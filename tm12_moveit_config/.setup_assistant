@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: tm12_description
+    relative_path: urdf/tm12_robot.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/tm12.srdf
+  CONFIG:
+    author_name: Ken Tsai
+    author_email: ken.tsai@tm-robot.com
+    generated_timestamp: 1577250990

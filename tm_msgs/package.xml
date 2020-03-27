@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>tm_msgs</name>
+  <version>1.0.0</version>
+  <description>The tm_msgs package</description>
+
+  <author email="ken.tsai@tm-robot.com">Ken Tsai</author>
+  <maintainer email="ken.tsai@tm-robot.com">Ken Tsai</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <export>
+  </export>
+</package>

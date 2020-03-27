@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>techman_robot</name>
+  <version>1.0.0</version>
+  <description>
+    Drivers, description, and utilities for Techman Robot Arms.
+  </description>
+
+  <author email="ken.tsai@tm-robot.com">Ken Tsai</author>
+  <maintainer email="ken.tsai@tm-robot.com">Ken Tsai</maintainer>
+
+  <license>BSD</license>
+
+  <!-- <url type="website">http://wiki.ros.org/techman_robot</url> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <!-- <exec_depend>techman_robots</exec_depend> -->
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

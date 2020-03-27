@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+  Techman robot common bringup.
+  Starts robot state publisher (translates joint positions to propper tfs).
+  and tm_driver node 
+  Usage:
+    tm_common.launch robot_ip:=<value>
+-->
+<launch>
+  <arg name="prefix" default="" />
+  <arg name="robot_ip" />
+  <arg name="max_velocity" default="3.14159" /> <!-- [rad/s] -->
+  <arg name="min_payload" default="0.0" /> <!-- [kg] -->
+  <arg name="max_payload" default="6.0" /> <!-- [kg] -->
+  <arg name="base_frame" default="$(arg prefix)base" />
+  <arg name="tool_frame" default="$(arg prefix)tool0" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- tm driver -->
+  <node name="tm_driver" pkg="tm_driver" type="tm_driver" output="screen">
+    <param name="prefix" type="str" value="$(arg prefix)" />
+    <param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
+    <param name="max_velocity" type="double" value="$(arg max_velocity)" />
+    <param name="min_payload" type="double" value="$(arg min_payload)" />
+    <param name="max_payload" type="double" value="$(arg max_payload)" />
+    <param name="base_frame" type="str" value="$(arg base_frame)" />
+    <param name="tool_frame" type="str" value="$(arg tool_frame)" />
+  </node>
+</launch>

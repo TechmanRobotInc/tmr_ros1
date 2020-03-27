@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>tm_driver</name>
+  <version>1.0.0</version>
+  <description>Driver for TMFlow</description>
+
+  <author email="ken.tsai@tm-robot.com">Ken Tsai</author>
+  <maintainer email="ken.tsai@tm-robot.com">Ken Tsai</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>control_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>tm_msgs</build_depend>
+  <!--
+  <build_depend>hardware_interface</build_depend>
+  <build_depend>controller_manager</build_depend>
+  -->
+
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>tm_msgs</exec_depend>
+  <!--
+  <exec_depend>ros_controllers</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  -->
+
+  <export>
+  </export>
+</package>

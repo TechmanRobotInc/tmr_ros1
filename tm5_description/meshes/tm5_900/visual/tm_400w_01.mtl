@@ -1,0 +1,10 @@
+# OBJ Material Export by Luxion KeyShot
+
+newmtl screw-shader_VR1
+Kd 0.278165 0.278165 0.287179
+
+newmtl cos-material-VR1 #1
+Kd 0.835897 0.835897 0.835897
+
+newmtl Housing - VR
+Kd 0.4 0.383856 0.383856

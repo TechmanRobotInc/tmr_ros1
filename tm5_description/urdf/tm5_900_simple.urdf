@@ -1,0 +1,184 @@
+<?xml version="1.0" ?>
+<robot name="tm5_900">
+<!--
+    <link name="">
+        <visual>
+            <geometry>
+                <mesh filename="" />
+            </geometry>
+            <material name="Black">
+                <color rgba="1.0 1.0 1.0 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="" type="revolute">
+        <parent link="" />
+        <child link="" />
+        <origin  xyz="0 0 0" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+-->
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm5_base.obj" />
+            </geometry>
+            <material name="LightGrey">
+                <color rgba="0.5 0.5 0.5 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_base_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="shoulder_1_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="shoulder_1_link" />
+        <origin xyz="0 0.1452 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="shoulder_1_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm_400w_01.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_400w_01_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="shoulder_2_joint" type="revolute">
+        <parent link="shoulder_1_link" />
+        <child link="arm_1_link" />
+        <origin xyz="0 0 0.146" rpy="0 0 0" />
+        <axis xyz="0 0 -1" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="arm_1_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm5_900_arm1.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm1_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="elbow_joint" type="revolute">
+        <parent link="arm_1_link" />
+        <child link="arm_2_link" />
+        <origin  xyz="0 0.429 -0.1298" rpy="0 0 0" />
+        <axis xyz="0 0 -1" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="arm_2_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm5_900_arm2.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm2_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="wrist_1_joint" type="revolute">
+        <parent link="arm_2_link" />
+        <child link="wrist_1_link" />
+        <origin xyz="0 0.4115 0.106" rpy="0 0 0" />
+        <axis xyz="0 0 -1" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="wrist_1_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm_100w_01.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_01_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="wrist_2_joint" type="revolute">
+        <parent link="wrist_1_link" />
+        <child link="wrist_2_link" />
+        <origin xyz="0 0.106 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="wrist_2_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm_100w_02.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_02_c.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="wrist_3_joint" type="revolute">
+        <parent link="wrist_2_link" />
+        <child link="wrist_3_link" />
+        <origin xyz="0 0 0.1144" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+        <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
+    </joint>
+
+    <link name="wrist_3_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/visual/tm_ee.obj" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_ee_c.stl" />
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="base" />
+    <joint name="base_fixed_joint" type="fixed">
+        <parent link="base" />
+        <child link="base_link" />
+        <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+    </joint>
+
+    <link name="tool0" />
+    <joint name="tool0_fixed_joint" type="fixed">
+        <parent link="wrist_3_link"/>
+        <child link="tool0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+</robot>
