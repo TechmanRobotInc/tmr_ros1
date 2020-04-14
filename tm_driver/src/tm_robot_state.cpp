@@ -199,7 +199,7 @@ size_t TmRobotState::_deserialize(const char *data, size_t size, bool use_mtx)
 			{
 				std::stringstream ss;
 				for (size_t i = 0; i < bsize; ++i) {
-					ss << *(data + boffset);
+					ss << *(data + boffset + i);
 				}
 				_error_content = ss.str();
 			}
