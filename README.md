@@ -139,7 +139,7 @@ Click on the __Data Table Setting__ button and check the following boxes:
 > 5. Click the __+ Add Parameters__ button.
 > ![choose_add_parameters](figures/choose_add_parameters.png)
 >
-> 6. To check whether the connection succeeds or not, please enter ``ROS_COMPUTER_IP:6089/api`` in the __HTTP Parameters__ blank text and click the __Send__ button to get the information of the remote computer for ROS.
+> 6. To check whether the connection succeeds or not, please enter ``ROS_COMPUTER_IP:6189/api`` in the __HTTP Parameters__ blank text and click the __Send__ button to get the information of the remote computer for ROS.
 > ![check_connect_success](figures/check_connect_success.png)
 >
 >       If the connection fails, __TIMEOUT__ error will be displayed in the window
@@ -147,7 +147,7 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >
 >       If the IP address of the (remote) ROS computer doesn't exist, **ERROR_CODE_7** will be displayed in the window.
 > ![wrong_port](figures/wrong_port.png)
-> 7. Enter ``ROS_COMPUTER_IP:6089/api/DET`` in the URL blank text and type arbitrary letters in the __Value__ blank text; the __Key__ will be generated automatically.
+> 7. Enter ``ROS_COMPUTER_IP:6189/api/DET`` in the URL blank text and type arbitrary letters in the __Value__ blank text; the __Key__ will be generated automatically.
 > ![add_model](figures/add_model.png)
 > 8. Finally, assign a name to the model in  the __Model name__ blank text and click the __Save__ button.
 > ![save_model](figures/save_model.png)
