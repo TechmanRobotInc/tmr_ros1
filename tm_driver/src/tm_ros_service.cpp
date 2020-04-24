@@ -7,7 +7,7 @@
 bool TmRosNode::send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScriptResponse &res)
 {
     bool rb = (iface_.sct.send_script_str(req.id, req.script) == iface_.RC_OK);
-    res.success = rb;
+    res.ok = rb;
     return rb;
 }
 bool TmRosNode::set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventResponse &res)
@@ -29,7 +29,7 @@ bool TmRosNode::set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventRespon
 bool TmRosNode::set_io(tm_msgs::SetIORequest &req, tm_msgs::SetIOResponse &res)
 {
     bool rb = iface_.set_io(TmIOModule(req.module), TmIOType(req.type), int(req.pin), req.state);
-    res.success = rb;
+    res.ok = rb;
     return rb;
 }
 bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPositionsResponse &res)
@@ -46,6 +46,6 @@ bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPos
         rb = iface_.set_tool_pose_Line(req.positions, req.velocity, req.acc_time, req.blend_percentage, req.fine_goal);
         break;
     }
-    res.success = rb;
+    res.ok = rb;
     return rb;
 }

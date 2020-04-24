@@ -4,4 +4,4 @@ int8 EVENT_RESUME = 3
 
 int8 event_type
 ---
-bool success
+bool ok
