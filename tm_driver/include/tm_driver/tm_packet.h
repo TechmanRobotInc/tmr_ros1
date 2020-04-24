@@ -218,7 +218,7 @@ public:
 class TmSvrData
 {
 public:
-	enum SrcType { Move, Copy };
+	enum SrcType { Shallow, Deep };
 
 	enum class Mode : char {
 		RESPONSE = 0,
@@ -244,7 +244,7 @@ private:
 	std::string _transaction_id;
 	Mode _mode = Mode::RESPONSE;
 
-	SrcType _src_type = SrcType::Move;
+	//SrcType _src_type = SrcType::Shallow;
 
 	const char *_content = NULL;
 	size_t _len = 0;
@@ -309,12 +309,12 @@ public:
 class TmSctData
 {
 public:
-	enum SrcType { Move, Copy };
+	enum SrcType { Shallow, Deep };
 
 private:
 	std::string _script_id;
 
-	SrcType _src_type = SrcType::Move;
+	//SrcType _src_type = SrcType::Shallow;
 
 	const char *_script;
 	size_t _len = 0;
@@ -341,8 +341,8 @@ public:
 		clear_script(*this);
 	}
 
-	const char *script() { return _script; }
 	std::string script_id() { return _script_id; }
+	const char *script() { return _script; }
 	size_t script_len() { return _len; }
 	size_t data_size() { return _size; }
 	bool is_ok() { return _is_ok; }

@@ -320,7 +320,7 @@ void TmSvrData::clear_content(TmSvrData &data)
 
 void TmSvrData::build_TmSvrData(TmSvrData &data, const std::string &id, Mode mode, const char *content, size_t len, SrcType type)
 {
-	data._is_copy = (type != SrcType::Move);
+	data._is_copy = (type != SrcType::Shallow);
 	data._is_valid = false;
 	data._transaction_id = id;
 	data._mode = mode;
@@ -339,7 +339,7 @@ void TmSvrData::build_TmSvrData(TmSvrData &data, const std::string &id, Mode mod
 
 void TmSvrData::build_TmSvrData(TmSvrData &data, const char *bytes, size_t size, SrcType type)
 {
-	data._is_copy = (type != SrcType::Move);
+	data._is_copy = (type != SrcType::Shallow);
 	data._is_valid = false;
 
 	if (!bytes) {
@@ -536,6 +536,9 @@ void FakeTmSvrPacket::build_content(std::vector<char> &content, float *angle, fl
 	content.push_back(ulen.ca[1]);
 }
 
+//
+// TMSCT
+//
 
 void TmSctData::clear_script(TmSctData &data)
 {
@@ -554,7 +557,7 @@ void TmSctData::clear_script(TmSctData &data)
 
 void TmSctData::build_TmSctData(TmSctData &data, const std::string &id, const char *script, size_t len, SrcType type)
 {
-	data._is_copy = (type != SrcType::Move);
+	data._is_copy = (type != SrcType::Shallow);
 	data._is_valid = false;
 	data._script_id = id;
 	if (data._is_copy) {
@@ -572,7 +575,7 @@ void TmSctData::build_TmSctData(TmSctData &data, const std::string &id, const ch
 
 void TmSctData::build_TmSctData(TmSctData &data, const char *bytes, size_t size, SrcType type)
 {
-	data._is_copy = (type != SrcType::Move);
+	data._is_copy = (type != SrcType::Shallow);
 	data._is_valid = false;
 	data._has_error = false;
 	data._is_ok = false;
@@ -632,6 +635,10 @@ void TmPacket::build_packet(TmPacket &packet, const TmSctData &data)
 	TmSctData::build_bytes(packet.data, data);
 }
 
+//
+// CPERR
+//
+
 void TmCPError::set_CPError(Code ec)
 {
 	_err_code = ec;
@@ -644,7 +651,7 @@ void TmCPError::set_CPError(const char *bytes, size_t size)
 		_err_code_str.clear();
 		return;
 	}
-	_err_code_str = std::string{ bytes , size };
+	_err_code_str = std::string{ bytes, size };
 
 	_err_code = Code(TmPacket::hex_uint8_from_string(_err_code_str));
 }

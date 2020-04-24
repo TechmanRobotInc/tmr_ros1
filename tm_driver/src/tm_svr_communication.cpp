@@ -84,7 +84,7 @@ void TmSvrCommunication::halt()
 TmCommRC TmSvrCommunication::send_content_str(const std::string &id, const std::string &content)
 {
 	std::string cntt = content;
-	TmSvrData cmd{ id, TmSvrData::Mode::STRING, cntt.data(), cntt.size(), TmSvrData::SrcType::Move };
+	TmSvrData cmd{ id, TmSvrData::Mode::STRING, cntt.data(), cntt.size(), TmSvrData::SrcType::Shallow };
 	TmPacket pack{ cmd };
 	return send_packet_all(pack);
 }
@@ -150,7 +150,7 @@ TmCommRC TmSvrCommunication::tmsvr_function()
 			
 			err_data.error_code(TmCPError::Code::Ok);
 
-			TmSvrData::build_TmSvrData(data, pack.data.data(), pack.data.size(), TmSvrData::SrcType::Move);
+			TmSvrData::build_TmSvrData(data, pack.data.data(), pack.data.size(), TmSvrData::SrcType::Shallow);
 			
 			if (data.is_valid()) {
 				switch (data.mode()) {

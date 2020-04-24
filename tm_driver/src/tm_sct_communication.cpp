@@ -63,7 +63,7 @@ void TmSctCommunication::halt()
 TmCommRC TmSctCommunication::send_script_str(const std::string &id, const std::string &script)
 {
 	std::string sct = script;
-	TmSctData cmd{ id, sct.data(), sct.size(), TmSctData::SrcType::Move };
+	TmSctData cmd{ id, sct.data(), sct.size(), TmSctData::SrcType::Shallow };
 	TmPacket pack{ cmd };
 	return send_packet_all(pack);
 }
@@ -129,7 +129,7 @@ TmCommRC TmSctCommunication::tmsct_function()
 			//print_info("TM_SCT: TMSCT");
 			err_data.error_code(TmCPError::Code::Ok);
 
-			TmSctData::build_TmSctData(sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Move);
+			TmSctData::build_TmSctData(sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
 			
 			mtx_sct_lock();
 			_sct_response = std::string{ sct_data.script(), sct_data.script_len() };

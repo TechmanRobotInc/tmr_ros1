@@ -157,7 +157,7 @@ size_t _recv_fake_svr_pack_data(char *buf)
 	FakeTmSvrPacket svr_pack;
 	FakeTmSvrPacket::build_content(svr_pack.content, angle, pose);
 	TmSvrData::build_TmSvrData(svr_pack.data, "0", TmSvrData::Mode::BINARY,
-		svr_pack.content.data(), svr_pack.content.size(), TmSvrData::SrcType::Move);
+		svr_pack.content.data(), svr_pack.content.size(), TmSvrData::SrcType::Shallow);
 	TmSvrData::build_bytes(svr_pack.packet.data, svr_pack.data);
 	svr_pack.packet.setup_header(TmPacket::Header::TMSVR);
 	std::vector<char> pack_byte;
