@@ -16,6 +16,10 @@ void TmRosNode::publish_msg(PubMsg &pm)
 {
     // Publish feedback state
     pm.fbs_msg.header.stamp = ros::Time::now();
+
+    pm.fbs_msg.is_svr_connected = iface_.svr.is_connected();
+    pm.fbs_msg.is_sct_connected = iface_.sct.is_connected();
+
     pm.fbs_msg.joint_pos = iface_.state.joint_angle();
     pm.fbs_msg.joint_vel = iface_.state.joint_speed();
     pm.fbs_msg.joint_tor = iface_.state.joint_torque();

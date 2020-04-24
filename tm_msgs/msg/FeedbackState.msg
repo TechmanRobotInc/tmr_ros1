@@ -1,6 +1,11 @@
 
 Header header
 
+# Connection Status
+
+bool is_svr_connected
+bool is_sct_connected
+
 # Movement
 
 float64[] joint_pos
