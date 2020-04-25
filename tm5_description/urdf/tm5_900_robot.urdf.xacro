@@ -11,6 +11,13 @@
 
   <!-- arm -->
   <!--xacro:tm5_900_robot prefix="" joint_limited="false" transmission_hw_interface="$(arg transmission_hw_interface)" /-->
-  <xacro:tm5_900_robot prefix="" joint_limited="false"/>
+  <xacro:tm5_900_robot prefix="" joint_limited="false" stl_mesh="$(arg stl_mesh)" />
+
+  <link name="world" />
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link="base" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
 
 </robot>
