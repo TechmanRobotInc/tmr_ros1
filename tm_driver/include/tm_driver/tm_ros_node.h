@@ -22,6 +22,7 @@
 
 #include "tm_msgs/FeedbackState.h"
 //#include "tm_msgs/WriteIO.h"
+#include "tm_msgs/ConnectTM.h"
 #include "tm_msgs/SendScript.h"
 #include "tm_msgs/SetEvent.h"
 #include "tm_msgs/SetIO.h"
@@ -60,13 +61,23 @@ protected:
     // Topic
     ////////////////////////////////
 
+    int pub_reconnect_timeout_ms_;
+    int pub_reconnect_timeval_ms_;
+
     boost::thread pub_thread_;
+
+    ////////////////////////////////
+    // Service for connection
+    ////////////////////////////////
+
+    ros::ServiceServer connect_srv_;
 
     ////////////////////////////////
     // Service
     ////////////////////////////////
 
     ros::ServiceServer send_script_srv_;
+
     ros::ServiceServer set_event_srv_;
     ros::ServiceServer set_io_srv_;
 
@@ -132,7 +143,10 @@ private:
     // Service
     ////////////////////////////////
 
+    bool connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMResponse &res);
+
     bool send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScriptResponse &res);
+
     bool set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventResponse &res);
     bool set_io(tm_msgs::SetIORequest &req, tm_msgs::SetIOResponse &res);
 

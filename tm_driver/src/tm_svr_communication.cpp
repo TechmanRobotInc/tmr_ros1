@@ -90,7 +90,7 @@ TmCommRC TmSvrCommunication::send_content_str(const std::string &id, const std::
 }
 TmCommRC TmSvrCommunication::send_play_cmd()
 {
-	return send_content_str("0", "Stick_PlayPause=1\r\n");
+	return send_content_str("0", "Stick_PlayPause=1");
 }
 
 void TmSvrCommunication::thread_function()
@@ -99,6 +99,9 @@ void TmSvrCommunication::thread_function()
 	_keep_thread_alive = true;
 	while (_keep_thread_alive) {
 		bool reconnect = false;
+		if (!recv_init()) {
+			print_info("TM_SVR: is not connected");
+		}
 		while (_keep_thread_alive && is_connected() && !reconnect) {
 			TmCommRC rc = tmsvr_function();
 			_updated = true;
@@ -115,20 +118,30 @@ void TmSvrCommunication::thread_function()
 			}
 		}
 		Close();
-		print_info("TM_SVR: reconnect in ");
-		int cnt = 5;
-		while (_keep_thread_alive && cnt > 0) {
-			print_info("%d sec...", cnt);
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			--cnt;
-		}
-		if (_keep_thread_alive) {
-			print_info("TM_SVR: connect...");
-			Connect(1000);
-		}
+		reconnect_function();
 	}
 	Close();
 	print_info("TM_SVR: thread end");
+}
+void TmSvrCommunication::reconnect_function()
+{
+	if (!_keep_thread_alive) return;
+	if (_reconnect_timeval_ms <= 0) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	print_info("TM_SVR: reconnect in ");
+	int cnt = 0;
+	while (_keep_thread_alive && cnt < _reconnect_timeval_ms) {
+		if (cnt % 500 == 0) {
+			print_info("%.1f sec...", 0.001 * (_reconnect_timeval_ms - cnt));
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		++cnt;
+	}
+	if (_keep_thread_alive && _reconnect_timeval_ms >= 0) {
+		print_info("0 sec\nTM_SVR: connect(%dms)...", _reconnect_timeout_ms);
+		Connect(_reconnect_timeout_ms);
+	}
 }
 TmCommRC TmSvrCommunication::tmsvr_function()
 {

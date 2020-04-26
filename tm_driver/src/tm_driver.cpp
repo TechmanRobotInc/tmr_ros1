@@ -32,7 +32,7 @@ TmDriver::TmDriver(const std::string &ip,
 	}
 }
 
-bool TmDriver::start(int timeout_ms)
+bool TmDriver::start(int timeout_ms, bool stick_play)
 {
 	halt();
 	print_info("TM_DRV: start");
@@ -40,15 +40,11 @@ bool TmDriver::start(int timeout_ms)
 	bool rb = svr.start(timeout_ms);
 	if (!rb) return rb;
 	// send command to run project
-	rb = (svr.send_play_cmd() == RC_OK);
-	if (!rb) return rb;
+	if (stick_play) {
+		svr.send_play_cmd();
+	}
 	// connect to listen node
 	rb = sct.start(timeout_ms);
-	if (!rb) {
-		svr.halt();
-		return rb;
-	}
-	_is_all_connected = true;
 	return rb;
 }
 
@@ -64,7 +60,6 @@ void TmDriver::halt()
 		// send command to stop project
 	}
 	svr.halt();
-	_is_all_connected = false;
 }
 
 ////////////////////////////////

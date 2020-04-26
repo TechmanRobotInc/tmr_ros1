@@ -4,6 +4,51 @@
 // Service
 ////////////////////////////////
 
+bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMResponse &res)
+{
+    bool rb = true;
+    int t_o = (int)(1000.0 * req.timeout);
+    int t_v = (int)(1000.0 * req.timeval);
+    switch (req.server) {
+    case tm_msgs::ConnectTMRequest::TMSVR:
+        if (req.connect) {
+            print_info("TM_ROS: (re)connect(%d) TMSVR", t_o);
+            iface_.svr.halt();
+            rb = iface_.svr.start(t_o);
+        }
+        if (req.reconnect) {
+            pub_reconnect_timeout_ms_ = t_o;
+            pub_reconnect_timeval_ms_ = t_v;
+            print_info("TM_ROS: set TMSVR reconnect timeout %dms, timeval %dms", t_o, t_v);
+        }
+        else {
+            // no reconnect
+            pub_reconnect_timeval_ms_ = -1;
+            print_info("TM_ROS: set TMSVR NOT reconnect");
+        }
+        break;
+    case tm_msgs::ConnectTMRequest::TMSCT:
+        if (req.connect) {
+            print_info("TM_ROS: (re)connect(%d) TMSCT", t_o);
+            iface_.sct.halt();
+            rb = iface_.sct.start(t_o);
+        }
+        if (req.reconnect) {
+            iface_.sct.set_reconnect_timeout(t_o);
+            iface_.sct.set_reconnect_timeval(t_v);
+            print_info("TM_ROS: set TMSCT reconnect timeout %dms, timeval %dms", t_o, t_v);
+        }
+        else {
+            // no reconnect
+            iface_.sct.set_reconnect_timeval(-1);
+            print_info("TM_ROS: set TMSCT NOT reconnect");
+        }
+        break;
+    }
+    res.ok = rb;
+    return rb;
+}
+
 bool TmRosNode::send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScriptResponse &res)
 {
     bool rb = (iface_.sct.send_script_str(req.id, req.script) == iface_.RC_OK);

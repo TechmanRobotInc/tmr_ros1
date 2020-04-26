@@ -48,6 +48,8 @@ TmRosNode::TmRosNode(const std::string &host)
     ////////////////////////////////
     // Topic
     ////////////////////////////////
+    pub_reconnect_timeout_ms_ = 1000;
+    pub_reconnect_timeval_ms_ = 3000;
     pub_thread_ = boost::thread(boost::bind(&TmRosNode::publisher, this));
 
     ////////////////////////////////
@@ -58,7 +60,10 @@ TmRosNode::TmRosNode(const std::string &host)
     ////////////////////////////////
     // Service
     ////////////////////////////////
+    connect_srv_ = nh_.advertiseService("tm_diver/connect_tm", &TmRosNode::connect_tm, this);
+
     send_script_srv_ = nh_.advertiseService("tm_driver/send_script", &TmRosNode::send_script, this);
+
     set_event_srv_ = nh_.advertiseService("tm_driver/set_event", &TmRosNode::set_event, this);
     set_io_srv_ = nh_.advertiseService("tm_driver/set_io", &TmRosNode::set_io, this);
 

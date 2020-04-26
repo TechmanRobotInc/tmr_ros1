@@ -365,7 +365,7 @@ bool TmCommunication::Connect(int timeout_ms)
 {
 	if (_sockfd > 0) return true;
 
-	if (timeout_ms < 0) timeout_ms = -1;
+	if (timeout_ms < 0) timeout_ms = 0;
 
 #ifdef _WIN32
 	addrinfo hints;
@@ -408,6 +408,10 @@ bool TmCommunication::Connect(int timeout_ms)
 
 void TmCommunication::Close()
 {
+	// reset
+	_recv_rc = TmCommRC::OK;
+	_recv_ready = false;
+
 	if (_sockfd <= 0) return;
 #ifdef _WIN32
 	closesocket((SOCKET)_sockfd);
@@ -490,19 +494,27 @@ TmCommRC TmCommunication::send_packet_(TmPacket &packet, int *n)
 		return send_bytes(bytes.data(), bytes.size(), n);
 }
 
+bool TmCommunication::recv_init()
+{
+	_recv_ready = _recv->setup(_sockfd);
+	return _recv_ready;
+}
+
 TmCommRC TmCommunication::recv_spin_once(int timeval_ms, int *n)
 {
 	TmCommRC rc = TmCommRC::OK;
 
 	if (n) *n = 0;
 
+	//if (_sockfd <= 0) return TmCommRC::NOTCONNECT;
+
 	// first init.
-	if (!_recv_ready) {
+	/*if (!_recv_ready) {
 		if (_recv->setup(_sockfd))
 			_recv_ready = true;
 		else
 			return TmCommRC::NOTREADY;
-	}
+	}*/
 
 	// spin once
 	int nb = 0;

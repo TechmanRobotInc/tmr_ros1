@@ -90,6 +90,9 @@ void TmRosNode::publisher()
     while (ros::ok()) {
         int count = 0;
         bool reconnect = false;
+        if (!iface_.svr.recv_init()) {
+			print_info("TM_ROS: (TM_SVR): is not connected");
+		}
         while (ros::ok() && iface_.svr.is_connected() && !reconnect){
             auto rc = iface_.svr.tmsvr_function();
             /*if (rc == TmCommRC::OK) {
@@ -109,16 +112,24 @@ void TmRosNode::publisher()
             }
         }
         iface_.svr.Close();
-        print_info("TM_ROS: (TM_SVR) reconnect in ");
-        int cnt = 5;
-        while (ros::ok() && cnt > 0) {
-            print_info("%d sec...", cnt);
-            boost::this_thread::sleep_for(boost::chrono::seconds(1));
-            --cnt;
+
+        // reconnect == true
+        if (!ros::ok()) break;
+        if (pub_reconnect_timeval_ms_ <= 0) {
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
         }
-        if (ros::ok()) {
-            print_info("TM_ROS: (TM_SVR) connect...");
-            iface_.svr.Connect(1000);
+        print_info("TM_ROS: (TM_SVR) reconnect in ");
+        int cnt = 0;
+        while (ros::ok() && cnt < pub_reconnect_timeval_ms_) {
+            if (cnt % 500 == 0) {
+                print_info("%.1f sec...", 0.001 * (pub_reconnect_timeval_ms_ - cnt));
+            }
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+            ++cnt;
+        }
+        if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
+            print_info("0 sec\nTM_ROS: (TM_SVR) connect(%d)...", pub_reconnect_timeout_ms_);
+            iface_.svr.Connect(pub_reconnect_timeout_ms_);
         }
     }
     iface_.svr.Close();

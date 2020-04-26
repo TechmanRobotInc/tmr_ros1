@@ -18,8 +18,6 @@ private:
 	bool _has_svr_thrd = false;
 	bool _has_sct_thrd = false;
 
-	bool _is_all_connected = false;
-
 	bool _is_executing_traj = false;
 
 	////////////////////////////////
@@ -37,7 +35,7 @@ public:
 		std::condition_variable *psct_cv);
 
 	// start: connect to server, run project, connect to listen node
-	bool start(int timeout_ms = -1);
+	bool start(int timeout_ms = -1, bool stick_play = true);
 
 	// halt: disconnect to listen node, stop project, disconnect to server
 	void halt();
