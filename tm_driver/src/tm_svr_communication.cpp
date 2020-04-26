@@ -81,6 +81,13 @@ void TmSvrCommunication::halt()
 	}
 }
 
+TmCommRC TmSvrCommunication::send_content(const std::string &id, TmSvrData::Mode mode, const std::string &content)
+{
+	std::string cntt = content;
+	TmSvrData cmd{ id, mode, cntt.data(), cntt.size(), TmSvrData::SrcType::Shallow };
+	TmPacket pack{ cmd };
+	return send_packet_all(pack);
+}
 TmCommRC TmSvrCommunication::send_content_str(const std::string &id, const std::string &content)
 {
 	std::string cntt = content;
@@ -168,13 +175,18 @@ TmCommRC TmSvrCommunication::tmsvr_function()
 			if (data.is_valid()) {
 				switch (data.mode()) {
 				case TmSvrData::Mode::RESPONSE:
-					print_info("TM_SVR: response (%d)", int(data.error_code()));
+					print_info("TM_SVR: RESPONSE (%s): [%d]: %s", data.transaction_id().c_str(),
+						(int)(data.error_code()), std::string(data.content(), data.content_len()).c_str());
 					break;
 				case TmSvrData::Mode::BINARY:
 					state.mtx_deserialize(data.content(), data.content_len());
 					break;
+				case TmSvrData::Mode::READ_STRING:
+					print_info("TM_SVR: READ_STRING (%s): %s", data.transaction_id().c_str(),
+						std::string(data.content(), data.content_len()).c_str());
+					break;
 				default:
-					print_info("TM_SVR: invalid mode (%d)", int(data.mode()));
+					print_info("TM_SVR: (%s): invalid mode (%d)", data.transaction_id().c_str(), (int)(data.mode()));
 					break;
 				}
 			}

@@ -72,6 +72,33 @@ TmCommRC TmSctCommunication::send_script_exit_cmd()
 	return send_script_str("0", "ScriptExit()");
 }
 
+TmCommRC TmSctCommunication::send_sta_request(const std::string &subcmd, const std::string &subdata)
+{
+	std::string data = subdata;
+	TmStaData req{ subcmd, data.data(), data.size(), TmStaData::SrcType::Shallow };
+	TmPacket pack{ req };
+	return send_packet_all(pack);
+}
+
+std::string TmSctCommunication::mtx_sct_response(std::string &id)
+{
+	std::string rs;
+	mtx_sct_lock();
+	id = sct_data.script_id();
+	rs = std::string{ sct_data.script(), sct_data.script_len() };
+	mtx_sct_unlock();
+	return rs;
+}
+std::string TmSctCommunication::mtx_sta_response(std::string &cmd)
+{
+	std::string rs;
+	mtx_sta_lock();
+	cmd = sta_data.subcmd_str();
+	rs = std::string{ sta_data.subdata(), sta_data.subdata_len() };
+	mtx_sta_unlock();
+	return rs;
+}
+
 void TmSctCommunication::thread_function()
 {
 	print_info("TM_SCT: thread begin");
@@ -129,6 +156,10 @@ TmCommRC TmSctCommunication::tmsct_function()
 	}
 	std::vector<TmPacket> &pack_vec = packet_list();
 
+	//TmCPError err_data_tmp;
+	TmSctData sct_data_tmp;
+	TmStaData sta_data_tmp;
+
 	for (auto &pack : pack_vec) {
 		switch (pack.type) {
 		case TmPacket::Header::CPERR:
@@ -136,29 +167,67 @@ TmCommRC TmSctCommunication::tmsct_function()
 			err_data.set_CPError(pack.data.data(), pack.data.size());
 			print_error(err_data.error_code_str().c_str());
 			break;
+
 		case TmPacket::Header::TMSCT:
 			//print_info("TM_SCT: TMSCT");
 			err_data.error_code(TmCPError::Code::Ok);
 
-			TmSctData::build_TmSctData(sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
+			/*TmSctData::build_TmSctData(sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
 			
 			mtx_sct_lock();
-			_sct_response = std::string{ sct_data.script(), sct_data.script_len() };
+			_sct_res_id = sct_data.script_id();
+			_sct_res_script = std::string{ sct_data.script(), sct_data.script_len() };
 			mtx_sct_unlock();
+
 			if (sct_data.has_error()) {
-				print_error("TM_SCT: err: %s", _sct_response.c_str());
+				print_error("TM_SCT: err: (%s) %s", _sct_res_id.c_str(), _sct_res_script.c_str());
 			}
 			else {
-				print_info("TM_SCT: res: %s", _sct_response.c_str());
-			}
+				print_info("TM_SCT: res: (%s) %s", _sct_res_id.c_str(), _sct_res_script.c_str());
+			}*/
+
+			TmSctData::build_TmSctData(sct_data_tmp, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
+
+			mtx_sct_lock();
+			TmSctData::build_TmSctData(sct_data, sct_data_tmp, TmSctData::SrcType::Deep);
+			mtx_sct_unlock();
+
+			if (sct_data.has_error())
+				print_info("TM_SCT: err: (%s): %s", sct_data.script_id().c_str(), sct_data.script());
+			else
+				print_info("TM_SCT: res: (%s): %s", sct_data.script_id().c_str(), sct_data.script());
+
 			break;
+
 		case TmPacket::Header::TMSTA:
 			print_info("TM_SCT: TMSTA");
+
+			err_data.error_code(TmCPError::Code::Ok);
+
+			TmStaData::build_TmStaData(sta_data_tmp, pack.data.data(), pack.data.size(), TmStaData::SrcType::Shallow);
+
+			mtx_sta_lock();
+			TmStaData::build_TmStaData(sta_data, sta_data_tmp, TmStaData::SrcType::Deep);
+			mtx_sta_unlock();
+
+			print_info("TM_STA: res: (%s): %s", sta_data.subcmd_str().c_str(), sta_data.subdata());
+
+			tmsta_function();
 			break;
+
 		default:
 			print_info("TM_SCT: invalid header");
 			break;
 		}
 	}
 	return rc;
+}
+void TmSctCommunication::tmsta_function()
+{
+	switch (sta_data.subcmd()) {
+	case 0:
+		break;
+	case 1:
+		break;
+	}
 }

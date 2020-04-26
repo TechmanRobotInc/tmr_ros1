@@ -34,7 +34,9 @@ public:
 	void set_reconnect_timeval(int timeval_ms)
 	{ _reconnect_timeval_ms = timeval_ms; }
 
+	TmCommRC send_content(const std::string &id, TmSvrData::Mode mode, const std::string &content);
 	TmCommRC send_content_str(const std::string &id, const std::string &content);
+
 	TmCommRC send_play_cmd();
 	//TmCommRC send_stop_cmd();
 
