@@ -21,8 +21,12 @@
 //#include <cmath>
 
 #include "tm_msgs/FeedbackState.h"
-//#include "tm_msgs/WriteIO.h"
+#include "tm_msgs/SvrResponse.h"
+#include "tm_msgs/SctResponse.h"
+#include "tm_msgs/StaResponse.h"
 #include "tm_msgs/ConnectTM.h"
+#include "tm_msgs/WriteItem.h"
+#include "tm_msgs/AskItem.h"
 #include "tm_msgs/SendScript.h"
 #include "tm_msgs/SetEvent.h"
 #include "tm_msgs/SetIO.h"
@@ -63,8 +67,11 @@ protected:
 
     int pub_reconnect_timeout_ms_;
     int pub_reconnect_timeval_ms_;
-
     boost::thread pub_thread_;
+
+    int sct_reconnect_timeout_ms_;
+    int sct_reconnect_timeval_ms_;
+    boost::thread sct_thread_;
 
     ////////////////////////////////
     // Service for connection
@@ -75,6 +82,9 @@ protected:
     ////////////////////////////////
     // Service
     ////////////////////////////////
+
+    ros::ServiceServer write_item_srv_;
+    ros::ServiceServer ask_item_srv_;
 
     ros::ServiceServer send_script_srv_;
 
@@ -115,12 +125,6 @@ private:
     void cancelCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTrajectoryAction> gh);
 
     ////////////////////////////////
-    // robot error handling
-    ////////////////////////////////
-
-    void robot_error_proc(int &count);
-
-    ////////////////////////////////
     // Topic
     ////////////////////////////////
 
@@ -128,6 +132,7 @@ private:
         ros::Publisher fbs_pub;
         ros::Publisher joint_pub;
         ros::Publisher tool_pose_pub;
+        ros::Publisher svr_pub;
 
         tm_msgs::FeedbackState fbs_msg;
         sensor_msgs::JointState joint_msg;
@@ -135,15 +140,34 @@ private:
 
         //tf::Transform transform;
         tf::TransformBroadcaster tfbc;
+
+        tm_msgs::SvrResponse svr_msg;
     };
-    void publish_msg(PubMsg &msg);
+    void publish_fbs(PubMsg &pm);
+    void publish_svr(PubMsg &pm);
+    bool publish_func(PubMsg &pm);
     void publisher();
+
+    struct SctMsg {
+        ros::Publisher sct_pub;
+        ros::Publisher sta_pub;
+
+        tm_msgs::SctResponse sct_msg;
+        tm_msgs::StaResponse sta_msg;
+    };
+    void sct_msg(SctMsg &sm);
+    void sta_msg(SctMsg &sm);
+    bool sct_func(SctMsg &sm);
+    void sct_responsor();
 
     ////////////////////////////////
     // Service
     ////////////////////////////////
 
     bool connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMResponse &res);
+
+    bool write_item(tm_msgs::WriteItemRequest &req, tm_msgs::WriteItemResponse &res);
+    bool ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse &res);
 
     bool send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScriptResponse &res);
 

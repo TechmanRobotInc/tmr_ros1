@@ -12,39 +12,54 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
     switch (req.server) {
     case tm_msgs::ConnectTMRequest::TMSVR:
         if (req.connect) {
-            print_info("TM_ROS: (re)connect(%d) TMSVR", t_o);
+            print_info("TM_ROS: (re)connect(%d) TM_SVR", t_o);
             iface_.svr.halt();
             rb = iface_.svr.start(t_o);
         }
         if (req.reconnect) {
             pub_reconnect_timeout_ms_ = t_o;
             pub_reconnect_timeval_ms_ = t_v;
-            print_info("TM_ROS: set TMSVR reconnect timeout %dms, timeval %dms", t_o, t_v);
+            print_info("TM_ROS: set SVR reconnect timeout %dms, timeval %dms", t_o, t_v);
         }
         else {
             // no reconnect
             pub_reconnect_timeval_ms_ = -1;
-            print_info("TM_ROS: set TMSVR NOT reconnect");
+            print_info("TM_ROS: set SVR NOT reconnect");
         }
         break;
     case tm_msgs::ConnectTMRequest::TMSCT:
         if (req.connect) {
-            print_info("TM_ROS: (re)connect(%d) TMSCT", t_o);
+            print_info("TM_ROS: (re)connect(%d) TM_SCT", t_o);
             iface_.sct.halt();
             rb = iface_.sct.start(t_o);
         }
         if (req.reconnect) {
-            iface_.sct.set_reconnect_timeout(t_o);
-            iface_.sct.set_reconnect_timeval(t_v);
-            print_info("TM_ROS: set TMSCT reconnect timeout %dms, timeval %dms", t_o, t_v);
+            sct_reconnect_timeout_ms_ = t_o;
+            sct_reconnect_timeval_ms_ = t_v;
+            print_info("TM_ROS: set SCT reconnect timeout %dms, timeval %dms", t_o, t_v);
         }
         else {
             // no reconnect
-            iface_.sct.set_reconnect_timeval(-1);
-            print_info("TM_ROS: set TMSCT NOT reconnect");
+            sct_reconnect_timeval_ms_ = -1;
+            print_info("TM_ROS: set SCT NOT reconnect");
         }
         break;
     }
+    res.ok = rb;
+    return rb;
+}
+
+bool TmRosNode::write_item(tm_msgs::WriteItemRequest &req, tm_msgs::WriteItemResponse &res)
+{
+    bool rb;
+    std::string content = req.item + "=" + req.value;
+    rb = (iface_.svr.send_content_str(req.id, content) == iface_.RC_OK);
+    res.ok = rb;
+    return rb;
+}
+bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse &res)
+{
+    bool rb = (iface_.svr.send_content(req.id, TmSvrData::Mode::READ_STRING, req.item) == iface_.RC_OK);
     res.ok = rb;
     return rb;
 }
@@ -58,17 +73,27 @@ bool TmRosNode::send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScript
 bool TmRosNode::set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventResponse &res)
 {
     bool rb = false;
-    switch (req.event_type) {
-    case tm_msgs::SetEventRequest::EVENT_STOP:
+    switch (req.func) {
+    case tm_msgs::SetEventRequest::EXIT:
+        rb = iface_.script_exit();
+        break;
+    case tm_msgs::SetEventRequest::Tag:
+        rb = iface_.set_tag((int)(req.arg0), (int)(req.arg1));
+        break;
+    case tm_msgs::SetEventRequest::WaitTag:
+        rb = iface_.set_wait_tag((int)(req.arg0), (int)(req.arg1));
+        break;
+    case tm_msgs::SetEventRequest::STOP:
         rb = iface_.set_stop();
         break;
-    case tm_msgs::SetEventRequest::EVENT_PAUSE:
+    case tm_msgs::SetEventRequest::PAUSE:
         rb = iface_.set_pause();
         break;
-    case tm_msgs::SetEventRequest::EVENT_RESUME:
+    case tm_msgs::SetEventRequest::RESUME:
         rb = iface_.set_resume();
         break;
     }
+    res.ok = rb;
     return rb;
 }
 bool TmRosNode::set_io(tm_msgs::SetIORequest &req, tm_msgs::SetIOResponse &res)

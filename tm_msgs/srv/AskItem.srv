@@ -1,0 +1,6 @@
+# Ask: request 'Read'
+
+string id
+string item
+---
+bool ok

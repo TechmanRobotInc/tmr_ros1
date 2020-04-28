@@ -67,9 +67,9 @@ TmCommRC TmSctCommunication::send_script_str(const std::string &id, const std::s
 	TmPacket pack{ cmd };
 	return send_packet_all(pack);
 }
-TmCommRC TmSctCommunication::send_script_exit_cmd()
+TmCommRC TmSctCommunication::send_script_exit()
 {
-	return send_script_str("0", "ScriptExit()");
+	return send_script_str("Exit", "ScriptExit()");
 }
 
 TmCommRC TmSctCommunication::send_sta_request(const std::string &subcmd, const std::string &subdata)
@@ -110,6 +110,9 @@ void TmSctCommunication::thread_function()
 		}
 		while (_keep_thread_alive && is_connected() && !reconnect) {
 			TmCommRC rc = tmsct_function();
+			_updated = true;
+			_cv->notify_all();
+
 			switch (rc) {
 			case TmCommRC::ERR:
 			case TmCommRC::NOTREADY:
@@ -200,8 +203,7 @@ TmCommRC TmSctCommunication::tmsct_function()
 			break;
 
 		case TmPacket::Header::TMSTA:
-			print_info("TM_SCT: TMSTA");
-
+			//print_info("TM_SCT: TMSTA");
 			err_data.error_code(TmCPError::Code::Ok);
 
 			TmStaData::build_TmStaData(sta_data_tmp, pack.data.data(), pack.data.size(), TmStaData::SrcType::Shallow);

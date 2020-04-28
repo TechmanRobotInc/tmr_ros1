@@ -41,7 +41,7 @@ bool TmDriver::start(int timeout_ms, bool stick_play)
 	if (!rb) return rb;
 	// send command to run project
 	if (stick_play) {
-		svr.send_play_cmd();
+		svr.send_stick_play();
 	}
 	// connect to listen node
 	rb = sct.start(timeout_ms);
@@ -53,7 +53,7 @@ void TmDriver::halt()
 	print_info("TM_DRV: halt");
 	if (sct.is_connected()) {
 		// send command to stop project
-		sct.send_script_exit_cmd();
+		sct.send_script_exit();
 	}
 	sct.halt();
 	if (svr.is_connected()) {
@@ -70,6 +70,18 @@ void TmDriver::halt()
 // SCT Robot Function (set_XXX)
 ////////////////////////////////
 
+bool TmDriver::script_exit(const std::string &id)
+{
+	return (sct.send_script_str(id, TmCommand::script_exit()) == RC_OK);
+}
+bool TmDriver::set_tag(int tag, int wait, const std::string &id)
+{
+	return (sct.send_script_str(id, TmCommand::set_tag(tag, wait)) == RC_OK);
+}
+bool TmDriver::set_wait_tag(int tag, int timeout_ms, const std::string &id)
+{
+	return (sct.send_script_str(id, TmCommand::set_tag(tag, timeout_ms)) == RC_OK);
+}
 bool TmDriver::set_stop(const std::string &id)
 {
 	return (sct.send_script_str(id, TmCommand::set_stop()) == RC_OK);

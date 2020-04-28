@@ -37,7 +37,7 @@ public:
 	TmCommRC send_content(const std::string &id, TmSvrData::Mode mode, const std::string &content);
 	TmCommRC send_content_str(const std::string &id, const std::string &content);
 
-	TmCommRC send_play_cmd();
+	TmCommRC send_stick_play();
 	//TmCommRC send_stop_cmd();
 
 	bool state_updated() { return _updated; }

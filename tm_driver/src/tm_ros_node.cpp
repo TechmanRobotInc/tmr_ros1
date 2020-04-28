@@ -7,7 +7,8 @@
 ////////////////////////////////
 
 TmRosNode::TmRosNode(const std::string &host)
-    : iface_(host, nullptr, &sct_cv_)
+    //: iface_(host, nullptr, &sct_cv_)
+    : iface_(host, nullptr, nullptr)
     , as_(nh_, "joint_trajectory_action"
         , boost::bind(&TmRosNode::goalCB, this, _1)
         , boost::bind(&TmRosNode::cancelCB, this, _1)
@@ -52,6 +53,10 @@ TmRosNode::TmRosNode(const std::string &host)
     pub_reconnect_timeval_ms_ = 3000;
     pub_thread_ = boost::thread(boost::bind(&TmRosNode::publisher, this));
 
+    sct_reconnect_timeout_ms_ = 1000;
+    sct_reconnect_timeval_ms_ = 3000;
+    sct_thread_ = boost::thread(boost::bind(&TmRosNode::sct_responsor, this));
+
     ////////////////////////////////
     // Action
     ////////////////////////////////
@@ -61,6 +66,9 @@ TmRosNode::TmRosNode(const std::string &host)
     // Service
     ////////////////////////////////
     connect_srv_ = nh_.advertiseService("tm_diver/connect_tm", &TmRosNode::connect_tm, this);
+
+    write_item_srv_ = nh_.advertiseService("tm_driver/write_item", &TmRosNode::write_item, this);
+    ask_item_srv_ = nh_.advertiseService("tm_driver/ask_item", &TmRosNode::ask_item, this);
 
     send_script_srv_ = nh_.advertiseService("tm_driver/send_script", &TmRosNode::send_script, this);
 

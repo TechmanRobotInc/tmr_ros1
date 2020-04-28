@@ -95,9 +95,9 @@ TmCommRC TmSvrCommunication::send_content_str(const std::string &id, const std::
 	TmPacket pack{ cmd };
 	return send_packet_all(pack);
 }
-TmCommRC TmSvrCommunication::send_play_cmd()
+TmCommRC TmSvrCommunication::send_stick_play()
 {
-	return send_content_str("0", "Stick_PlayPause=1");
+	return send_content_str("Play", "Stick_PlayPause=1");
 }
 
 void TmSvrCommunication::thread_function()
