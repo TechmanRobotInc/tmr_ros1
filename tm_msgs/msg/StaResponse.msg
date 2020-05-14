@@ -1,4 +1,6 @@
+# For SetEvent TAG / AskSta service
+
 Header header
 
-int8 subcmd
+string subcmd
 string subdata

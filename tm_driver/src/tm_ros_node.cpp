@@ -49,6 +49,10 @@ TmRosNode::TmRosNode(const std::string &host)
     ////////////////////////////////
     // Topic
     ////////////////////////////////
+
+    svr_updated_ = false;
+    sta_updated_ = false;
+
     pub_reconnect_timeout_ms_ = 1000;
     pub_reconnect_timeval_ms_ = 3000;
     pub_thread_ = boost::thread(boost::bind(&TmRosNode::publisher, this));
@@ -77,15 +81,22 @@ TmRosNode::TmRosNode(const std::string &host)
 
     set_positions_srv_ = nh_.advertiseService("tm_driver/set_positions", &TmRosNode::set_positions, this);
 
+    ask_sta_srv_ = nh_.advertiseService("tm_driver/ask_sta", &TmRosNode::ask_sta, this);
+
 }
 TmRosNode::~TmRosNode()
 {
+    svr_updated_ = true;
+    sta_updated_ = true;
+    svr_cond_.notify_all();
+    sta_cond_.notify_all();
     halt();
 }
 void TmRosNode::halt()
 {
     printf("TM_ROS: halt\n");
     if (pub_thread_.joinable()) { pub_thread_.join(); }
+    if (sct_thread_.joinable()) { sct_thread_.join(); }
     // Driver
     iface_.halt();
 }

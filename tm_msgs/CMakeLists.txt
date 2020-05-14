@@ -27,6 +27,7 @@ add_service_files(
   SetIO.srv
   #SetPayload.srv
   SetPositions.srv
+  AskSta.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

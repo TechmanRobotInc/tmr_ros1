@@ -403,6 +403,10 @@ public:
 	{
 		build_TmStaData(*this, sub_cmd, sub_data, len, type);
 	}
+	explicit TmStaData(const unsigned char sub_cmd, const char *sub_data, size_t len, SrcType type)
+	{
+		build_TmStaData(*this, sub_cmd, sub_data, len, type);
+	}
 	explicit TmStaData(const char *data, size_t size, SrcType type)
 	{
 		build_TmStaData(*this, data, size, type);

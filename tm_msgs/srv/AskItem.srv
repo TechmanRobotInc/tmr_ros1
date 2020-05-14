@@ -2,5 +2,11 @@
 
 string id
 string item
+
+float64 wait_time
+
 ---
 bool ok
+
+string id
+string value

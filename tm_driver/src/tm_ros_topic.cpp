@@ -6,6 +6,8 @@
 
 void TmRosNode::publish_fbs(PubMsg &pm)
 {
+    TmRobotState &state = iface_.state;
+
     // Publish feedback state
     pm.fbs_msg.header.stamp = ros::Time::now();
 
@@ -68,6 +70,9 @@ void TmRosNode::publish_svr(PubMsg &pm)
 {
     TmSvrData &data = iface_.svr.data;
 
+    svr_updated_ = true;
+    svr_cond_.notify_all();
+
     pm.svr_msg.id = data.transaction_id();
     pm.svr_msg.mode = (int)(data.mode());
     pm.svr_msg.content = std::string{ data.content(), data.content_len() };
@@ -93,7 +98,7 @@ bool TmRosNode::publish_func(PubMsg &pm)
         return true;
     }
     bool fbs = false;
-    std::vector<TmPacket> &pack_vec = iface_.svr.packet_list();
+    std::vector<TmPacket> &pack_vec = svr.packet_list();
 
     for (auto &pack : pack_vec) {
         if (pack.type == TmPacket::Header::CPERR) {
@@ -108,6 +113,7 @@ bool TmRosNode::publish_func(PubMsg &pm)
 
             svr.err_data.error_code(TmCPError::Code::Ok);
 
+            //TODO ? lock and copy for service response
             TmSvrData::build_TmSvrData(svr.data, pack.data.data(), pack.data.size(), TmSvrData::SrcType::Shallow);
 
             if (svr.data.is_valid()) {
@@ -146,6 +152,8 @@ bool TmRosNode::publish_func(PubMsg &pm)
 }
 void TmRosNode::publisher()
 {
+    TmSvrCommunication &svr = iface_.svr;
+
     print_info("TM_ROS: publisher thread begin");
 
     PubMsg pm;
@@ -161,14 +169,14 @@ void TmRosNode::publisher()
     pm.joint_msg.effort.assign(joint_names_.size(), 0.0);
 
     while (ros::ok()) {
-        int count = 0;
-        if (!iface_.svr.recv_init()) {
+        //bool reconnect = false;
+        if (!svr.recv_init()) {
             print_info("TM_ROS: (TM_SVR): is not connected");
         }
-        while (ros::ok() && iface_.svr.is_connected()) {
+        while (ros::ok() && svr.is_connected()) {
             if (!publish_func(pm)) break;
         }
-        iface_.svr.Close();
+        svr.Close();
 
         // reconnect == true
         if (!ros::ok()) break;
@@ -186,10 +194,10 @@ void TmRosNode::publisher()
         }
         if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
             print_info("0 sec\nTM_ROS: (TM_SVR): connect(%d)...", pub_reconnect_timeout_ms_);
-            iface_.svr.Connect(pub_reconnect_timeout_ms_);
+            svr.Connect(pub_reconnect_timeout_ms_);
         }
     }
-    iface_.svr.Close();
+    svr.Close();
     printf("TM_ROS: publisher thread end\n");
 }
 
@@ -214,10 +222,13 @@ void TmRosNode::sta_msg(SctMsg &sm)
 {
     TmStaData &data = iface_.sct.sta_data;
 
-    sm.sta_msg.subcmd = data.subcmd();
+    sta_updated_ = true;
+    sta_cond_.notify_all();
+
+    sm.sta_msg.subcmd = data.subcmd_str();
     sm.sta_msg.subdata = std::string{ data.subdata(), data.subdata_len() };
 
-    print_info("TM_ROS: (TM_STA): res: (%s): %s", data.subcmd_str().c_str(), sm.sta_msg.subdata.c_str());
+    print_info("TM_ROS: (TM_STA): res: (%s): %s", sm.sta_msg.subcmd.c_str(), sm.sta_msg.subdata.c_str());
 
     sm.sta_msg.header.stamp = ros::Time::now();
     sm.sta_pub.publish(sm.sta_msg);
@@ -235,7 +246,7 @@ bool TmRosNode::sct_func(SctMsg &sm)
     else if (rc != TmCommRC::OK) {
         return true;
     }
-    std::vector<TmPacket> &pack_vec = iface_.sct.packet_list();
+    std::vector<TmPacket> &pack_vec = sct.packet_list();
 
     for (auto &pack : pack_vec) {
         switch (pack.type) {
@@ -252,6 +263,7 @@ bool TmRosNode::sct_func(SctMsg &sm)
 
             sct.err_data.error_code(TmCPError::Code::Ok);
 
+            //TODO ? lock and copy for service response
             TmSctData::build_TmSctData(sct.sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
 
             sct_msg(sm);
@@ -261,6 +273,7 @@ bool TmRosNode::sct_func(SctMsg &sm)
 
             sct.err_data.error_code(TmCPError::Code::Ok);
 
+            //TODO ? lock and copy for service response
             TmStaData::build_TmStaData(sct.sta_data, pack.data.data(), pack.data.size(), TmStaData::SrcType::Shallow);
 
             sta_msg(sm);
@@ -275,6 +288,8 @@ bool TmRosNode::sct_func(SctMsg &sm)
 }
 void TmRosNode::sct_responsor()
 {
+    TmSctCommunication &sct = iface_.sct;
+
     boost::this_thread::sleep_for(boost::chrono::milliseconds(50));
 
     print_info("TM_ROS: sct_response thread begin");
@@ -284,14 +299,14 @@ void TmRosNode::sct_responsor()
     sm.sta_pub = nh_.advertise<tm_msgs::StaResponse>("tm_driver/sta_response", 1);
 
     while (ros::ok()) {
-        int count = 0;
-        if (!iface_.sct.recv_init()) {
+        //bool reconnect = false;
+        if (!sct.recv_init()) {
             print_info("TM_ROS: (TM_SCT): is not connected");
         }
-        while (ros::ok() && iface_.sct.is_connected()) {
+        while (ros::ok() && sct.is_connected()) {
             if (!sct_func(sm)) break;
         }
-        iface_.sct.Close();
+        sct.Close();
 
         // reconnect == true
         if (!ros::ok()) break;
@@ -309,9 +324,9 @@ void TmRosNode::sct_responsor()
         }
         if (ros::ok() && sct_reconnect_timeval_ms_ >= 0) {
             print_info("0 sec\nTM_ROS: (TM_SCT) connect(%d)...", sct_reconnect_timeout_ms_);
-            iface_.sct.Connect(sct_reconnect_timeout_ms_);
+            sct.Connect(sct_reconnect_timeout_ms_);
         }
     }
-    iface_.sct.Close();
+    sct.Close();
     printf("TM_ROS: sct_response thread end\n");
 }

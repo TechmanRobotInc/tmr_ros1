@@ -17,8 +17,7 @@
 //#include <boost/thread/mutex.hpp>
 //#include <boost/thread/condition_variable.hpp>
 
-//#include <functional>
-//#include <cmath>
+#include "tm_driver/tm_pose_conversion.h"
 
 #include "tm_msgs/FeedbackState.h"
 #include "tm_msgs/SvrResponse.h"
@@ -32,8 +31,8 @@
 #include "tm_msgs/SetIO.h"
 //#include "tm_msgs/SetPayload"
 #include "tm_msgs/SetPositions.h"
+#include "tm_msgs/AskSta.h"
 
-#include "tm_driver/tm_pose_conversion.h"
 
 class TmRosNode {
 protected:
@@ -65,6 +64,11 @@ protected:
     // Topic
     ////////////////////////////////
 
+    bool svr_updated_;
+    bool sta_updated_;
+    boost::condition_variable svr_cond_;
+    boost::condition_variable sta_cond_;
+
     int pub_reconnect_timeout_ms_;
     int pub_reconnect_timeval_ms_;
     boost::thread pub_thread_;
@@ -92,6 +96,8 @@ protected:
     ros::ServiceServer set_io_srv_;
 
     ros::ServiceServer set_positions_srv_;
+
+    ros::ServiceServer ask_sta_srv_;
 
     ////////////////////////////////
     // Init.
@@ -176,4 +182,5 @@ private:
 
     bool set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPositionsResponse &res);
 
+    bool ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &res);
 };

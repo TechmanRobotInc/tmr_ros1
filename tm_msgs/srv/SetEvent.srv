@@ -1,5 +1,5 @@
-int8 Tag = 1
-int8 WaitTag = 2
+int8 TAG = 1
+int8 WAIT_TAG = 2
 int8 STOP = 11
 int8 PAUSE = 12
 int8 RESUME = 13
