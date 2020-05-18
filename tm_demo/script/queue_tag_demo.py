@@ -12,20 +12,34 @@ Notice:
     robot will move to home pose and rotate J3 to about 70 degree
 2. start from a new flow so that the Tag state is all 'false'
 
-send 4 points of motion command and 4 QueueTag command in-between,
-than ask QueueTag state to check whether the motion command is done
+send 4 points of motion command and 4 QueueTag command in-between.
+Two way to check whether the motion command is done:
+1. Listening to 'tm_driver/sta_response' topic.
+2. Polling QueueTag state by 'tm_driver/ask_sta' service.
+
 
 set QueueTag:
 using 'tm_driver/set_event' service
 
 ask QueueTag:
 using 'tm_driver/ask_sta' service,
-and 'sta_response' topic
+and 'tm_driver/sta_response' topic
 
 """
 
-def queue_tag_demo():
+def callback(msg):
+    rospy.loginfo(rospy.get_caller_id() + ': %s', msg.subdata)
+    if msg.subcmd == '01':
+        data = msg.subdata.split(',')
+        if data[1] == 'true':
+            rospy.loginfo('point (Tag %s) is reached', data[0])
+
+def queue_tag_demo(by_polling):
     rospy.init_node('queue_tag_demo')
+
+    if not by_polling:
+        # listen to 'tm_driver/sta_response' topic
+        rospy.Subscriber('tm_driver/sta_response', StaResponse, callback)
 
     # using services
     rospy.wait_for_service('tm_driver/set_event')
@@ -50,19 +64,23 @@ def queue_tag_demo():
         set_positions(SetPositionsRequest.PTP_J, points[i], 0.1, 0.4, 0, False)
         set_event(SetEventRequest.TAG, i + 1, 0)
 
-    # ask sta to check QueueTag state
-    i = 0
-    while i < 4:
-        rospy.sleep(0.2)
-        res = ask_sta('01', str(i + 1), 1)
-        if res.subcmd == '01':
-            data = res.subdata.split(',')
-            if data[1] == 'true':
-                print("point %d (Tag %s) is reached", i, data[0])
-                i = i + 1
+    if by_polling:
+        # ask sta to check QueueTag state
+        i = 0
+        while i < 4:
+            rospy.sleep(0.2)
+            res = ask_sta('01', str(i + 1), 1)
+            if res.subcmd == '01':
+                data = res.subdata.split(',')
+                if data[1] == 'true':
+                    rospy.loginfo('point %d (Tag %s) is reached', i + 1, data[0])
+                    i = i + 1
+    else:
+        rospy.spin()
 
 if __name__ == '__main__':
     try:
-        queue_tag_demo()
+        #queue_tag_demo(False)
+        queue_tag_demo(True)
     except rospy.ROSInterruptException:
         pass
