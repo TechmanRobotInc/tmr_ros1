@@ -53,7 +53,10 @@ def ask_item_demo():
 
     { X,Y,Z,R,P,Y } unit: mm | deg
 
-    transformation from tool flange to camera frame
+    transformation from camera frame to tool flange
+    tool0
+         T
+          camera
 
     """
 
@@ -68,6 +71,30 @@ def ask_item_demo():
     # ask delta DH info.
     resd = ask_item('dd', 'DeltaDH', 1)
     rospy.loginfo('id: %s, value: %s\n', resd.id, resd.value)
+
+    """
+    Note
+    DeltaDH string format:
+
+    for example:
+    "DeltaDH={-0.001059821,0.02508766,0.009534874,0,0.001116668,0.06614932,0.308224,0.0287381,0.06797475,-0.0319523,0.3752921,0.06614756,-0.006998898,0.06792655,-0.06083903,0.02092069,0.02965812,-0.1331249,0.06793034,0.02077797,0.08265772,0.03200645,0.01835932,0.06145732,0.08273286,0.6686108,0.6972408,-0.1793097,-0.0794057,1.425708}"
+ 
+    { d_theta1, d_alpha1, d_a1, d_d1, d_beta1, d_theta2, .... }  unit: mm | deg
+    (prefix: d -> delta)
+
+    theta = theta + d_theta
+    alpha = alpha + d_alpha
+    beta = d_beta
+    a = a + d_a
+    d = d + d_d
+    ct, st = cos(theta), sin(theta)
+    ca, sa = cos(alpha), sin(alpha)
+    T = [
+        cb * ct - sb * sa*st, -ca*st, sb * ct + cb * sa*st, ct * a
+        cb * st + sb * sa*ct,  ca*ct, sb * st - cb * sa*ct, st * a
+                 -sb * ca,     sa,              cb * ca,         d
+    ]
+    """
 
     rospy.sleep(0.5)
 
