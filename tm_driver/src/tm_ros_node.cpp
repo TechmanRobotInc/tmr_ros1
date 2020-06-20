@@ -50,6 +50,15 @@ TmRosNode::TmRosNode(const std::string &host)
     // Topic
     ////////////////////////////////
 
+    pm_.fbs_pub = nh_.advertise<tm_msgs::FeedbackState>("feedback_states", 1);
+    pm_.joint_pub = nh_.advertise<sensor_msgs::JointState>("joint_states", 1);
+    pm_.tool_pose_pub = nh_.advertise<geometry_msgs::PoseStamped>("tool_pose", 1);
+
+    pm_.svr_pub = nh_.advertise<tm_msgs::SvrResponse>("tm_driver/svr_response", 1);
+
+    sm_.sct_pub = nh_.advertise<tm_msgs::SctResponse>("tm_driver/sct_response", 1);
+    sm_.sta_pub = nh_.advertise<tm_msgs::StaResponse>("tm_driver/sta_response", 1);
+
     svr_updated_ = false;
     sta_updated_ = false;
 

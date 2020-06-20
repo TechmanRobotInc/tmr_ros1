@@ -59,6 +59,7 @@ bool TmRosNode::write_item(tm_msgs::WriteItemRequest &req, tm_msgs::WriteItemRes
 }
 bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse &res)
 {
+    PubMsg &pm = pm_;
     TmSvrData &data = iface_.svr.data;
     bool rb = false;
 
@@ -74,8 +75,10 @@ bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse 
             svr_cond_.wait_for(locker, boost::chrono::duration<double>(req.wait_time));
         }
         if (svr_updated_) {
-            res.id = data.transaction_id();
-            res.value = std::string{ data.content(), data.content_len() };
+            svr_mtx_.lock();
+            res.id = pm.svr_msg.id;
+            res.value = pm.svr_msg.content;
+            svr_mtx_.unlock();
             svr_updated_ = false;
         }
         else rb = false;
@@ -142,6 +145,7 @@ bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPos
 
 bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &res)
 {
+    SctMsg &sm = sm_;
     TmStaData &data = iface_.sct.sta_data;
     bool rb = false;
 
@@ -156,8 +160,10 @@ bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &re
             svr_cond_.wait_for(locker, boost::chrono::duration<double>(req.wait_time));
         }
         if (sta_updated_) {
-            res.subcmd = data.subcmd_str();
-            res.subdata = std::string{ data.subdata(), data.subdata_len() };
+            sta_mtx_.lock();
+            res.subcmd = sm.sta_msg.subcmd;
+            res.subdata = sm.sta_msg.subdata;
+            sta_mtx_.unlock();
             sta_updated_ = false;
         }
         else rb = false;

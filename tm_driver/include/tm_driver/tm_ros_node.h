@@ -64,10 +64,36 @@ protected:
     // Topic
     ////////////////////////////////
 
+    struct PubMsg {
+        ros::Publisher fbs_pub;
+        ros::Publisher joint_pub;
+        ros::Publisher tool_pose_pub;
+        ros::Publisher svr_pub;
+
+        tm_msgs::FeedbackState fbs_msg;
+        sensor_msgs::JointState joint_msg;
+        geometry_msgs::PoseStamped tool_pose_msg;
+
+        //tf::Transform transform;
+        tf::TransformBroadcaster tfbc;
+
+        tm_msgs::SvrResponse svr_msg;
+    } pm_;
+
+    struct SctMsg {
+        ros::Publisher sct_pub;
+        ros::Publisher sta_pub;
+
+        tm_msgs::SctResponse sct_msg;
+        tm_msgs::StaResponse sta_msg;
+    } sm_;
+
     bool svr_updated_;
     bool sta_updated_;
     boost::condition_variable svr_cond_;
     boost::condition_variable sta_cond_;
+    boost::mutex svr_mtx_;
+    boost::mutex sta_mtx_;
 
     int pub_reconnect_timeout_ms_;
     int pub_reconnect_timeval_ms_;
@@ -134,36 +160,14 @@ private:
     // Topic
     ////////////////////////////////
 
-    struct PubMsg {
-        ros::Publisher fbs_pub;
-        ros::Publisher joint_pub;
-        ros::Publisher tool_pose_pub;
-        ros::Publisher svr_pub;
-
-        tm_msgs::FeedbackState fbs_msg;
-        sensor_msgs::JointState joint_msg;
-        geometry_msgs::PoseStamped tool_pose_msg;
-
-        //tf::Transform transform;
-        tf::TransformBroadcaster tfbc;
-
-        tm_msgs::SvrResponse svr_msg;
-    };
-    void publish_fbs(PubMsg &pm);
-    void publish_svr(PubMsg &pm);
-    bool publish_func(PubMsg &pm);
+    void publish_fbs();
+    void publish_svr();
+    bool publish_func();
     void publisher();
 
-    struct SctMsg {
-        ros::Publisher sct_pub;
-        ros::Publisher sta_pub;
-
-        tm_msgs::SctResponse sct_msg;
-        tm_msgs::StaResponse sta_msg;
-    };
-    void sct_msg(SctMsg &sm);
-    void sta_msg(SctMsg &sm);
-    bool sct_func(SctMsg &sm);
+    void sct_msg();
+    void sta_msg();
+    bool sct_func();
     void sct_responsor();
 
     ////////////////////////////////
