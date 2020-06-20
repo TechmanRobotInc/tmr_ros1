@@ -39,7 +39,7 @@
     <!--
       DH for TM5-700:
       a = [0.0000, 0.3290, 0.3115,  0.0000,  0.0000,  0.0000]
-      d = [0.1452,  0.0000,  0.0000,  -0.1222,  0.1060,  0.1144]
+      d = [0.1452,  0.0000,  0.0000,  -0.1223,  0.1060,  0.11315]
       alpha = [-0.5*pi, 0, 0, 0.5*pi, 0.5*pi, 0]
       q_home_offset = [0, -0.5*pi, 0, 0.5*pi, 0, 0]
       joint_direction = [-1, -1, 1, -1, 1, 1]
@@ -50,14 +50,14 @@
     <xacro:property name="tm_d1" value="0.1452" />
     <xacro:property name="tm_a2" value="0.3290" />
     <xacro:property name="tm_a3" value="0.3115" />
-    <xacro:property name="tm_d4" value="0.1222" />
+    <xacro:property name="tm_d4" value="0.1223" />
     <xacro:property name="tm_d5" value="0.1060" />
     <xacro:property name="tm_d6" value="0.11315" />
 
     <!-- offsets for shoulder/elbow joints -->
     <xacro:property name="wrist_offset" value="${tm_d5}" />
     <xacro:property name="shoulder_offset" value="0.146" />
-    <xacro:property name="elbow_offset" value="${wrist_offset + shoulder_offset - tm_d4}" /> <!-- 0.1298 -->
+    <xacro:property name="elbow_offset" value="${wrist_offset + shoulder_offset - tm_d4}" /> <!-- 0.1297 -->
 
     <!-- link lengths -->
     <xacro:property name="shoulder_height" value="${tm_d1}" />

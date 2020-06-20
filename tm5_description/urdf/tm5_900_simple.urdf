@@ -87,7 +87,7 @@
     <joint name="elbow_joint" type="revolute">
         <parent link="arm_1_link" />
         <child link="arm_2_link" />
-        <origin  xyz="0 0.429 -0.1298" rpy="0 0 0" />
+        <origin  xyz="0 0.429 -0.1297" rpy="0 0 0" />
         <axis xyz="0 0 -1" />
         <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
     </joint>
@@ -142,7 +142,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_02_c.STL" />
+                <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_02_c.stl" />
             </geometry>
         </collision>
     </link>
@@ -150,7 +150,7 @@
     <joint name="wrist_3_joint" type="revolute">
         <parent link="wrist_2_link" />
         <child link="wrist_3_link" />
-        <origin xyz="0 0 0.1144" rpy="0 0 0" />
+        <origin xyz="0 0 0.11315" rpy="0 0 0" />
         <axis xyz="0 0 1" />
         <limit effort="10.0" lower="-3.14" upper="3.14" velocity="1.0" />
     </joint>
