@@ -127,8 +127,11 @@ Click on the __Data Table Setting__ button and check the following boxes:
 > 2. Click the __AOI -only__ icon.
 > ![choose_aoi_only](figures/choose_aoi_only.png)
 >
->       If no suitable dongle is detected, warning alerts will be displayed in the window.
+>TMflow 1.76 second version only:<br/> 
+>If no suitable dongle is detected, warning alerts will be displayed in the window.<br/>
 > ![open_need_dongle_key](figures/open_need_dongle_key.png)
+>TMflow 1.80 version: <br/>
+>You don't need dongle to activate this function.
 >
 > 3. Click the __Find__ icon.
 > ![select_find](figures/select_find.png)
