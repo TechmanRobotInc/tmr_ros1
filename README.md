@@ -133,12 +133,16 @@ Click on the __Data Table Setting__ button and check the following boxes:
 > 3. Click the __Find__ icon.
 > ![select_find](figures/select_find.png)
 >
-> 4. Click the __AI_Detection__ icon.
+> 4. In TMflow 1.76 second version, click the __AI_Detection__ icon.<br/>
 > ![choose_ai_detection_only](figures/choose_ai_detection_only.png)
+> In TMflow 1.80 version, click the __External Detection__ icon.
+> ![change1](figures/change1.png)
 >
-> 5. Click the __+ Add Parameters__ button.
+> 5. In TMflow 1.76 second version, click the __+ Add Parameters__ button.
 > ![choose_add_parameters](figures/choose_add_parameters.png)
->
+> In TMflow 1.80 version, click the __Setting__ button.
+>![change2](figures/change2.png)
+
 > 6. To check whether the connection succeeds or not, please enter ``ROS_COMPUTER_IP:6189/api`` in the __HTTP Parameters__ blank text and click the __Send__ button to get the information of the remote computer for ROS.
 > ![check_connect_success](figures/check_connect_success.png)
 >
