@@ -100,21 +100,26 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >       - [x] Project_Pause
 >       - [x] Safeguard_A
 >       - [x] ESTOP
+>       - [x] Camera_Light
 >       - [x] Error_Code
->       - [x] Eroor_Content
 >       - [x] Joint_Angle
 >       - [x] Coord_Robot_Flange
 >       - [x] Coord_Robot_Tool
+>       - [x] TCP_Force
+>       - [x] TCP_Force3D
 >       - [x] TCP_Speed
+>       - [x] TCP_Speed3D
 >       - [x] Joint_Speed
 >       - [x] Joint_Torque
+>       - [x] Project_Speed
+>       - [x] MA_Mode
+>       - [x] Robot Light
 >       - [x] Ctrl_DO0~DO7
 >       - [x] Ctrl_DI0~DI7
 >       - [x] Ctrl_AO0
->       - [x] Ctrl_AI0
->       - [x] Ctrl_AI1
+>       - [x] Ctrl_AI0~AI1
 >       - [x] END_DO0~DO3
->       - [x] END_DI0~END_DI3
+>       - [x] END_DI0~DI3
 >       - [x] END_AI0
 >
 >       ![2](figures/3.png)
