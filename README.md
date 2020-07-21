@@ -119,7 +119,7 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >       - [x] Ctrl_AO0
 >       - [x] Ctrl_AI0~AI1
 >       - [x] END_DO0~DO3
->       - [x] END_DI0~DI3
+>       - [x] END_DI0~DI2
 >       - [x] END_AI0
 >
 >       ![2](figures/3.png)
