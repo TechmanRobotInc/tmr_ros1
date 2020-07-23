@@ -2,6 +2,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="tm5_700" >
 
   <!-- xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/-->
+  <xacro:arg name="stl_mesh" default="false"/>
 
   <!-- common stuff -->
   <xacro:include filename="$(find tm5_description)/urdf/common.gazebo.xacro" />
