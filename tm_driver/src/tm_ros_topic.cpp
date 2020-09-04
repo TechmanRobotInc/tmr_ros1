@@ -80,15 +80,14 @@ void TmRosNode::publish_svr()
 {
     PubMsg &pm = pm_;
     TmSvrData &data = iface_.svr.data;
-
-    svr_mtx_.lock();
-    pm.svr_msg.id = data.transaction_id();
-    pm.svr_msg.mode = (int)(data.mode());
-    pm.svr_msg.content = std::string{ data.content(), data.content_len() };
-    pm.svr_msg.error_code = (int)(data.error_code());
-    svr_mtx_.unlock();
-
-    svr_updated_ = true;
+    {
+        boost::unique_lock<boost::mutex> lck(svr_mtx_);
+        pm.svr_msg.id = data.transaction_id();
+        pm.svr_msg.mode = (int)(data.mode());
+        pm.svr_msg.content = std::string{ data.content(), data.content_len() };
+        pm.svr_msg.error_code = (int)(data.error_code());
+        svr_updated_ = true;
+    }
     svr_cond_.notify_all();
 
     print_info("TM_ROS: (TM_SVR): (%s) (%d) %s",
@@ -238,13 +237,12 @@ void TmRosNode::sta_msg()
 {
     SctMsg &sm = sm_;
     TmStaData &data = iface_.sct.sta_data;
-
-    sta_mtx_.lock();
-    sm.sta_msg.subcmd = data.subcmd_str();
-    sm.sta_msg.subdata = std::string{ data.subdata(), data.subdata_len() };
-    sta_mtx_.unlock();
-
-    sta_updated_ = true;
+    {
+        boost::lock_guard<boost::mutex> lck(sta_mtx_);
+        sm.sta_msg.subcmd = data.subcmd_str();
+        sm.sta_msg.subdata = std::string{ data.subdata(), data.subdata_len() };
+        sta_updated_ = true;
+    }
     sta_cond_.notify_all();
 
     print_info("TM_ROS: (TM_STA): res: (%s): %s", sm.sta_msg.subcmd.c_str(), sm.sta_msg.subdata.c_str());

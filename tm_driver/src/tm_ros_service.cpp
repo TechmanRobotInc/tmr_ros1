@@ -63,25 +63,25 @@ bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse 
     TmSvrData &data = iface_.svr.data;
     bool rb = false;
 
+    svr_mtx_.lock();
     svr_updated_ = false;
+    svr_mtx_.unlock();
 
     rb = (iface_.svr.send_content(req.id, TmSvrData::Mode::READ_STRING, req.item) == iface_.RC_OK);
-    if (!rb) return rb;
 
-    if (req.wait_time > 0.0) {
-        boost::mutex lock;
-        boost::unique_lock<boost::mutex> locker(lock);
-        if (!svr_updated_) {
-            svr_cond_.wait_for(locker, boost::chrono::duration<double>(req.wait_time));
-        }
-        if (svr_updated_) {
-            svr_mtx_.lock();
+    {
+        boost::unique_lock<boost::mutex> lck(svr_mtx_);
+        if (rb && req.wait_time > 0.0) {
+            if (!svr_updated_) {
+                svr_cond_.wait_for(lck, boost::chrono::duration<double>(req.wait_time));
+            }
+            if (!svr_updated_) {
+                rb = false;
+            }
             res.id = pm.svr_msg.id;
             res.value = pm.svr_msg.content;
-            svr_mtx_.unlock();
-            svr_updated_ = false;
         }
-        else rb = false;
+        svr_updated_ = false;
     }
     res.ok = rb;
     return rb;
@@ -149,24 +149,25 @@ bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &re
     TmStaData &data = iface_.sct.sta_data;
     bool rb = false;
 
+    sta_mtx_.lock();
     sta_updated_ = false;
+    sta_mtx_.unlock();
 
     rb = (iface_.sct.send_sta_request(req.subcmd, req.subdata) == iface_.RC_OK);
 
-    if (req.wait_time > 0.0) {
-        boost::mutex lock;
-        boost::unique_lock<boost::mutex> locker(lock);
-        if (!sta_updated_) {
-            svr_cond_.wait_for(locker, boost::chrono::duration<double>(req.wait_time));
-        }
-        if (sta_updated_) {
-            sta_mtx_.lock();
+    {
+        boost::unique_lock<boost::mutex> lck(sta_mtx_);
+        if (rb && req.wait_time > 0.0) {
+            if (!sta_updated_) {
+                sta_cond_.wait_for(lck, boost::chrono::duration<double>(req.wait_time));
+            }
+            if (!sta_updated_) {
+                rb = false;
+            }
             res.subcmd = sm.sta_msg.subcmd;
             res.subdata = sm.sta_msg.subdata;
-            sta_mtx_.unlock();
-            sta_updated_ = false;
         }
-        else rb = false;
+        sta_updated_ = false;
     }
     res.ok = rb;
     return rb;

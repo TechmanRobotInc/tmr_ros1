@@ -89,15 +89,16 @@ protected:
     } sm_;
 
     bool svr_updated_;
-    bool sta_updated_;
-    boost::condition_variable svr_cond_;
-    boost::condition_variable sta_cond_;
     boost::mutex svr_mtx_;
-    boost::mutex sta_mtx_;
+    boost::condition_variable svr_cond_;
 
     int pub_reconnect_timeout_ms_;
     int pub_reconnect_timeval_ms_;
     boost::thread pub_thread_;
+
+    bool sta_updated_;
+    boost::mutex sta_mtx_;
+    boost::condition_variable sta_cond_;
 
     int sct_reconnect_timeout_ms_;
     int sct_reconnect_timeval_ms_;

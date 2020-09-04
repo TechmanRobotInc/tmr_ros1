@@ -60,12 +60,11 @@ TmRosNode::TmRosNode(const std::string &host)
     sm_.sta_pub = nh_.advertise<tm_msgs::StaResponse>("tm_driver/sta_response", 1);
 
     svr_updated_ = false;
-    sta_updated_ = false;
-
     pub_reconnect_timeout_ms_ = 1000;
     pub_reconnect_timeval_ms_ = 3000;
     pub_thread_ = boost::thread(boost::bind(&TmRosNode::publisher, this));
 
+    sta_updated_ = false;
     sct_reconnect_timeout_ms_ = 1000;
     sct_reconnect_timeval_ms_ = 3000;
     sct_thread_ = boost::thread(boost::bind(&TmRosNode::sct_responsor, this));
@@ -95,17 +94,17 @@ TmRosNode::TmRosNode(const std::string &host)
 }
 TmRosNode::~TmRosNode()
 {
-    svr_updated_ = true;
-    sta_updated_ = true;
-    svr_cond_.notify_all();
-    sta_cond_.notify_all();
     halt();
 }
 void TmRosNode::halt()
 {
     printf("TM_ROS: halt\n");
-    if (pub_thread_.joinable()) { pub_thread_.join(); }
+    sta_updated_ = true;
+    sta_cond_.notify_all();
+    svr_updated_ = true;
+    svr_cond_.notify_all();
     if (sct_thread_.joinable()) { sct_thread_.join(); }
+    if (pub_thread_.joinable()) { pub_thread_.join(); }
     // Driver
     iface_.halt();
 }
