@@ -15,7 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tm_msgs
   hardware_interface
-  controller_manager
 )
 
 #set(BOOST_FLAG TRUE)
