@@ -44,40 +44,6 @@ send motion command to _listen node_, the motion type include PTP, LINE, CIRC an
 > ```
 >
 
-### __ROS2 Driver__
-
-The driver for ROS2 publishes identical topics and provides identical services as ROS1 version, but for now there is no interface integration with MoveIt.  
-This driver uses _ros2 composition_, there are two nodes in the identical process:
-one node publishes topics while the other node sets up service servers.
-
-> __Usage__
->
->For example, execute the launch script to enable the driver to connect to tm5-900 robot  
->
->```bash
->ros2 launch tm_driver tm5_900_bringup.py >robot_ip:=YOUR_ROBOT_IP_ADDRESS
->```
->
-> __Techman robot vision__
->
-> - type: sensor_msgs::msg::Image
-> - message name: techman_image
-
-### __Installation__
-
-> __Building from source__
->
-> 1. install ROS and dependency :  
-__for ROS1 :__  
-install ROS (melodic)  
-install ros-melodic-moveit  
-install ros-melodic-industrial-core  
-__for ROS2 :__  
-install ROS2 (dashing)  
-install ros-dashing-ros1-bridge
-> 2. create workspace and clone package folder into _${WORKSPACE}/src_  
-> 3. ```catkin_make``` !
-
 ## __3. Usage__
 
 ### __TMFlow setup__
@@ -124,46 +90,7 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >
 >       ![2](figures/3.png)
 >
-> __Vision__
 >
-> :warning: Before going through the following steps, please build the vision ROS node on other  (remote) computer and then connect this computer to the local techman robot computer.
->
-> 1. Access the techman robot HMI and create a vision task.
-> 2. Click the __AOI -only__ icon.
-> ![choose_aoi_only](figures/choose_aoi_only.png)
->
->TMflow 1.76 second version only:<br/> 
->If no suitable dongle is detected, warning alerts will be displayed in the window.<br/>
-> ![open_need_dongle_key](figures/open_need_dongle_key.png)
->TMflow 1.80 version: <br/>
->You don't need dongle to activate this function.
->
-> 3. Click the __Find__ icon.
-> ![select_find](figures/select_find.png)
->
-> 4. In TMflow 1.76 second version, click the __AI_Detection__ icon.<br/>
-> ![choose_ai_detection_only](figures/choose_ai_detection_only.png)
-> In TMflow 1.80 version, click the __External Detection__ icon.
-> ![change1](figures/change1.png)
->
-> 5. In TMflow 1.76 second version, click the __+ Add Parameters__ button.
-> ![choose_add_parameters](figures/choose_add_parameters.png)
-> In TMflow 1.80 version, click the __Setting__ button.
->![change2](figures/change2.png)
-
-> 6. To check whether the connection succeeds or not, please enter ``ROS_COMPUTER_IP:6189/api`` in the __HTTP Parameters__ blank text and click the __Send__ button to get the information of the remote computer for ROS.
-> ![check_connect_success](figures/check_connect_success.png)
->
->       If the connection fails, __TIMEOUT__ error will be displayed in the window
-> ![wrong_ip_address](figures/wrong_ip_address.png)
->
->       If the IP address of the (remote) ROS computer doesn't exist, **ERROR_CODE_7** will be displayed in the window.
-> ![wrong_port](figures/wrong_port.png)
-> 7. Enter ``ROS_COMPUTER_IP:6189/api/DET`` in the URL blank text and type arbitrary letters in the __Value__ blank text; the __Key__ will be generated automatically.
-> ![add_model](figures/add_model.png)
-> 8. Finally, assign a name to the model in  the __Model name__ blank text and click the __Save__ button.
-> ![save_model](figures/save_model.png)
-
 ### __TM ROS driver usage__
 
 > Change the current working directory of the terminal to your workspace`<workspace>`and set up the environment.
@@ -186,44 +113,3 @@ Click on the __Data Table Setting__ button and check the following boxes:
 > ```
 >
 > The parameter `<robot_ip>` means the IP address of the robot control pc.
-
-## __4. Vision__
-
-### __Get image data through Techman Robot ROS2 driver__
-
-> :warning: This package can only be built and run in ROS2 dashing. Other versions might not work.
->
-> __Dependencies__
->
-> - ROS2 dashing
-> - Python packages:
->   1. flask
->   2. numpy
->   3. opencv-python==3.4.*
->   4. waitress
->   5. datetime
->
-> __Installation__
->
-> Create a dictionary and downlaod the repository.
->
->```bash
-> mkdir ~/techman_ros2
-> cd ~/techman_ros2
-> colon build
-> ```
->
-> __The Techman Robot ROS2 node which publishes image data__
->
-> ```bash
-> cd ~/techman_ros2 && source install/setup.bash
-> ros2 run tm_get_status image_talker
-> ```
->
-> The terminal prints ``Serving on <your_ip_address>:6189`` if the initialization succeeds.
->
-> ```bash
-> ros2 run custom_package sub_img
-> ```
->
-> The viewer will display image data from _TMFlow_.
