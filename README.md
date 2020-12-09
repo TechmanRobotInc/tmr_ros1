@@ -9,7 +9,7 @@ The TM Robot is a state-of-the-art production tool that is highly compatible and
 ### __ROS1 Driver__
 
 The TM ROS driver connects to _TMFlow ethernet slave_ to control _TMFlow project_. Robot state is transmitted through this connection.  A working driver also connects to a _listen node_ (running at a _TMFlow project_) at the same time. To control the robot locomotion ,IO ,etc., the TM ROS driver sends robot script (_TM Robot Expression_) through this connection.
-More information about _TM Robot Expression_ and _ethernet slave_, see [TMRobotExpression.pdf]  
+More information about _TM Robot Expression_ and _ethernet slave_, see [Expression Editor and Listen Node.pdf]
 The TM ROS driver for ROS1 is a __single ROS node__ which creates a ROS interface such as topics and services:
 
 > __Action Server__
@@ -33,7 +33,7 @@ send "Stop", "Pause" or "Resume" command to _listen node_
 > - _/tm_driver/set_io_ (see _tm_msgs/srv/SetIO.srv_) :  
 send digital or analog output value to _listen node_  
 > - _/tm_driver/set_position (see _tm_msgs/srv/SetPosition.srv_) :  
-send motion command to _listen node_, the motion type include PTP, LINE, CIRC ans PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [TMRobotExpression.pdf]
+send motion command to _listen node_, the motion type include PTP, LINE, CIRC ans PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
 >
 > __Usage__
 >
@@ -118,8 +118,8 @@ Click on the __Data Table Setting__ button and check the following boxes:
 ## GUI debug and demo
 This GUI shows up tm_driver connection status, sct sta svr messages and robot status. You can use this GUI to check driver and robot connect status and send re-connect command and base on this GUI to modify.
 
-### Hoe to use it
-1. Creat a folder ``~/tm_driver`` by type<br/>
+### How to use it
+1. Create a folder ``~/tm_driver`` by type<br/>
 ``mkdir ~/tm_driver``<br/>
 ``cd ~/tm_driver``
 2. Download this package by using git<br/>
