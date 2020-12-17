@@ -127,7 +127,6 @@ target_link_libraries(tm_driver
 #############
 
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ## Mark executables and/or libraries for installation
 install(TARGETS tm_driver #tm_hardware_interface
