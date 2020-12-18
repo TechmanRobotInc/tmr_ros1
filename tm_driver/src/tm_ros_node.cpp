@@ -41,10 +41,15 @@ TmRosNode::TmRosNode(const std::string &host)
     }
     tool_frame_name_ = prefix + frame_name;
 
+    bool auto_stick_play = true;
+    if (ros::param::get("~auto_stick_play", auto_stick_play)) {
+        print_info("TM_ROS: set auto_stick_play to %d", auto_stick_play);
+    }
+
     ////////////////////////////////
     // TmDriver
     ////////////////////////////////
-    iface_.start(5000);
+    iface_.start(5000, auto_stick_play);
 
     ////////////////////////////////
     // Topic
