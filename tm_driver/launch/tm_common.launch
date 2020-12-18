@@ -14,6 +14,7 @@
   <arg name="max_payload" default="6.0" /> <!-- [kg] -->
   <arg name="base_frame" default="$(arg prefix)base" />
   <arg name="tool_frame" default="$(arg prefix)tool0" />
+  <arg name="auto_stick_play" default="true" />
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
@@ -26,5 +27,6 @@
     <param name="max_payload" type="double" value="$(arg max_payload)" />
     <param name="base_frame" type="str" value="$(arg base_frame)" />
     <param name="tool_frame" type="str" value="$(arg tool_frame)" />
+    <param name="auto_stick_play" type="bool" value="$(arg auto_stick_play)" />
   </node>
 </launch>
