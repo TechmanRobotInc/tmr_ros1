@@ -5,6 +5,9 @@
 The TM Robot is a state-of-the-art production tool that is highly compatible and flexible to collaboration between human and machine. The Robot Operating System (ROS) provides abundant libraries and tools which can be utilized to reduce the cost of trivial development software tool and build robot applications without struggling. Our TM ROS driver provides nodes for communication with Techman Robot controllers, data including robot states, images from the eye-in-hand camera and URDF models for various robot arms via _TMFlow_.
 
 ## __2. Feature__
+This driver is for ROS1 Melodic version.
+
+If you want to use ros2 driver version, please go to [TM ROS2 driver](https://github.com/TechmanRobotInc/tmr_ros1).
 
 ### __ROS1 Driver__
 
@@ -93,11 +96,12 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >
 ### __TM ROS driver usage__
 
-> Change the current working directory of the terminal to your workspace`<workspace>`and set up the environment.
+> After you have set up the ROS1 environment and TM driver build based on a specific workspace, then type in your workspace`<workspace>` by starting a terminal, and remember to make the workspace visible to ROS.
 >
 > ```bash
+> source /opt/ros/melodic/setup.bash
 > cd <workspace>
-> source devel/setup.bash
+> source ./devel/setup.bash
 > ```
 >
 > Manipulate the virtual TM robot:
@@ -115,31 +119,104 @@ Click on the __Data Table Setting__ button and check the following boxes:
 > The parameter `<robot_ip>` means the IP address of the robot control pc.
 
 
-## GUI debug and demo
-This GUI shows up tm_driver connection status, sct sta svr messages and robot status. You can use this GUI to check driver and robot connect status and send re-connect command and base on this GUI to modify.
+## __4. Code of Demo__
+There are some demo codes showing  how to use this driver.
 
-### How to use it
-1. Create a folder ``~/tm_driver`` by type<br/>
-``mkdir ~/tm_driver``<br/>
-``cd ~/tm_driver``
-2. Download this package by using git<br/>
+> 1. demo_send_script:<br/>
+In this demo code, it shows how to send a listen node script to control the robot. <br/>
+You can use service named "send_script" to send script.<br/>
+"id"->The transaction number expressed in any alphanumeric characters . (Reports the CPERR 04 error if a non-alphanumeric byte is encountered .  When used as a communication packet response , it is a transaction number and identifies which group of commands to respond.<br/>
+"script"-> the script which you want to send.<br/>
+"ok" -> Correctness of the script.
+> 2. demo_ask_item:<br/>
+In this demo code, you can use this service to send TMSCT cmd. More details please refer to the Expression Editor and Listen Node.pdf(Chapter7.4 TMSCT)<br/>
+> 3. demo_ask_sta:<br/>
+In this demo code, you can use this service to send TMSTA cmd. More details please refer to the Expression Editor and Listen Node.pdf(Chapter7.5 TMSTA)<br/>
+> 4. demo_connect_tm:<br/>
+In this demo code, you can set the connection type. <br/>
+If you set to reconnect as true, every time when driver disconnects from listen node, it will try to re-connect it.<br/>
+There are two kind connection settings you can select, one is "connect_tmsvr" for EtherCAT server connection, and the other is "connect_tmsct" for setting TM-Flow connection.<br/>
+> 5. demo_set_event:<br/>
+In this demo code, six event types can be selected.<br/> 
+func: TAG, WAIT_TAG, STOP, PAUSE, RESUME and EXIT<br/>
+arg0: if func is TAG or WAIT_TAG, arg0 is timeout in ms<br/>
+arg1: if func is TAG or WAIT_TAG, arg1 is id<br/>
+> 6. demo_set_io:<br/>
+In this demo code, you should set module, type, pin and state. More details please refer to the Expression Editor and Listen Node.pdf(Chapter6.5 IO)<br/>
+module : MODULE_CONTROLBOX or MODULE_ENDEFFECTOR<br/>
+type: TYPE_DIGITAL_IN, TYPE_DIGITAL_OUT, TYPE_INSTANT_DO, TYPE_ANALOG_IN, TYPE_ANALOG_OUT, TYPE_INSTANT_AO<br/>
+pin: pin number<br/>
+state: STATE_OFF or STATE_ON or other value(if digitial IO)<br/>
+> 7. demo_set_positions:<br/>
+In this demo, you should be careful with parameter units to operation.<br/>
+motion_type : PTP_J , PTP_T , LINE_J , LINE_T , CIRC_J ,CIRC_T , PLINE_J ,PLINE_T.  More details please refer to the Expression Editor and Listen Node.pdf(Chapter8 PTP, Line, Circle, Pline, Move_PTP, Move_Line, Move_PLine) <br/>
+positions : target position or target joint(rad)<br/>
+velocity : joint velocity-> max value is Pi -> 3.14 rad/s , line velocity ->m/s <br/>
+acc_time : to max speed time in millisecond<br/>
+blend_percentage : 0 has no blending
+fine_goal : In a real situation, the controller will check the erro of the final position and should wait a few milliseconds.<br/>
+> 8. demo_write_item: <br/>
+In this demo code, you can use this service to send TMSVR cmd. More details please refer to the Expression Editor and Listen Node.pdf(Chapter9.3 svr_write())
+> 9. demo_leave_listen_node:<br/>
+In this demo code, you can use send_script service sending a script to leave the listen node.<br/>
+
+
+## Usage with demo code & driver
+> Note: If you have even successfully built a specific code(tmr_ros1), you only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
+``mkdir ~/tmdriver_ws``<br/>
+``cd ~/tmdriver_ws``<br/>
+> 2. Clone the the TM driver of git repository into the current directory by typing<br/>
 ``git clone https://github.com/TechmanRobotInc/tmr_ros1.git``<br/>
-3. Build the source code and set the path<br/>
+> 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
+``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
+> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
+Note: Do you ``source /opt/ros/melodic/setup.bash`` ready? then type below.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
-4. Open a terminal and type<br/>
-``roscore``
-4. Open another terminal and type<br/>
+> 5. Terminal 1: Startup ROS core  and type<br/>
+``roscore``<br/>
+> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM robot by typing<br/>
+``source ./devel/setup.bash``<br/>
 ``rosrun tm_driver tm_driver <robot_ip>``<br/>
-<robot_ip> is tm robot ip address, you can get it by TM Flow, for example 192.168.10.2
-5. Open another terminal and type<br/>
+The <robot_ip> is the IP address of the TM robot, you can get it through TM Flow, for example 192.168.10.2<br/>
+> 7. In another new terminal: Source setup.bash in the workspace path and type specific demo node function which you want to study for applications. For example: you select to run demo_set_io, you can type<br/>
+``source ./devel/setup.bash``<br/>
+``rosrun demo demo_set_io``<br/>
+>[CAUTION]:warning: Some demos will let the robot move, please be careful.<br/>
+
+
+## TM GUI debugging and demonstration
+The GUI displays tm_driver connection status, sct, sta, svr messages and robot status. Easily judge the message between the driver and the robot through the GUI display. If the connection fails, you can also try to send a reconnect command on this GUI for debugging.
+
+### Usage with TM GUI debugging
+> Note: If you have even successfully built a specific code(tmr_ros1), you only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
+``mkdir ~/tmdriver_ws``<br/>
+``cd ~/tmdriver_ws``<br/>
+> 2. Clone the the TM driver of git repository into the current directory by typing<br/>
+``git clone https://github.com/TechmanRobotInc/tmr_ros1.git``<br/>
+> 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
+``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
+> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
+Note: Do you ``source /opt/ros/melodic/setup.bash`` ready? then type below.<br/>
+``catkin_make``<br/>
+``source ./devel/setup.bash``<br/>
+> 5. Terminal 1: Startup ROS core  and type<br/>
+``roscore``<br/>
+> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM robot by typing<br/>
+``source ./devel/setup.bash``<br/>
+``rosrun tm_driver tm_driver <robot_ip>``<br/>
+The <robot_ip> is the IP address of the TM robot, you can get it through TM Flow, for example 192.168.10.2<br/>
+> 7. In another new terminal 3: Source setup.bash in the workspace path and start GUI debug by typing<br/>
+``source ./devel/setup.bash``<br/>
 ``rosrun ui_for_debug_and_demo robot_ui``<br/>
 
-### UI description
-1. When ``is_srv_connect`` and ``is_sct_connect`` are true, it means the all connection is success.
-2. If ``is_srv_connect`` is false, you should check the data table is correct or not.
-3. If ``is_sct_connect`` is false, you should check whether you run the project or not.
-4. If ``is_srv_connect`` and ``is_sct_connect`` are true, but ``robot link`` is false. It means you connect the TM project, but you are not in listen node, so you when you send the move command, it doesn't work.
-5. When you send a command or click ``"change control box IO"``, you can see ``"Robot Response"`` add a response item, the item details you can reference ``SctResponse.msg``, ``StaResponse.msg`` and ``SvrResponse.msg``.
-6. You can click ``"clear"`` to clear the old response items.
-7. If you didn't open the ``tm_ros_driver``, you will see all items show ``"Not ini"``.
+### Debugging description
+> * If ``is_srv_connect`` and ``is_sct_connect`` are true, it means that all connection is success.<br/>
+> * If ``is_srv_connect`` is false, you should check whether the data table is correct.<br/>
+> * If ``is_sct_connect`` is false, you should check whether the project is running.<br/>
+> * If ``is_srv_connect`` and ``is_sct_connect`` are true, and the ``robot link`` is false, it means that the driver has connected to the TM project, but the TMFlow listen node is set to abnormal. Therefore, when you send the move command, it does not work.<br/>
+> * When you send a command or click ``"change control box IO"``,  you will see a response item embedded in the ``Robot Response``. For details of this item, please refer to ``SctResponse.msg``, ``StaResponse.msg`` and ``SvrResponse.msg``.<br/>
+> * You can click ``"clear"`` to clear the old response items.<br/>
+> * If you forget to run the ``tm_ros_driver``, you will see all items displayed as ``"Not ini"``.<br/>
