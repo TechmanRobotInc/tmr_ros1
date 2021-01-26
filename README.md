@@ -12,7 +12,7 @@ If the user want to use ROS2 driver version, please go to [TM ROS2 driver](https
 
 
 More information: TM ROS driver list
-|ROS Distribution|TM ROS 808080driver version|Remark: switch GitHub branches|
+|ROS Distribution|TM ROS driver version|Remark: switch GitHub branches|
 |:---|:---|:---:|
 |[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[<font color=#800000>**TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[<font color=#800000>**TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|master|
