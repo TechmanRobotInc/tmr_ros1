@@ -22,6 +22,7 @@ void TmRosNode::publish_fbs()
     pm.fbs_msg.tcp_speed = state.tcp_speed_vec();
     pm.fbs_msg.tcp_force = state.tcp_force_vec();
     pm.fbs_msg.robot_link = state.is_linked();
+    pm.fbs_msg.is_data_table_correct = state.is_data_table_correct();
     pm.fbs_msg.robot_error = state.has_error();
     pm.fbs_msg.project_run = state.is_project_running();
     pm.fbs_msg.project_pause = state.is_project_paused();

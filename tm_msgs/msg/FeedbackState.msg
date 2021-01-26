@@ -21,7 +21,7 @@ float64[] tcp_force
 bool robot_link
 
 bool robot_error
-
+bool is_data_table_correct
 bool project_run
 bool project_pause
 
