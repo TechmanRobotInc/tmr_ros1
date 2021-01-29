@@ -12,12 +12,12 @@ If the user want to use ROS2 driver version, please go to [TM ROS2 driver](https
 
 
 More information: TM ROS driver list
-|ROS Distribution|TM ROS driver version|Remark: switch GitHub branches|
+|ROS Distribution  (ROS Environment Setup)|TM ROS driver version|Remark: switch GitHub branches|
 |:---|:---|:---:|
 |[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[<font color=#800000>**TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[<font color=#800000>**TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|master|
 |[**<font color=#808080>ROS 2 Foxy Fitzroy**](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)|[**<font color=#0000FF>TM ROS2 Foxy driver**](https://github.com/TechmanRobotInc/tmr_ros2)|master|
-|[**<font color=#808080>ROS 2 Dashing Diademata**](https://index.ros.org/doc/ros2/Releases/)|[<font color=#0000FF>**TM ROS2 Dashing driver**](https://github.com/TechmanRobotInc/tmr_ros2/tree/dashing-devel)|dashing-devel|
+|[**<font color=#808080>ROS 2 Dashing Diademata**](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)|[<font color=#0000FF>**TM ROS2 Dashing driver**](https://github.com/TechmanRobotInc/tmr_ros2/tree/dashing-devel)|dashing-devel|
 Note: The two current master branches are ROS1 Melodic and ROS2 Foxy.
 
 
@@ -50,14 +50,33 @@ send digital or analog output value to _listen node_
 > - _/tm_driver/set_position (see _tm_msgs/srv/SetPosition.srv_) :  
 send motion command to _listen node_, the motion type include PTP, LINE, CIRC ans PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
 >
-> __Usage__
+> __ROS1 driver usage__
+> 
+> After the user has set up the ROS1 environment and built the TM driver based on the specific workspace, please enter your workspace `<workspace>` by launching the terminal, and remember to make the workspace visible to ROS.
+> 
 >
-> For example, execute the launch file to enable the driver to connect to tm5-900 robot  
+> ```bash
+> source /opt/ros/melodic/setup.bash
+> cd <workspace>
+> source ./devel/setup.bash
+> ```
+> :warning: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMFlow__) system/network settings are ready and the listening node is running. 
+> 
+>Then, run the driver to maintain the connection with the TM Robot by type 
+>
+>```bash
+>ros run tm_driver tm_driver <robot_ip>
+>```
+>
+>
+> Another way, the user can execute the specific existing launch file (example: __tm5_900_bringup.launch__) to enable the driver to connect to __tm5-900__ robot  
 >
 > ```bash
 > roslaunch tm_driver tm5_900_bringup.launch robot_ip:=YOUR_ROBOT_IP_ADDRESS
 > ```
 >
+>Now, the user can use a new terminal to run each ROS node or command, but don't forget to source the correct setup shell files as starting a new terminal.
+
 
 ## __3. Usage__
 
@@ -108,21 +127,18 @@ Click on the __Data Table Setting__ button and check the following boxes:
 >
 ### __TM ROS driver usage__
 
-> After the user have set up the ROS1 environment and TM driver build based on a specific workspace, then type in your workspace`<workspace>` by starting a terminal, and remember to make the workspace visible to ROS.
+> __Usage with MoveIt__ 
 >
-> ```bash
-> source /opt/ros/melodic/setup.bash
-> cd <workspace>
-> source ./devel/setup.bash
-> ```
+> See [Moveit tutorial](http://docs.ros.org/en/melodic/api/moveit_tutorials/html/doc/getting_started/getting_started.html).<br/>
 >
-> Manipulate the virtual TM robot:
+>To bring up MoveIt environment in simulation mode with virtual TM Robot , by type
+> 
 >
 > ```bash
 > roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=True
 > ```
 >
-> The user can also manipulate TM robot in the real world:
+> The user can also manipulate TM Robot in the real world:
 >
 > ```bash
 > roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip>
@@ -188,10 +204,10 @@ Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtai
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core  and type<br/>
 ``roscore``<br/>
-> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM robot by typing<br/>
+> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM Robot by typing<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun tm_driver tm_driver <robot_ip>``<br/>
-The <robot_ip> is the IP address of the TM robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
+The <robot_ip> is the IP address of the TM Robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
 > 7. In another new terminal: Source setup.bash in the workspace path and type specific demo node function which the user want to study for applications. For example: the user select to run demo_set_io, the user can type<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun demo demo_set_io``<br/>
@@ -216,10 +232,10 @@ Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtai
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core  and type<br/>
 ``roscore``<br/>
-> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM robot by typing<br/>
+> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM Robot by typing<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun tm_driver tm_driver <robot_ip>``<br/>
-The <robot_ip> is the IP address of the TM robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
+The <robot_ip> is the IP address of the TM Robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
 > 7. In another new terminal 3: Source setup.bash in the workspace path and start GUI debug by typing<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun ui_for_debug_and_demo robot_ui``<br/>
