@@ -87,7 +87,7 @@ send motion command to _listen node_, the motion type include PTP, LINE, CIRC an
 > __Listen node__
 >
 > 1. Create a flow project; then choose the __listen__ node and the __Goto__ node
-> ![1](figures/1.png)
+> [![1](figures/1.png)](https://www.youtube.com/watch?v=LuKE2wVNn5Y)
 >
 > 2. Go to the __System/Network setting__ page  
 Type network parameters of device for ROS
