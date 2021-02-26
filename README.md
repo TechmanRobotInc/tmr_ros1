@@ -221,3 +221,38 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 >Note:  The user also can add your workspace to the .bashrc such that it is sourced every time you start a new terminal.<br/>
 ``echo "source ~/tmdriver_ws/devel/setup.bash" >> ~/.bashrc``<br/>
 
+
+## TM GUI debugging and demonstration
+The GUI displays tm_driver connection status, sct, sta, svr messages and robot status. Easily judge the message between the driver and the robot through the GUI display. If the connection fails, the user can also try to send a reconnect command on this GUI for debugging.
+
+### Usage with TM GUI debugging
+> Note: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
+``mkdir ~/tmdriver_ws``<br/>
+``cd ~/tmdriver_ws``<br/>
+> 2. Clone the the TM driver of git repository into the current directory by typing<br/>
+``git clone https://github.com/TechmanRobotInc/tmr_ros1.git``<br/>
+> 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
+``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
+> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
+Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+``catkin_make``<br/>
+``source ./devel/setup.bash``<br/>
+> 5. Terminal 1: Startup ROS core  and type<br/>
+``roscore``<br/>
+> 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM Robot by typing<br/>
+``source ./devel/setup.bash``<br/>
+``rosrun tm_driver tm_driver <robot_ip_address>``<br/>
+The <robot_ip_address> is the IP address of the TM Robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
+> 7. In another new terminal 3: Source setup.bash in the workspace path and start GUI debug by typing<br/>
+``source ./devel/setup.bash``<br/>
+``rosrun ui_for_debug_and_demo robot_ui``<br/>
+
+### Debugging description
+> * If ``is_srv_connect`` and ``is_sct_connect`` are true, it means that all connection is success.<br/>
+> * If ``is_srv_connect`` is false, the user should check whether the data table is correct.<br/>
+> * If ``is_sct_connect`` is false, the user should check whether the project is running.<br/>
+> * If ``is_srv_connect`` and ``is_sct_connect`` are true, and the ``robot link`` is false, it means that the driver has connected to the TM project, but the TMFlow listen node is set to abnormal. Therefore, when the user send the move command, it does not work.<br/>
+> * When the user send a command or click ``"change control box IO"``,  the user will see a response item embedded in the ``Robot Response``. For details of this item, please refer to ``SctResponse.msg``, ``StaResponse.msg`` and ``SvrResponse.msg``.<br/>
+> * The user can click ``"clear"`` to clear the old response items.<br/>
+> * If the user forget to run the ``tm_ros_driver``, the user will see all items displayed as ``"Not ini"``.<br/>
