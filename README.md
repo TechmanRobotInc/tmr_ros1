@@ -11,7 +11,7 @@ For using the driver, please make sure your ROS PC is installed correct.<br/>
 If the user want to use ROS2 driver version, please go to [TM ROS2 driver](https://github.com/TechmanRobotInc/tmr_ros2).<br/>
 
 
-More information: TM ROS driver list
+More information: TM ROS driver support list
 |ROS Distribution (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
 |:---|:---|:---:|:---:|
 |[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|x|noetic|
@@ -105,7 +105,7 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >
 > 4. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
 >
-> Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
+>     Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
 
 
 ###  &sect; __Remote connection to TM ROBOT__
