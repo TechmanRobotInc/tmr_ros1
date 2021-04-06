@@ -191,7 +191,7 @@ void TmRosNode::publisher()
         while (ros::ok() && svr.is_connected()) {
             if (!publish_func()) break;
         }
-        svr.Close();
+        svr.close_socket();
 
         // reconnect == true
         if (!ros::ok()) break;
@@ -209,10 +209,10 @@ void TmRosNode::publisher()
         }
         if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
             print_info("0 sec\nTM_ROS: (TM_SVR): connect(%d)...", pub_reconnect_timeout_ms_);
-            svr.Connect(pub_reconnect_timeout_ms_);
+            svr.connect_socket(pub_reconnect_timeout_ms_);
         }
     }
-    svr.Close();
+    svr.close_socket();
     printf("TM_ROS: publisher thread end\n");
 }
 
@@ -324,7 +324,7 @@ void TmRosNode::sct_responsor()
         while (ros::ok() && sct.is_connected()) {
             if (!sct_func()) break;
         }
-        sct.Close();
+        sct.close_socket();
 
         // reconnect == true
         if (!ros::ok()) break;
@@ -342,9 +342,9 @@ void TmRosNode::sct_responsor()
         }
         if (ros::ok() && sct_reconnect_timeval_ms_ >= 0) {
             print_info("0 sec\nTM_ROS: (TM_SCT) connect(%d)...", sct_reconnect_timeout_ms_);
-            sct.Connect(sct_reconnect_timeout_ms_);
+            sct.connect_socket(sct_reconnect_timeout_ms_);
         }
     }
-    sct.Close();
+    sct.close_socket();
     printf("TM_ROS: sct_response thread end\n");
 }
