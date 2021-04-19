@@ -183,7 +183,6 @@ TmCommRC TmCommRecv::spin_once(int timeval_ms, int *n)
 	TmCommRC rc = TmCommRC::OK;
 	int nb = 0;
 	int rv = 0;
-	int sp = 0;
 	timeval tv;
 
 	// fake
@@ -378,7 +377,7 @@ bool TmCommunication::connect_socket(int timeout_ms)
 #else
 	socketFile = socket(AF_INET, SOCK_STREAM, 0);
 #endif
-        _sockfd = socketFile;
+    _sockfd = socketFile;
 	if (_sockfd < 0) {
 		print_error("TM_COM: Error socket");
 		return false;
@@ -389,7 +388,6 @@ bool TmCommunication::connect_socket(int timeout_ms)
 	setsockopt(_sockfd, IPPROTO_TCP, TCP_QUICKACK, (char*)&_optflag, sizeof(_optflag));
 #endif
 	setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&_optflag, sizeof(_optflag));
-
 	struct timeval timeout;      
     timeout.tv_sec = timeout_ms/1000;
     timeout.tv_usec = 0;
@@ -398,9 +396,11 @@ bool TmCommunication::connect_socket(int timeout_ms)
         print_error("setsockopt failed\n");
 	}
         
+
     if (setsockopt (_sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,sizeof(timeout)) < 0){
 		print_error("setsockopt failed\n");
 	}
+        
 
 	if (connect_with_timeout(_sockfd, _ip, _port, timeout_ms) == 0) {
 		print_info("TM_COM: O_NONBLOCK connection is ok");
