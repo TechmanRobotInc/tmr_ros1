@@ -19,7 +19,6 @@ void MainWindow::initial_ui_component(){
   ui->robot_response_listView->setSelectionMode(QAbstractItemView::ExtendedSelection);
   ui->robot_response_listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
-
 void MainWindow::initial_ros_thread_to_ui_page(){
   connect(rosPage.get(), SIGNAL(send_ui_feed_back_status(tm_msgs::FeedbackState)), this, SLOT(send_ui_feed_back_status(tm_msgs::FeedbackState)));
   connect(rosPage.get(), SIGNAL(send_to_ui_list(std::string)), this, SLOT(send_to_ui_list(std::string)));
@@ -31,22 +30,22 @@ void MainWindow::set_text_nan_initial(QLabel* label){
   label->setFont(f);
   label->setText("NaN");
   label->setStyleSheet("background-color:rgb(81, 86, 90)");
-  label->setStyleSheet("QLabel { color:rgb(143,122,102);}");//rgb(46, 52, 54);//rgb(143,122,102)// color : black; }"
+  label->setStyleSheet("QLabel { color:rgb(143,122,102);}");
 }
 void MainWindow::set_text_true_false(bool isTrue, QLabel* label, bool isReverse){
   if(!isReverse)
   {
-  if(isTrue){
-    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">True</span></p></body></html>");
-  } else{
+    if(isTrue){
+      label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">True</span></p></body></html>");
+    } else{
       label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#cc0000;\">False</span></p></body></html>");
+    }
   }
-}
   else
   {
-  if(isTrue){
-    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#cc0000;\">True</span></p></body></html>");
-  } else{
+    if(isTrue){
+      label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#cc0000;\">True</span></p></body></html>");
+    } else{
       label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">False</span></p></body></html>");
     }
   }
@@ -54,7 +53,7 @@ void MainWindow::set_text_true_false(bool isTrue, QLabel* label, bool isReverse)
 void MainWindow::set_text_on_off(bool isTrue, QLabel* label, bool isReverse){
   if(!isReverse)
   {
-  if(isTrue){
+    if(isTrue){
       label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#73d216;\">On</span></p></body></html>");
     } else{
       label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#fcaf3e;\">Off</span></p></body></html>");
@@ -63,27 +62,27 @@ void MainWindow::set_text_on_off(bool isTrue, QLabel* label, bool isReverse){
   else
   {
     if(isTrue){
-    label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#cc0000;\">On</span></p></body></html>");
-  } else{
-    label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#73d216;\">Off</span></p></body></html>");
+      label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#cc0000;\">On</span></p></body></html>");
+    } else{
+      label->setText("<html><head/><body><p><span style=\"font-size:14pt; font-weight:600; color:#73d216;\">Off</span></p></body></html>");
     }
   }
 }
 void MainWindow::set_text_high_low(bool isTrue, QLabel* label, bool isReverse){
   if(!isReverse)
   {
-  if(isTrue){
+    if(isTrue){
       label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;L</span></p></body></html>");
-  } else{
+    } else{
       label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;H</span></p></body></html>");
+    }
   }
-}
   else
   {
-  if(isTrue){
-    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;H</span></p></body></html>");
-  } else{
-    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;L</span></p></body></html>");
+    if(isTrue){
+      label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;H</span></p></body></html>");
+    } else{
+      label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">&nbsp;&nbsp;L</span></p></body></html>");
     }
   }
 }
@@ -91,8 +90,16 @@ void MainWindow::set_text_null_reserve(bool isTrue, QLabel* label){
   if(isTrue){
     label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">Null</span></p></body></html>");
   } else{
-    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#d3d7cf;\">RSV</span></p></body></html>");
+    label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#8F7A66;\">RSV</span></p></body></html>");
   }
+}
+void MainWindow::error_code_format_change(tm_msgs::FeedbackState msg, QLabel* label, int base){
+  QFont f("Arial",14);
+  f.setWeight(600);  
+  label->setFont(f);
+  label->setText(QString::number(msg.error_code,base));
+  label->setStyleSheet("background-color:rgb(81, 86, 90)");
+  label->setStyleSheet("QLabel { color:rgb(143,122,102);}");
 }
 void MainWindow::initial_text_ctrl_label(){
   set_text_nan_initial(ui->svrclient_status_label);
@@ -113,7 +120,6 @@ QString MainWindow::format_change(std::string msg){
   str = "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#73d216;\">";
   str += msg;
   str += "</span></p></body></html>";
-
   return QString::fromStdString(str);
 }
 void MainWindow::send_ui_feed_back_status(tm_msgs::FeedbackState msg){
@@ -130,7 +136,7 @@ void MainWindow::send_ui_feed_back_status(tm_msgs::FeedbackState msg){
       set_text_null_reserve(true,ui->error_code_status_label);    
       set_text_null_reserve(true,ui->error_content_status_label);
   } else{ 
-      ui->error_code_status_label->setText(format_change(std::to_string(msg.error_code)));
+      error_code_format_change(msg,ui->error_code_status_label,16);
       set_text_null_reserve(false,ui->error_content_status_label);
   }    
   if(msg.cb_digital_output.size()>0){
@@ -164,7 +170,6 @@ void MainWindow::initial_ui_page_to_ros_thread(){
   connect(this, SIGNAL(send_sct_as_re_connect()),rosPage.get(),SLOT(send_sct_as_re_connect()));
   connect(this, SIGNAL(send_svr_as_re_connect()),rosPage.get(),SLOT(send_svr_as_re_connect()));
   connect(this, SIGNAL(change_control_box_io_button()),rosPage.get(),SLOT(change_control_box_io_button()));
-  
 }
 void MainWindow::send_to_ui_list(std::string showMessage){
   QList<QStandardItem *> itemList;
