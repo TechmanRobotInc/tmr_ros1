@@ -4,6 +4,10 @@ project(ui_for_debug_and_demo)
 add_compile_options(-std=c++14)
 #add_compile_options(-std=c++11)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # find dependencies
 find_package(catkin REQUIRED COMPONENTS
   actionlib
