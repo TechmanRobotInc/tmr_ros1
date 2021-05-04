@@ -17,6 +17,9 @@ void TmRosNode::publish_fbs()
 
     pm.fbs_msg.joint_pos = state.joint_angle();
     pm.fbs_msg.joint_vel = state.joint_speed();
+    pm.fbs_msg.joint_tor_average = state.joint_torque_average();
+    pm.fbs_msg.joint_tor_min = state.joint_torque_min();
+    pm.fbs_msg.joint_tor_max = state.joint_torque_max();
     pm.fbs_msg.joint_tor = state.joint_torque();
     pm.fbs_msg.tool_pose = state.tool_pose();
     pm.fbs_msg.tcp_speed = state.tcp_speed_vec();
