@@ -284,11 +284,11 @@ The GUI displays tm_driver connection status, sct, sta, svr messages and robot s
 ``mkdir ~/tmdriver_ws``<br/>
 ``cd ~/tmdriver_ws``<br/>
 > 2. Clone the the TM driver of git repository into the current directory by typing<br/>
-``git clone https://github.com/TechmanRobotInc/tmr_ros1.git``<br/>
-> 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
+``git clone https://github.com/TechmanRobotInc/tmr_ros1.git -b noetic``<br/>
+> 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-noetic``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
 > 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
-Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+Note: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core  and type<br/>
