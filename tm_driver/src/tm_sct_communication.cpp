@@ -21,6 +21,7 @@ TmSctCommunication::TmSctCommunication(const std::string &ip,
 		_has_thread = true;
 	}
 }
+
 TmSctCommunication::~TmSctCommunication()
 {
 	halt();
@@ -40,6 +41,7 @@ bool TmSctCommunication::start(int timeout_ms)
 	}
 	return rb;
 }
+
 void TmSctCommunication::halt()
 {
 	if (_has_thread) {
@@ -67,6 +69,7 @@ TmCommRC TmSctCommunication::send_script_str(const std::string &id, const std::s
 	TmPacket pack{ cmd };
 	return send_packet_all(pack);
 }
+
 TmCommRC TmSctCommunication::send_script_exit()
 {
 	return send_script_str("Exit", "ScriptExit()");
@@ -89,6 +92,7 @@ std::string TmSctCommunication::mtx_sct_response(std::string &id)
 	mtx_sct_unlock();
 	return rs;
 }
+
 std::string TmSctCommunication::mtx_sta_response(std::string &cmd)
 {
 	std::string rs;
@@ -129,6 +133,7 @@ void TmSctCommunication::thread_function()
 	close_socket();
 	print_info("TM_SCT: thread end");
 }
+
 void TmSctCommunication::reconnect_function()
 {
 	if (!_keep_thread_alive) return;
@@ -149,6 +154,7 @@ void TmSctCommunication::reconnect_function()
 		connect_socket(_reconnect_timeout_ms);
 	}
 }
+
 TmCommRC TmSctCommunication::tmsct_function()
 {
 	TmCommRC rc;
@@ -224,6 +230,7 @@ TmCommRC TmSctCommunication::tmsct_function()
 	}
 	return rc;
 }
+
 void TmSctCommunication::tmsta_function()
 {
 	switch (sta_data.subcmd()) {
