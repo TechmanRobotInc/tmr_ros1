@@ -4,28 +4,41 @@
 // Topic
 ////////////////////////////////
 
-void TmRosNode::publish_fbs()
+void TmRosNode::publish_fbs(TmCommRC rc)
 {
     PubMsg &pm = pm_;
     TmRobotState &state = iface_.state;
 
     // Publish feedback state
     pm.fbs_msg.header.stamp = ros::Time::now();
+    if(rc != TmCommRC::TIMEOUT){
+      pm.fbs_msg.is_svr_connected = iface_.svr.is_connected();
+      pm.fbs_msg.is_sct_connected = iface_.sct.is_connected();
+      pm.fbs_msg.tmsrv_cperr = (int)iface_.svr.tmSvrErrData.error_code();  //Node State Response 
+      pm.fbs_msg.tmsrv_dataerr = (int)pm.svr_msg.error_code;
+      pm.fbs_msg.tmscript_cperr = (int)iface_.sct.tmSctErrData.error_code();
+      pm.fbs_msg.tmscript_dataerr = (int)iface_.sct.sct_data.sct_has_error();
+    } else{
+      pm.fbs_msg.is_svr_connected = false;
+      pm.fbs_msg.is_sct_connected = false;
+      pm.fbs_msg.tmsrv_cperr = false;
+      pm.fbs_msg.tmsrv_dataerr = false;
+      pm.fbs_msg.tmscript_cperr = false;
+      pm.fbs_msg.tmscript_dataerr = false;  
+      iface_.svr.tmSvrErrData.set_CPError(TmCPError::Code::Ok);
+      pm.svr_msg.error_code = false;
+      iface_.sct.tmSctErrData.set_CPError(TmCPError::Code::Ok);
+      iface_.sct.sct_data.set_sct_data_has_error(false);
+    }    
 
-    pm.fbs_msg.is_svr_connected = iface_.svr.is_connected();
-    pm.fbs_msg.is_sct_connected = iface_.sct.is_connected();
-
+    pm.fbs_msg.is_data_table_correct = state.is_data_table_correct();
     pm.fbs_msg.joint_pos = state.joint_angle();
     pm.fbs_msg.joint_vel = state.joint_speed();
-    pm.fbs_msg.joint_tor_average = state.joint_torque_average();
-    pm.fbs_msg.joint_tor_min = state.joint_torque_min();
-    pm.fbs_msg.joint_tor_max = state.joint_torque_max();
     pm.fbs_msg.joint_tor = state.joint_torque();
     pm.fbs_msg.tool_pose = state.tool_pose();
     pm.fbs_msg.tcp_speed = state.tcp_speed_vec();
     pm.fbs_msg.tcp_force = state.tcp_force_vec();
     pm.fbs_msg.robot_link = state.is_linked();
-    pm.fbs_msg.is_data_table_correct = state.is_data_table_correct();
     pm.fbs_msg.robot_error = state.has_error();
     pm.fbs_msg.project_run = state.is_project_running();
     pm.fbs_msg.project_pause = state.is_project_paused();
@@ -45,6 +58,11 @@ void TmRosNode::publish_fbs()
     //pm.fbs_msg.ee_analog_output = state.ee_AO();
     pm.fbs_msg.ee_analog_input = state.ee_AI();
     pm.fbs_msg.error_content = state.error_content();
+
+    // Publish torque state
+    pm.fbs_msg.joint_tor_average = state.joint_torque_average();
+    pm.fbs_msg.joint_tor_min = state.joint_torque_min();
+    pm.fbs_msg.joint_tor_max = state.joint_torque_max();
     pm.fbs_pub.publish(pm.fbs_msg);
 
     // Publish joint state
@@ -78,8 +96,8 @@ void TmRosNode::publish_fbs()
     //pm.transform.setRotation(quat);
     pm.tfbc.sendTransform(tf::StampedTransform(
         Tbt, pm.joint_msg.header.stamp, base_frame_name_, tool_frame_name_));
-
 }
+
 void TmRosNode::publish_svr()
 {
     PubMsg &pm = pm_;
@@ -94,42 +112,60 @@ void TmRosNode::publish_svr()
     }
     svr_cond_.notify_all();
 
-    print_info("TM_ROS: (TM_SVR): (%s) (%d) %s",
-        pm.svr_msg.id.c_str(), pm.svr_msg.mode, pm.svr_msg.content.c_str());
-
+    if ((int)(pm.svr_msg.error_code) != 0) {
+        print_error("TM_ROS: (TM_SVR): MSG: (%s) (%d) %s", pm.svr_msg.id.c_str(), pm.svr_msg.mode, pm.svr_msg.content.c_str());   	
+        print_error("TM_ROS: (TM_SVR) ROS Node Data Error %d",(int)(pm.svr_msg.error_code));
+    }
+    else {
+        print_info("TM_ROS: (TM_SVR): MSG: (%s) (%d) %s", pm.svr_msg.id.c_str(), pm.svr_msg.mode, pm.svr_msg.content.c_str());
+    }    
+    
     pm.svr_msg.header.stamp = ros::Time::now();
     pm.svr_pub.publish(pm.svr_msg);
 }
+
 bool TmRosNode::publish_func()
 {
     //PubMsg &pm = pm_;
     TmSvrCommunication &svr = iface_.svr;
     int n;
     auto rc = svr.recv_spin_once(1000, &n);
+
     if (rc == TmCommRC::ERR ||
         rc == TmCommRC::NOTREADY ||
         rc == TmCommRC::NOTCONNECT) {
         return false;
-    }
-    else if (rc != TmCommRC::OK) {
-        return true;
     }
     bool fbs = false;
     std::vector<TmPacket> &pack_vec = svr.packet_list();
 
     for (auto &pack : pack_vec) {
         if (pack.type == TmPacket::Header::CPERR) {
-            print_info("TM_ROS: (TM_SVR): CPERR");
-            svr.err_data.set_CPError(pack.data.data(), pack.data.size());
-            print_error(svr.err_data.error_code_str().c_str());
-
-            // cpe response
-
+            svr.tmSvrErrData.set_CPError(pack.data.data(), pack.data.size());
+            print_error("TM_ROS: (TM_SVR) ROS Node Header CPERR %d",(int)svr.tmSvrErrData.error_code());
         }
         else if (pack.type == TmPacket::Header::TMSVR) {
 
-            svr.err_data.error_code(TmCPError::Code::Ok);
-
+            if (svr.data.is_valid() && (svr.data.mode()== TmSvrData::Mode::BINARY))
+            {
+                if ((int)iface_.svr.tmSvrErrData.error_code())  {} 
+                else
+                {
+                    svr.tmSvrErrData.error_code(TmCPError::Code::Ok); 
+                }
+            }
+            else if (svr.data.is_valid() && (svr.data.mode() == TmSvrData::Mode::RESPONSE))
+            {
+                if ((int)iface_.svr.data.error_code() != 0)  {}
+                else
+                {  
+                  svr.tmSvrErrData.error_code(TmCPError::Code::Ok);
+                }
+            }            
+            else
+            {
+                svr.tmSvrErrData.error_code(TmCPError::Code::Ok); 
+            }            
             //TODO ? lock and copy for service response
             TmSvrData::build_TmSvrData(svr.data, pack.data.data(), pack.data.size(), TmSvrData::SrcType::Shallow);
 
@@ -149,24 +185,28 @@ bool TmRosNode::publish_func()
                     publish_svr();
                     break;
                 default:
-                    print_info("TM_ROS: (TM_SVR): (%s): invalid mode (%d)",
+                    print_error("TM_ROS: (TM_SVR): (%s): invalid mode (%d)",
                         svr.data.transaction_id().c_str(), (int)(svr.data.mode()));
                     break;
                 }
             }
             else {
-                print_info("TM_ROS: (TM_SVR): invalid data");
+                print_error("TM_ROS: (TM_SVR): invalid data");
             }
         }
         else {
-            print_info("TM_ROS: (TM_SVR): invalid header");
+            print_error("TM_ROS: (TM_SVR): invalid header");
         }
     }
     if (fbs) {
-        publish_fbs();
+        publish_fbs(rc);
+    }
+    if(rc == TmCommRC::TIMEOUT){
+      return false;
     }
     return true;
 }
+
 void TmRosNode::publisher()
 {
     PubMsg &pm = pm_;
@@ -190,6 +230,7 @@ void TmRosNode::publisher()
         //bool reconnect = false;
         if (!svr.recv_init()) {
             print_info("TM_ROS: (TM_SVR): is not connected");
+            publish_fbs(TmCommRC::TIMEOUT);
         }
         while (ros::ok() && svr.is_connected()) {
             if (!publish_func()) break;
@@ -227,16 +268,18 @@ void TmRosNode::sct_msg()
     sm.sct_msg.id = data.script_id();
     sm.sct_msg.script = std::string{ data.script(), data.script_len() };
 
-    if (data.has_error()) {
-        print_info("TM_ROS: (TM_SCT): err: (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
+    if (data.sct_has_error()) {
+        print_error("TM_ROS: (TM_SCT): MSG: (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
+        print_error("TM_ROS: (TM_SCT) ROS Node Data Error %d",(int)data.sct_has_error());
     }
     else {
-        print_info("TM_ROS: (TM_SCT): res: (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
+        print_info("TM_ROS: (TM_SCT): MSG (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
     }
 
     sm.sct_msg.header.stamp = ros::Time::now();
     sm.sct_pub.publish(sm.sct_msg);
 }
+
 void TmRosNode::sta_msg()
 {
     SctMsg &sm = sm_;
@@ -254,6 +297,7 @@ void TmRosNode::sta_msg()
     sm.sta_msg.header.stamp = ros::Time::now();
     sm.sta_pub.publish(sm.sta_msg);
 }
+
 bool TmRosNode::sct_func()
 {
     TmSctCommunication &sct = iface_.sct;
@@ -272,17 +316,13 @@ bool TmRosNode::sct_func()
     for (auto &pack : pack_vec) {
         switch (pack.type) {
         case TmPacket::Header::CPERR:
-            print_info("TM_ROS: (TM_SCT): CPERR");
-            sct.err_data.set_CPError(pack.data.data(), pack.data.size());
-            print_error(sct.err_data.error_code_str().c_str());
-
-            // cpe response
-
+            sct.tmSctErrData.set_CPError(pack.data.data(), pack.data.size());
+            print_error("TM_ROS: (TM_SCT) ROS Node Header CPERR %d",(int)sct.tmSctErrData.error_code());
             break;
 
         case TmPacket::Header::TMSCT:
 
-            sct.err_data.error_code(TmCPError::Code::Ok);
+            sct.tmSctErrData.error_code(TmCPError::Code::Ok);
 
             //TODO ? lock and copy for service response
             TmSctData::build_TmSctData(sct.sct_data, pack.data.data(), pack.data.size(), TmSctData::SrcType::Shallow);
@@ -292,7 +332,7 @@ bool TmRosNode::sct_func()
 
         case TmPacket::Header::TMSTA:
 
-            sct.err_data.error_code(TmCPError::Code::Ok);
+            sct.tmSctErrData.error_code(TmCPError::Code::Ok);
 
             TmStaData::build_TmStaData(sct.sta_data, pack.data.data(), pack.data.size(), TmStaData::SrcType::Shallow);
 
@@ -300,12 +340,13 @@ bool TmRosNode::sct_func()
             break;
 
         default:
-            print_info("TM_ROS: (TM_SCT): invalid header");
+            print_error("TM_ROS: (TM_SCT): invalid header");
             break;
         }
     }
     return true;
 }
+
 void TmRosNode::sct_responsor()
 {
     SctMsg &sm = sm_;
