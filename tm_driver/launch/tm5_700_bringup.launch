@@ -10,6 +10,7 @@
   <arg name="robot_ip" />
   <arg name="min_payload" default="0.0" />
   <arg name="max_payload" default="6.0" />
+  <arg name="auto_stick_play" default="true" />
 
   <!-- robot model -->
   <!--
@@ -23,6 +24,7 @@
     <arg name="robot_ip" value="$(arg robot_ip)" />
     <arg name="min_payload" value="$(arg min_payload)" />
     <arg name="max_payload" value="$(arg max_payload)" />
+    <arg name="auto_stick_play" value="$(arg auto_stick_play)" />
   </include>
 
 </launch>
