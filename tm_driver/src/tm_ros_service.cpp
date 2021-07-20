@@ -14,7 +14,7 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
         if (req.connect) {
             print_info("TM_ROS: (re)connect(%d) TM_SVR", t_o);
             iface_.svr.halt();
-            rb = iface_.svr.start(t_o);
+            rb = iface_.svr.start_tm_svr(t_o);
         }
         if (req.reconnect) {
             pub_reconnect_timeout_ms_ = t_o;
@@ -31,7 +31,7 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
         if (req.connect) {
             print_info("TM_ROS: (re)connect(%d) TM_SCT", t_o);
             iface_.sct.halt();
-            rb = iface_.sct.start(t_o);
+            rb = iface_.sct.start_tm_sct(t_o);
         }
         if (req.reconnect) {
             sct_reconnect_timeout_ms_ = t_o;
@@ -57,6 +57,7 @@ bool TmRosNode::write_item(tm_msgs::WriteItemRequest &req, tm_msgs::WriteItemRes
     res.ok = rb;
     return rb;
 }
+
 bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse &res)
 {
     PubMsg &pm = pm_;
@@ -93,6 +94,7 @@ bool TmRosNode::send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScript
     res.ok = rb;
     return rb;
 }
+
 bool TmRosNode::set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventResponse &res)
 {
     bool rb = false;
@@ -119,12 +121,14 @@ bool TmRosNode::set_event(tm_msgs::SetEventRequest &req, tm_msgs::SetEventRespon
     res.ok = rb;
     return rb;
 }
+
 bool TmRosNode::set_io(tm_msgs::SetIORequest &req, tm_msgs::SetIOResponse &res)
 {
     bool rb = iface_.set_io(TmIOModule(req.module), TmIOType(req.type), int(req.pin), req.state);
     res.ok = rb;
     return rb;
 }
+
 bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPositionsResponse &res)
 {
     bool rb = false;
