@@ -88,6 +88,11 @@ protected:
         tm_msgs::StaResponse sta_msg;
     } sm_;
 
+    int diconnectTimes = 0;
+    uint64_t initialNotConnectTime = 0;
+    uint64_t notConnectTimeInS = 0;
+    int maxTrialTimeInMinute = -1;
+    uint64_t maxNotConnectTimeInS = 0;
     bool svr_updated_;
     boost::mutex svr_mtx_;
     boost::condition_variable svr_cond_;
@@ -165,6 +170,9 @@ private:
     void publish_svr();
     bool publish_func();
     void publisher();
+    void cq_monitor();//Connection quality
+    void cq_manage();
+    bool rc_halt();// Stop rescue connection
 
     void sct_msg();
     void sta_msg();

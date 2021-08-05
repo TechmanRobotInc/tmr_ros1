@@ -19,29 +19,29 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
         if (req.reconnect) {
             pub_reconnect_timeout_ms_ = t_o;
             pub_reconnect_timeval_ms_ = t_v;
-            print_info("TM_ROS: set SVR reconnect timeout %dms, timeval %dms", t_o, t_v);
+        ROS_INFO_STREAM("TM_ROS: set TM_SVR reconnect timeout " << (int)t_o << "ms, timeval " << (int)t_v << "ms");
         }
         else {
             // no reconnect
             pub_reconnect_timeval_ms_ = -1;
-            print_info("TM_ROS: set SVR NOT reconnect");
+        ROS_INFO_STREAM("TM_ROS: set TM_SVR NOT reconnect");
         }
         break;
     case tm_msgs::ConnectTMRequest::TMSCT:
         if (req.connect) {
-            print_info("TM_ROS: (re)connect(%d) TM_SCT", t_o);
+            ROS_INFO_STREAM("TM_ROS: (re)connect(" << (int)t_o << ") TM_SCT");
             iface_.sct.halt();
             rb = iface_.sct.start_tm_sct(t_o);
         }
         if (req.reconnect) {
             sct_reconnect_timeout_ms_ = t_o;
             sct_reconnect_timeval_ms_ = t_v;
-            print_info("TM_ROS: set SCT reconnect timeout %dms, timeval %dms", t_o, t_v);
+            ROS_INFO_STREAM("TM_ROS: set TM_SCT reconnect timeout " << (int)t_o << "ms, timeval " << (int)t_v << "ms");
         }
         else {
             // no reconnect
             sct_reconnect_timeval_ms_ = -1;
-            print_info("TM_ROS: set SCT NOT reconnect");
+            ROS_INFO_STREAM("TM_ROS: set TM_SCT NOT reconnect");
         }
         break;
     }
