@@ -21,7 +21,7 @@ TmRosNode::TmRosNode(const std::string &host)
     std::string prefix = "";
     if (ros::param::get("~prefix", prefix)) {
         if (prefix.length())
-            print_info("TM_ROS: set prefix to %s", prefix.c_str());
+            ROS_INFO_STREAM("TM_ROS: set prefix to "<< prefix);
     }
     joint_names_.push_back(prefix + "shoulder_1_joint");
     joint_names_.push_back(prefix + "shoulder_2_joint");
@@ -32,12 +32,12 @@ TmRosNode::TmRosNode(const std::string &host)
 
     std::string frame_name = "base";
     if (ros::param::get("~base_frame", frame_name)) {
-        print_info("TM_ROS: set base_frame to %s", frame_name.c_str());
+        ROS_INFO_STREAM("TM_ROS: set base_frame to " <<frame_name);
     }
     base_frame_name_ = prefix + frame_name;
     frame_name = "tool0";
     if (ros::param::get("~tool_frame", frame_name)) {
-        print_info("TM_ROS: set tool_frame to %s", frame_name.c_str());
+        ROS_INFO_STREAM("TM_ROS: set tool_frame to "<<frame_name);
     }
     tool_frame_name_ = prefix + frame_name;
 
@@ -98,7 +98,7 @@ TmRosNode::~TmRosNode()
 }
 void TmRosNode::halt()
 {
-    printf("TM_ROS: halt\n");
+    ROS_INFO_STREAM("TM_ROS: halt\n");
     sta_updated_ = true;
     sta_cond_.notify_all();
     svr_updated_ = true;
@@ -180,7 +180,7 @@ void TmRosNode::set_result(int32_t err_code, const std::string &err_str)
     result_.error_code = err_code;
     result_.error_string = err_str;
     if (err_code != result_.SUCCESSFUL && err_str.length()) {
-        print_error(err_str.c_str());
+        ROS_ERROR_STREAM(err_str);
     }
 }
 
@@ -196,7 +196,7 @@ void TmRosNode::set_pvt_traj(TmPvtTraj &pvts, const trajectory_msgs::JointTrajec
     pvts.mode = TmPvtMode::Joint;
 
     if (traj.points[0].time_from_start.toSec() != 0.0) {
-        print_warn("Trajectory's first point should be the current position, with time_from_start set to 0.0");
+        ROS_WARN_STREAM("Trajectory's first point should be the current position, with time_from_start set to 0.0");
         /*pvts.time_vec.push_back(traj.points[0].time_from_start.toSec());
         pvts.positions_vec.push_back(traj.points[0].positions);
         pvts.velocities_vec.push_back(traj.points[0].velocities);*/
@@ -220,21 +220,21 @@ void TmRosNode::set_pvt_traj(TmPvtTraj &pvts, const trajectory_msgs::JointTrajec
 
 void TmRosNode::traj_action(TmPvtTraj pvts)
 {
-    print_info("TM_ROS: trajectory thread begin");
+    ROS_INFO_STREAM("TM_ROS: trajectory thread begin");
     iface_.run_pvt_traj(pvts);
     if (has_goal_) {
         result_.error_code = result_.SUCCESSFUL;
         gh_.setSucceeded(result_);
         has_goal_ = false;
     }
-    print_info("TM_ROS: trajectory thread end");
+    ROS_INFO_STREAM("TM_ROS: trajectory thread end");
 }
 
 // action function
 
 void TmRosNode::goalCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTrajectoryAction> gh)
 {
-    print_info("TM_ROS: on goal");
+    ROS_INFO_STREAM("TM_ROS: on goal");
 
     //
     // check robot
@@ -261,7 +261,7 @@ void TmRosNode::goalCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTraj
     gh_ = gh;
 
     if (has_goal_) {
-        print_warn("TM_ROS: Received new goal while still executing previous trajectory. Canceling previous trajectory");
+        ROS_WARN_STREAM("TM_ROS: Received new goal while still executing previous trajectory. Canceling previous trajectory");
         set_result(-100, "TM_ROS: Received another trajectory");
         gh_.setAborted(result_, result_.error_string);
 
@@ -300,7 +300,7 @@ void TmRosNode::goalCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTraj
 
 void TmRosNode::cancelCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTrajectoryAction> gh)
 {
-    print_info("TM_ROS: on cancel");
+    ROS_INFO_STREAM("TM_ROS: on cancel");
 
     if (has_goal_) {
         if (gh == gh_) {
@@ -330,7 +330,7 @@ int main(int argc, char **argv)
         }
         else return 1;
     }
-    print_info("TM_ROS: robot_ip:=%s", host.c_str());
+    ROS_INFO_STREAM("TM_ROS: robot_ip:= "<< host);
 
     TmRosNode robot(host);
 
@@ -341,6 +341,6 @@ int main(int argc, char **argv)
 
     //robot.halt();
 
-    printf("TM_ROS: shutdown\n");
+    ROS_INFO_STREAM("TM_ROS: shutdown\n");
     return 0;
 }

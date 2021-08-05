@@ -31,7 +31,7 @@ private:
 public:
 	TmDataTable(TmRobotState *rs)
 	{
-		print_debug("Create DataTable");
+		ROS_DEBUG_STREAM("Create DataTable");
 
 		_item_map.clear();
 		//_item_map[""] = { Item:, &rs- };
@@ -114,7 +114,7 @@ public:
 
 TmRobotState::TmRobotState()
 {
-	print_debug("TmRobotState::TmRobotState");
+	ROS_DEBUG_STREAM("TmRobotState::TmRobotState");
 
 	_data_table = new TmDataTable(this);
 
@@ -150,7 +150,7 @@ TmRobotState::TmRobotState()
 }
 TmRobotState::~TmRobotState()
 {
-	print_debug("TmRobotState::~TmRobotState");
+	ROS_DEBUG_STREAM("TmRobotState::~TmRobotState");
 	delete _data_table;
 }
 
@@ -302,7 +302,7 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 	unsigned short uslen = 0; // 2 bytes
 	std::string item_name;
 
-	print_info("TM Flow DataTable Checked Item: ");
+	ROS_INFO_STREAM("TM Flow DataTable Checked Item: ");
 	_item_updates.clear();
 	//_f_deserialize_item.clear();
 
@@ -324,15 +324,13 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 			//func = std::bind(&RobotState::_deserialize_copy_wo_check, iter->second.dst,
 			//	std::placeholders::_2, std::placeholders::_3);
 			iter->second.checked = true;
-			std::string msg = "- " + item_name + " - checked";
-			print_info(msg.c_str());
+			ROS_DEBUG_STREAM("- " << item_name << " - checked");
 			++check_count;
 		}
 		else {
 			//func = std::bind(&RobotState::_deserialize_skip, nullptr,
 			//	std::placeholders::_2, std::placeholders::_3);
-			std::string msg = "- " + item_name + " - skipped";
-			print_info(msg.c_str());
+			ROS_DEBUG_STREAM("- " << item_name << " - skipped");
 			++skip_count;
 		}
 		_item_updates.push_back({ update.dst, update.func });
@@ -352,26 +350,23 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 		}
 		++count;
 	}
-	
-	std::string msg = "Total " + std::to_string(_item_updates.size()) + " item," +
-	std::to_string(check_count) + " checked, " + std::to_string(skip_count) + " skipped";
-	print_info(msg.c_str());
+	ROS_INFO_STREAM("Total " << _item_updates.size() << " item," <<
+		check_count << " checked, " << skip_count << " skipped");
 	isDataTableCorrect = true;
 
 	_deserialize_update(lock);
 
 	for (auto iter : _data_table->get()) {
 		if (iter.second.required && !iter.second.checked) {
-			std::string msg = "Required item" + iter.first + " is NOT checked";
 			isDataTableCorrect = false;
-			print_error(msg.c_str());
+			ROS_ERROR_STREAM("Required item" << iter.first << " is NOT checked");
 		}
 	}
 
 	if(isDataTableCorrect){
-	  print_info("data table is correct!");
+	  ROS_INFO_STREAM("data table is correct!");
 	} else{
-          print_error("data table is not correct");
+	  ROS_ERROR_STREAM("data table is not correct!");
 	}
 
 	_f_deserialize = std::bind(&TmRobotState::_deserialize, this,
@@ -386,7 +381,6 @@ size_t TmRobotState::_deserialize(const char *data, size_t size, bool use_mtx)
 	for (auto &update : _item_updates) {
 		boffset = _f_deserialize_item[update.func](update.dst, data, boffset);
 	}
-
 
 	_deserialize_update(use_mtx);
 
@@ -457,12 +451,12 @@ void TmRobotState::_deserialize_update(bool lock) {
 void TmRobotState::print()
 {
 	mtx_lock();
-	std::cout << "Robot_Link=" << _is_linked << "\n";
-	std::cout << "Robot_Error=" << _has_error << "\n";
-	std::cout << "Project_Run=" << _is_proj_running << "\n";
-	std::cout << "Project_Pause=" << _is_proj_running << "\n";
-	std::cout << "Safetyguard_A=" << _is_safeguard_A_triggered << "\n";
-	std::cout << "ESTOP=" << _is_ESTOP_pressed << "\n";
+	std::cout << "Robot_Link=" << (int)_is_linked << "\n";
+	std::cout << "Robot_Error=" << (int)_has_error << "\n";
+	std::cout << "Project_Run=" << (int)_is_proj_running << "\n";
+	std::cout << "Project_Pause=" << (int)_is_proj_paused << "\n";
+	std::cout << "Safetyguard_A=" << (int)_is_safeguard_A_triggered << "\n";
+	std::cout << "ESTOP=" << (int)_is_ESTOP_pressed << "\n";
 
 	std::cout << "Joint_Angle={";
 	for (auto &val : _joint_angle) { std::cout << val << ", "; }

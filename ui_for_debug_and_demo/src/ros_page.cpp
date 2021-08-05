@@ -117,8 +117,7 @@ RosPage::RosPage()
   initial_client();
 }
 RosPage::~RosPage(){
-  
-  std::cout<<"call ~RosPage"<<std::endl;
+  ROS_INFO_STREAM("call ~RosPage");
 }
 void RosPage::run(){
   ros::spin();

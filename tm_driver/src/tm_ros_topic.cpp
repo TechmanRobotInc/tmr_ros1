@@ -30,6 +30,9 @@ void TmRosNode::publish_fbs(TmCommRC rc)
       iface_.sct.tmSctErrData.set_CPError(TmCPError::Code::Ok);
       iface_.sct.sct_data.set_sct_data_has_error(false);
     }    
+   
+    pm.fbs_msg.max_not_connect_in_s = maxNotConnectTimeInS;
+    pm.fbs_msg.disconnection_times = diconnectTimes;
 
     pm.fbs_msg.is_data_table_correct = state.is_data_table_correct();
     pm.fbs_msg.joint_pos = state.joint_angle();
@@ -113,11 +116,11 @@ void TmRosNode::publish_svr()
     svr_cond_.notify_all();
 
     if ((int)(pm.svr_msg.error_code) != 0) {
-        print_error("TM_ROS: (TM_SVR): MSG: (%s) (%d) %s", pm.svr_msg.id.c_str(), pm.svr_msg.mode, pm.svr_msg.content.c_str());   	
-        print_error("TM_ROS: (TM_SVR) ROS Node Data Error %d",(int)(pm.svr_msg.error_code));
+        ROS_ERROR_STREAM("TM_ROS: (TM_SVR): MSG (" << pm.svr_msg.id << ") (" << (int)(pm.svr_msg.mode) << ") " << pm.svr_msg.content);  	
+        ROS_ERROR_STREAM("TM_ROS: (TM_SVR) ROS Node Data Error" << (int)(pm.svr_msg.error_code));
     }
     else {
-        print_info("TM_ROS: (TM_SVR): MSG: (%s) (%d) %s", pm.svr_msg.id.c_str(), pm.svr_msg.mode, pm.svr_msg.content.c_str());
+        ROS_INFO_STREAM("TM_ROS: (TM_SVR): MSG  (" << pm.svr_msg.id << ") (" << (int)(pm.svr_msg.mode) << ") " << pm.svr_msg.content);
     }    
     
     pm.svr_msg.header.stamp = ros::Time::now();
@@ -126,7 +129,6 @@ void TmRosNode::publish_svr()
 
 bool TmRosNode::publish_func()
 {
-    //PubMsg &pm = pm_;
     TmSvrCommunication &svr = iface_.svr;
     int n;
     auto rc = svr.recv_spin_once(1000, &n);
@@ -142,7 +144,7 @@ bool TmRosNode::publish_func()
     for (auto &pack : pack_vec) {
         if (pack.type == TmPacket::Header::CPERR) {
             svr.tmSvrErrData.set_CPError(pack.data.data(), pack.data.size());
-            print_error("TM_ROS: (TM_SVR) ROS Node Header CPERR %d",(int)svr.tmSvrErrData.error_code());
+            ROS_ERROR_STREAM("TM_ROS: (TM_SVR) ROS Node Header CPERR" << (int)svr.tmSvrErrData.error_code());
         }
         else if (pack.type == TmPacket::Header::TMSVR) {
 
@@ -166,7 +168,6 @@ bool TmRosNode::publish_func()
             {
                 svr.tmSvrErrData.error_code(TmCPError::Code::Ok); 
             }            
-            //TODO ? lock and copy for service response
             TmSvrData::build_TmSvrData(svr.data, pack.data.data(), pack.data.size(), TmSvrData::SrcType::Shallow);
 
             if (svr.data.is_valid()) {
@@ -185,35 +186,60 @@ bool TmRosNode::publish_func()
                     publish_svr();
                     break;
                 default:
-                    print_error("TM_ROS: (TM_SVR): (%s): invalid mode (%d)",
-                        svr.data.transaction_id().c_str(), (int)(svr.data.mode()));
+                    ROS_INFO_STREAM("TM_ROS: (TM_SVR): (" <<
+                        svr.data.transaction_id() << "): invalid mode (" << (int)(svr.data.mode()) << ")");
                     break;
                 }
             }
             else {
-                print_error("TM_ROS: (TM_SVR): invalid data");
+                ROS_ERROR_STREAM("TM_ROS: (TM_SVR): invalid data");
             }
         }
         else {
-            print_error("TM_ROS: (TM_SVR): invalid header");
+            ROS_ERROR_STREAM("TM_ROS: (TM_SVR): invalid header");
         }
     }
     if (fbs) {
         publish_fbs(rc);
     }
     if(rc == TmCommRC::TIMEOUT){
+      ROS_INFO_STREAM_ONCE( "TM_ROS: (TM_SVR): lINK TIMEOUT");
       return false;
     }
     return true;
 }
-
+void TmRosNode::cq_monitor(){
+    diconnectTimes ++;
+    initialNotConnectTime =  TmCommunication::get_current_time_in_ms();
+}
+void TmRosNode::cq_manage(){
+    
+    notConnectTimeInS = (TmCommunication::get_current_time_in_ms() - initialNotConnectTime)/1000;
+    if(diconnectTimes == 0){
+        return;
+    }
+    if(notConnectTimeInS>maxNotConnectTimeInS){
+        maxNotConnectTimeInS = notConnectTimeInS;
+    }
+}
+bool TmRosNode::rc_halt(){
+    if(maxTrialTimeInMinute == -1){
+        return false;
+    }
+    if((int)(notConnectTimeInS/60) >= maxTrialTimeInMinute){
+      print_info("TM_ROS: (TM_SVR): notConnectTimeInS = (%d) , maxTrialTimeInMinute = (%d)", 
+          (int)notConnectTimeInS, (int)maxTrialTimeInMinute);
+        return true;
+    }
+    return false;
+}
 void TmRosNode::publisher()
 {
     PubMsg &pm = pm_;
     TmSvrCommunication &svr = iface_.svr;
 
-    print_info("TM_ROS: publisher thread begin");
-
+    ROS_INFO_STREAM("TM_ROS: publisher thread begin");
+    initialNotConnectTime =  TmCommunication::get_current_time_in_ms();
     //PubMsg pm;
     //pm.fbs_pub = nh_.advertise<tm_msgs::FeedbackState>("feedback_states", 1);
     //pm.joint_pub = nh_.advertise<sensor_msgs::JointState>("joint_states", 1);
@@ -229,15 +255,22 @@ void TmRosNode::publisher()
     while (ros::ok()) {
         //bool reconnect = false;
         if (!svr.recv_init()) {
-            print_info("TM_ROS: (TM_SVR): is not connected");
+            ROS_INFO_STREAM("TM_ROS: (TM_SVR): is not connected");
+            cq_manage();
             publish_fbs(TmCommRC::TIMEOUT);
+            if(rc_halt()){
+                ROS_FATAL_STREAM("TM_ROS: (TM_SVR): Ethernet slave connection stopped");
+                break;
+            }
         }
         while (ros::ok() && svr.is_connected()) {
-            if (!publish_func()) break;
+            if (!publish_func()){
+                cq_monitor();
+                break;
+            }
         }
         svr.close_socket();
 
-        // reconnect == true
         if (!ros::ok()) break;
         if (pub_reconnect_timeval_ms_ <= 0) {
             boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
@@ -246,18 +279,18 @@ void TmRosNode::publisher()
         int cnt = 0;
         while (ros::ok() && cnt < pub_reconnect_timeval_ms_) {
             if (cnt % 500 == 0) {
-                print_info("%.1f sec...", 0.001 * (pub_reconnect_timeval_ms_ - cnt));
+                ROS_DEBUG_STREAM(0.001 * (pub_reconnect_timeval_ms_ - cnt) << " sec...");
             }
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
             ++cnt;
         }
         if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
-            print_info("0 sec\nTM_ROS: (TM_SVR): connect(%d)...", pub_reconnect_timeout_ms_);
+            ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SVR): connect" << (int)pub_reconnect_timeout_ms_ << "ms)...");
             svr.connect_socket(pub_reconnect_timeout_ms_);
         }
     }
     svr.close_socket();
-    printf("TM_ROS: publisher thread end\n");
+    ROS_INFO_STREAM("TM_ROS: publisher thread end");
 }
 
 void TmRosNode::sct_msg()
@@ -269,11 +302,11 @@ void TmRosNode::sct_msg()
     sm.sct_msg.script = std::string{ data.script(), data.script_len() };
 
     if (data.sct_has_error()) {
-        print_error("TM_ROS: (TM_SCT): MSG: (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
-        print_error("TM_ROS: (TM_SCT) ROS Node Data Error %d",(int)data.sct_has_error());
+        ROS_ERROR_STREAM("TM_ROS: (TM_SCT): MSG : (" << sm.sct_msg.id << "): " << sm.sct_msg.script);
+        ROS_ERROR_STREAM("TM_ROS: (TM_SCT):ROS Node Data Error: (" << (int)data.sct_has_error() << "): ");
     }
     else {
-        print_info("TM_ROS: (TM_SCT): MSG (%s): %s", sm.sct_msg.id.c_str(), sm.sct_msg.script.c_str());
+        ROS_INFO_STREAM("TM_ROS: (TM_SCT): MSG : (" << sm.sct_msg.id << "): " << sm.sct_msg.script);
     }
 
     sm.sct_msg.header.stamp = ros::Time::now();
@@ -292,7 +325,7 @@ void TmRosNode::sta_msg()
     }
     sta_cond_.notify_all();
 
-    print_info("TM_ROS: (TM_STA): res: (%s): %s", sm.sta_msg.subcmd.c_str(), sm.sta_msg.subdata.c_str());
+    ROS_INFO_STREAM("TM_ROS: (TM_STA): res: (" << sm.sta_msg.subcmd << "): " << sm.sta_msg.subdata);
 
     sm.sta_msg.header.stamp = ros::Time::now();
     sm.sta_pub.publish(sm.sta_msg);
@@ -317,7 +350,7 @@ bool TmRosNode::sct_func()
         switch (pack.type) {
         case TmPacket::Header::CPERR:
             sct.tmSctErrData.set_CPError(pack.data.data(), pack.data.size());
-            print_error("TM_ROS: (TM_SCT) ROS Node Header CPERR %d",(int)sct.tmSctErrData.error_code());
+            ROS_ERROR_STREAM("TM_ROS: (TM_SCT) ROS Node Header CPERR" << (int)sct.tmSctErrData.error_code());
             break;
 
         case TmPacket::Header::TMSCT:
@@ -340,7 +373,7 @@ bool TmRosNode::sct_func()
             break;
 
         default:
-            print_error("TM_ROS: (TM_SCT): invalid header");
+            ROS_ERROR_STREAM("TM_ROS: (TM_SCT): invalid header");
             break;
         }
     }
@@ -354,7 +387,7 @@ void TmRosNode::sct_responsor()
 
     boost::this_thread::sleep_for(boost::chrono::milliseconds(50));
 
-    print_info("TM_ROS: sct_response thread begin");
+    ROS_INFO_STREAM("TM_ROS: sct_response thread begin");
 
     //SctMsg sm;
     //sm.sct_pub = nh_.advertise<tm_msgs::SctResponse>("tm_driver/sct_response", 1);
@@ -363,9 +396,9 @@ void TmRosNode::sct_responsor()
     while (ros::ok()) {
         //bool reconnect = false;
         if (!sct.recv_init()) {
-            print_info("TM_ROS: (TM_SCT): is not connected");
+            ROS_INFO_STREAM("TM_ROS: (TM_SCT): is not connected");
         }
-        while (ros::ok() && sct.is_connected()) {
+        while (ros::ok() && sct.is_connected() && iface_.svr.is_connected()) { //william
             if (!sct_func()) break;
         }
         sct.close_socket();
@@ -375,20 +408,20 @@ void TmRosNode::sct_responsor()
         if (sct_reconnect_timeval_ms_ <= 0) {
             boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
         }
-        print_info("TM_ROS: (TM_SCT) reconnect in ");
+        ROS_INFO_STREAM("TM_ROS: (TM_SCT) reconnect in ");
         int cnt = 0;
         while (ros::ok() && cnt < sct_reconnect_timeval_ms_) {
             if (cnt % 1000 == 0) {
-                print_info("%.1f sec...", 0.001 * (sct_reconnect_timeval_ms_ - cnt));
+                ROS_DEBUG_STREAM(0.001 * (pub_reconnect_timeval_ms_ - cnt) << " sec...");
             }
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
             ++cnt;
         }
         if (ros::ok() && sct_reconnect_timeval_ms_ >= 0) {
-            print_info("0 sec\nTM_ROS: (TM_SCT) connect(%d)...", sct_reconnect_timeout_ms_);
+            ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SCT) connect(" << (int)sct_reconnect_timeout_ms_ << "ms)...");
             sct.connect_socket(sct_reconnect_timeout_ms_);
         }
     }
     sct.close_socket();
-    printf("TM_ROS: sct_response thread end\n");
+    ROS_INFO_STREAM("TM_ROS: sct_response thread end");		
 }

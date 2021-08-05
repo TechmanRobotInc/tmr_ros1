@@ -107,7 +107,7 @@ private:
 public:
 	explicit TmCommRecv(int recv_buf_len)
 	{
-		print_debug("TmCommRecv::TmCommRecv");
+		ROS_DEBUG_STREAM("TmCommRecv::TmCommRecv");
 
 		if (recv_buf_len < 512) recv_buf_len = 512;
 
@@ -118,7 +118,7 @@ public:
 	}
 	~TmCommRecv()
 	{
-		print_debug("TmCommRecv::~TmCommRecv");
+		ROS_DEBUG_STREAM("TmCommRecv::~TmCommRecv");
 		delete _recv_buf;
 	}
 
@@ -254,7 +254,7 @@ TmCommunication::TmCommunication(const char *ip, unsigned short port, int recv_b
 	, _recv_rc(TmCommRC::OK)
 	, _recv_ready(false)
 {
-	print_info("TmCommunication::TmCommunication");
+	ROS_INFO_STREAM("TmCommunication::TmCommunication");
 
 	_recv = new TmCommRecv(recv_buf_len);
 
@@ -276,7 +276,7 @@ TmCommunication::TmCommunication(const char *ip, unsigned short port, int recv_b
 
 TmCommunication::~TmCommunication()
 {
-	print_info("TmCommunication::~TmCommunication");
+	ROS_INFO_STREAM("TmCommunication::~TmCommunication");
 
 	delete _ip;
 	delete _recv;
@@ -286,7 +286,11 @@ TmCommunication::~TmCommunication()
 	WSACleanup();
 #endif
 }
-
+uint64_t TmCommunication::get_current_time_in_ms(){
+	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now(); 
+	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
+    return ms.count();
+}
 int TmCommunication::connect_with_timeout(int sockfd, const char *ip, unsigned short port, int timeout_ms)
 {
 	int rv = 0;
@@ -297,7 +301,7 @@ int TmCommunication::connect_with_timeout(int sockfd, const char *ip, unsigned s
 	timeval tv;
 	fd_set wset;
 
-	print_info("TM_COM: ip:=%s", ip);
+	ROS_INFO_STREAM_ONCE("TM_COM: ip:=" << ip);
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
@@ -312,28 +316,30 @@ int TmCommunication::connect_with_timeout(int sockfd, const char *ip, unsigned s
 #ifndef _WIN32
 	//Get Flag of Fcntl
 	if ((flags = fcntl(sockfd, F_GETFL, 0)) < 0 ) {
-		print_warn("TM_COM: The flag of fcntl is not ok");
+		ROS_WARN_STREAM("TM_COM: The flag of fcntl is not ok");
 		return -1;
 	}
 #endif
 
 	rv = connect(sockfd, (sockaddr *)&addr, 16);
-	print_info("TM_COM: rv:=%d", rv);
+	ROS_DEBUG_STREAM("TM_COM: rv:=" << (int)rv);
 
 	if (rv < 0) {
 		if (errno != EINPROGRESS) return -1;
 	}
 	if (rv == 0) {
-		print_info("TM_COM: Connection is ok");
+		timeoutcount = 0;
+		ROS_DEBUG_STREAM("TM_COM: Connection is ok");
 		return rv;
 	}
 	else {
+		timeoutcount++; 
 		//Wait for Connect OK by checking Write buffer
 		if ((rv = select(sockfd + 1, NULL, &wset, NULL, &tv)) < 0) {
 			return rv;
 		}
 		if (rv == 0) {
-			print_warn("TM_COM: Connection timeout");
+			ROS_WARN_STREAM("TM_COM: Connection timeout. count:=" << (int)timeoutcount);
 			//errno = ETIMEDOUT;
 			return -1;
 		}
@@ -343,18 +349,18 @@ int TmCommunication::connect_with_timeout(int sockfd, const char *ip, unsigned s
 #else
 			if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &err, (socklen_t *)&err_len) < 0) {
 #endif
-				print_error("TM_COM: Get socketopt SO_ERROR FAIL");
+				ROS_ERROR_STREAM("TM_COM: Get socketopt SO_ERROR FAIL");
 				errno = err;
 				return -1;
 			}
 		}
 		else {
-			print_error("TM_COM: Connection is not ready");
+			ROS_ERROR_STREAM("TM_COM: Connection is not ready");
 			return -1;
 		}
 		if (err != 0) {
 			errno = err;
-			print_error("TM_COM: Connection error");
+			ROS_ERROR_STREAM("TM_COM: Connection error");
 			return -1;
 		}
 	}
@@ -381,7 +387,7 @@ bool TmCommunication::connect_socket(int timeout_ms)
 #endif
     _sockfd = socketFile;
 	if (_sockfd < 0) {
-		print_error("TM_COM: Error socket");
+		ROS_ERROR_STREAM("TM_COM: Error socket");
 		return false;
 	}
 
@@ -395,26 +401,24 @@ bool TmCommunication::connect_socket(int timeout_ms)
     timeout.tv_usec = 0;
 
     if (setsockopt (_sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,sizeof(timeout)) < 0){
-        print_error("setsockopt failed\n");
+        ROS_ERROR_STREAM("setsockopt failed\n");
 	}
-        
 
     if (setsockopt (_sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,sizeof(timeout)) < 0){
-		print_error("setsockopt failed\n");
+        ROS_ERROR_STREAM("setsockopt failed\n");
 	}
-        
 
 	if (connect_with_timeout(_sockfd, _ip, _port, timeout_ms) == 0) {
-		print_info("TM_COM: O_NONBLOCK connection is ok");
+		ROS_DEBUG_STREAM("TM_COM: O_NONBLOCK connection is ok");
 		_isConnected = true;
 	}
 	else {
-		print_info("TM_COM: O_NONBLOCK connection is fail");
+		ROS_DEBUG_STREAM("TM_COM: O_NONBLOCK connection is fail");
 		_sockfd = -1;
 		_isConnected = false;
 	}
 	if (_sockfd > 0) {
-		print_info("TM_COM: TM robot is connected. sockfd:=%d", _sockfd);
+		ROS_INFO_STREAM("TM_COM: TM robot is connected. sockfd:=" << (int)_sockfd);
 		//_is_connected = true;
 		return true;
 	}
@@ -490,21 +494,21 @@ TmCommRC TmCommunication::send_packet(TmPacket &packet, int *n)
 {
 	std::vector<char> bytes;
 	TmPacket::build_bytes(bytes, packet);
-	print_info(TmPacket::string_from_bytes(bytes).c_str());
+	ROS_INFO_STREAM(TmPacket::string_from_bytes(bytes));
 	return send_bytes(bytes.data(), bytes.size(), n);
 }
 TmCommRC TmCommunication::send_packet_all(TmPacket &packet, int *n)
 {
 	std::vector<char> bytes;
 	TmPacket::build_bytes(bytes, packet);
-	print_info(TmPacket::string_from_bytes(bytes).c_str());
+	ROS_INFO_STREAM(TmPacket::string_from_bytes(bytes));
 	return send_bytes_all(bytes.data(), bytes.size(), n);
 }
 TmCommRC TmCommunication::send_packet_(TmPacket &packet, int *n)
 {
 	std::vector<char> bytes;
 	TmPacket::build_bytes(bytes, packet);
-	print_info(TmPacket::string_from_bytes(bytes).c_str());
+	ROS_INFO_STREAM(TmPacket::string_from_bytes(bytes));
 	if (bytes.size() > 0x1000)
 		return send_bytes_all(bytes.data(), bytes.size(), n);
 	else
