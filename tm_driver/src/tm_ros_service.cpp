@@ -17,14 +17,29 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
             rb = iface_.svr.start_tm_svr(t_o);
         }
         if (req.reconnect) {
-            pub_reconnect_timeout_ms_ = t_o;
-            pub_reconnect_timeval_ms_ = t_v;
-        ROS_INFO_STREAM("TM_ROS: set TM_SVR reconnect timeout " << (int)t_o << "ms, timeval " << (int)t_v << "ms");
+            if (svr_recovery_is_halt)
+            {
+                pub_reconnect_timeout_ms_ = 1000;
+                pub_reconnect_timeval_ms_ = 3000;
+                initialNotConnectTime =  TmCommunication::get_current_time_in_ms();
+                notConnectTimeInS = 0;
+                diconnectTimes = 0;
+                maxNotConnectTimeInS = 0;
+                svr_recovery_is_halt = false;
+                rb = iface_.svr.start_tm_svr(5000);
+                ROS_INFO_STREAM("TM_ROS: TM_SVR resume connection recovery");
+            }
+            else
+            {
+                pub_reconnect_timeout_ms_ = t_o;
+                pub_reconnect_timeval_ms_ = t_v;
+            }	
+            ROS_INFO_STREAM("TM_ROS: set TM_SVR reconnect timeout " << (int)pub_reconnect_timeout_ms_ << "ms, timeval " << (int)pub_reconnect_timeval_ms_ << "ms");
         }
         else {
             // no reconnect
             pub_reconnect_timeval_ms_ = -1;
-        ROS_INFO_STREAM("TM_ROS: set TM_SVR NOT reconnect");
+            ROS_INFO_STREAM("TM_ROS: set TM_SVR NOT reconnect");
         }
         break;
     case tm_msgs::ConnectTMRequest::TMSCT:
