@@ -93,6 +93,7 @@ protected:
     uint64_t notConnectTimeInS = 0;
     int maxTrialTimeInMinute = -1;
     uint64_t maxNotConnectTimeInS = 0;
+    bool svr_recovery_is_halt = false;
     bool svr_updated_;
     boost::mutex svr_mtx_;
     boost::condition_variable svr_cond_;
@@ -170,15 +171,16 @@ private:
     void publish_svr();
     bool publish_func();
     void publisher();
+    void svr_connect_recover();
     void cq_monitor();//Connection quality
     void cq_manage();
-    bool rc_halt();// Stop rescue connection
+    bool rc_halt();//Stop rescue connection
 
     void sct_msg();
     void sta_msg();
     bool sct_func();
     void sct_responsor();
-
+    void sct_connect_recover();
     ////////////////////////////////
     // Service
     ////////////////////////////////
