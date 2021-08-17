@@ -13,7 +13,7 @@ void TmRosNode::publish_fbs(TmCommRC rc)
     pm.fbs_msg.header.stamp = ros::Time::now();
     if(rc != TmCommRC::TIMEOUT){
       pm.fbs_msg.is_svr_connected = iface_.svr.is_connected();
-      pm.fbs_msg.is_sct_connected = iface_.sct.is_connected();
+      pm.fbs_msg.is_sct_connected = iface_.sct.is_connected() & iface_.is_on_listen_node();
       pm.fbs_msg.tmsrv_cperr = (int)iface_.svr.tmSvrErrData.error_code();  //Node State Response 
       pm.fbs_msg.tmsrv_dataerr = (int)pm.svr_msg.error_code;
       pm.fbs_msg.tmscript_cperr = (int)iface_.sct.tmSctErrData.error_code();
@@ -291,33 +291,48 @@ void TmRosNode::publisher()
 void TmRosNode::svr_connect_recover()
 {
     TmSvrCommunication &svr = iface_.svr;	
-    int cnt = 0;
+    int timeInterval = 0;
+    int lastTimeInterval = 1000;
+    	    	
     if (pub_reconnect_timeval_ms_ <= 0) {
-            boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
     print_info("TM_ROS: (TM_SVR): reconnect in ");
 
-    while (ros::ok() && cnt < pub_reconnect_timeval_ms_) {
-            if (cnt % 500 == 0) {
-                ROS_DEBUG_STREAM(0.001 * (pub_reconnect_timeval_ms_ - cnt) << " sec...");
-            }
-            boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
-            ++cnt;
-    }
+    uint64_t startTimeMs = TmCommunication::get_current_time_in_ms();
+    while (ros::ok() && timeInterval < pub_reconnect_timeval_ms_) {
+        if ( lastTimeInterval/1000 != timeInterval/1000) {
+            ROS_DEBUG_STREAM("TM_SVR reconnect remain : " << (0.001 * (pub_reconnect_timeval_ms_ - timeInterval)) << " sec... ");
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        lastTimeInterval = timeInterval;
+        timeInterval = TmCommunication::get_current_time_in_ms() - startTimeMs;
+    }    
     if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
-            ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SVR): connect" << (int)pub_reconnect_timeout_ms_ << "ms)...");
-            svr.connect_socket(pub_reconnect_timeout_ms_);
+        ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SVR): connect" << (int)pub_reconnect_timeout_ms_ << "ms)...");
+        svr.connect_socket(pub_reconnect_timeout_ms_);
+    }
+}
+
+void TmRosNode::check_is_on_listen_node_from_script(std::string id, std::string script){
+    std::string idzero = "0";
+    std::string ok = "OK";
+    std::string errorString = "ERROR";
+    if(idzero.compare(id)==0 && errorString.compare(script)!=0 &&  ok.compare(script)!=0){
+        iface_.back_to_listen_node();
     }
 }
 
 void TmRosNode::sct_msg()
 {
-    SctMsg &sm = sm_;
+    SctAndStaMsg &sm = sm_;
     TmSctData &data = iface_.sct.sct_data;
 
     sm.sct_msg.id = data.script_id();
     sm.sct_msg.script = std::string{ data.script(), data.script_len() };
+
+    check_is_on_listen_node_from_script(sm.sct_msg.id, sm.sct_msg.script);
 
     if (data.sct_has_error()) {
         ROS_ERROR_STREAM("TM_ROS: (TM_SCT): MSG : (" << sm.sct_msg.id << "): " << sm.sct_msg.script);
@@ -333,7 +348,7 @@ void TmRosNode::sct_msg()
 
 void TmRosNode::sta_msg()
 {
-    SctMsg &sm = sm_;
+    SctAndStaMsg &sm = sm_;
     TmStaData &data = iface_.sct.sta_data;
     {
         boost::lock_guard<boost::mutex> lck(sta_mtx_);
@@ -353,6 +368,7 @@ bool TmRosNode::sct_func()
 {
     TmSctCommunication &sct = iface_.sct;
     int n;
+    firstCheckIsOnListenNodeCondVar.notify_one();
     
     auto rc = sct.recv_spin_once(1000, &n);
     if (rc == TmCommRC::ERR ||
@@ -399,9 +415,34 @@ bool TmRosNode::sct_func()
     return true;
 }
 
+void TmRosNode::check_is_on_listen_node(){
+    std::unique_lock<std::mutex> firstCheckIsOnListenNodeLock(firstCheckIsOnListenNodeMutex);
+    std::unique_lock<std::mutex> checkIsOnListenNodeLock(checkIsOnListenNodeMutex);
+    
+    firstCheckIsOnListenNodeCondVar.wait(firstCheckIsOnListenNodeLock);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    while (ros::ok()){
+        std::string reSubcmd;
+        std::string reSubdata;
+        ask_sta_struct("00","",1,reSubcmd,reSubdata);
+        bool isInListenNode = false;
+
+        std::istringstream(reSubdata) >> std::boolalpha >> isInListenNode;
+    
+        if(isInListenNode){
+            ROS_INFO_STREAM("On listen node !");
+            iface_.back_to_listen_node();
+        } else{
+            ROS_INFO_STREAM("Not on listen node !");
+        }
+        checkIsOnListenNodeCondVar.wait(checkIsOnListenNodeLock);
+    }
+}
+
 void TmRosNode::sct_responsor()
 {
-    SctMsg &sm = sm_;
+    SctAndStaMsg &sm = sm_;
     TmSctCommunication &sct = iface_.sct;
 
     boost::this_thread::sleep_for(boost::chrono::milliseconds(50));
@@ -417,13 +458,21 @@ void TmRosNode::sct_responsor()
         if (!sct.recv_init()) {
             ROS_INFO_STREAM("TM_ROS: (TM_SCT): is not connected");
         }
+        firstEnter = true;
         while (ros::ok() && sct.is_connected() && iface_.svr.is_connected()) {
+            if(firstEnter){
+                checkIsOnListenNodeCondVar.notify_one();
+                firstEnter = false;
+            }
             if (!sct_func()) break;
         }
         sct.close_socket();
         if (!ros::ok()) break;
         sct_connect_recover();
     }
+    checkIsOnListenNodeCondVar.notify_one();
+    firstCheckIsOnListenNodeCondVar.notify_one();
+    
     sct.close_socket();
     ROS_INFO_STREAM("TM_ROS: sct_response thread end");		
 }
@@ -431,18 +480,23 @@ void TmRosNode::sct_responsor()
 void TmRosNode::sct_connect_recover()
 {
     TmSctCommunication &sct = iface_.sct;
-    int cnt = 0;
+    int timeInterval = 0;
+    int lastTimeInterval=1000;
+            	
     if (sct_reconnect_timeval_ms_ <= 0) {
-            boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+    
     ROS_INFO_STREAM("TM_ROS: (TM_SCT) reconnect in ");
 
-    while (ros::ok() && cnt < sct_reconnect_timeval_ms_) {
-         if (cnt % 1000 == 0) {
-            ROS_DEBUG_STREAM(0.001 * (pub_reconnect_timeval_ms_ - cnt) << " sec...");
+    uint64_t startTimeMs = TmCommunication::get_current_time_in_ms();
+    while (ros::ok() && timeInterval < sct_reconnect_timeval_ms_) {
+        if ( lastTimeInterval/1000 != timeInterval/1000) {
+            ROS_DEBUG_STREAM("TM_SCT reconnect remain : " << (0.001 * (sct_reconnect_timeval_ms_ - timeInterval)) << " sec... ");
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
-        ++cnt;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        lastTimeInterval = timeInterval;
+        timeInterval = TmCommunication::get_current_time_in_ms() - startTimeMs;
     }
     if (ros::ok() && sct_reconnect_timeval_ms_ >= 0) {
         ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SCT) connect(" << (int)sct_reconnect_timeout_ms_ << "ms)...");

@@ -39,7 +39,10 @@ protected:
     std::condition_variable svr_cv_;
     std::condition_variable sct_cv_;
     TmDriver iface_;
-
+    std::mutex checkIsOnListenNodeMutex;
+    std::condition_variable checkIsOnListenNodeCondVar;
+    std::mutex firstCheckIsOnListenNodeMutex;
+    std::condition_variable firstCheckIsOnListenNodeCondVar;
     ros::NodeHandle nh_;
 
     ////////////////////////////////
@@ -80,7 +83,7 @@ protected:
         tm_msgs::SvrResponse svr_msg;
     } pm_;
 
-    struct SctMsg {
+    struct SctAndStaMsg {
         ros::Publisher sct_pub;
         ros::Publisher sta_pub;
 
@@ -109,6 +112,8 @@ protected:
     int sct_reconnect_timeout_ms_;
     int sct_reconnect_timeval_ms_;
     boost::thread sct_thread_;
+    boost::thread checkListenNodeThread;
+    bool firstEnter = true;
 
     ////////////////////////////////
     // Service for connection
@@ -177,10 +182,13 @@ private:
     bool rc_halt();//Stop rescue connection
 
     void sct_msg();
+    void check_is_on_listen_node_from_script(std::string id, std::string script);
     void sta_msg();
     bool sct_func();
+    void check_is_on_listen_node();
     void sct_responsor();
     void sct_connect_recover();
+    bool ask_sta_struct(std::string subcmd, std::string subdata, double waitTime,std::string &reSubcmd, std::string &reSubdata);
     ////////////////////////////////
     // Service
     ////////////////////////////////
