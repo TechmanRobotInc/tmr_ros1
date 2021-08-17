@@ -162,9 +162,9 @@ bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPos
     return rb;
 }
 
-bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &res)
+bool TmRosNode::ask_sta_struct(std::string subcmd, std::string subdata, double waitTime,std::string &reSubcmd, std::string &reSubdata)
 {
-    SctMsg &sm = sm_;
+    SctAndStaMsg &sm = sm_;
     TmStaData &data = iface_.sct.sta_data;
     bool rb = false;
 
@@ -172,22 +172,29 @@ bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &re
     sta_updated_ = false;
     sta_mtx_.unlock();
 
-    rb = (iface_.sct.send_sta_request(req.subcmd, req.subdata) == iface_.RC_OK);
+    rb = (iface_.sct.send_sta_request(subcmd, subdata) == iface_.RC_OK);
 
     {
         boost::unique_lock<boost::mutex> lck(sta_mtx_);
-        if (rb && req.wait_time > 0.0) {
+        if (rb && waitTime > 0.0) {
             if (!sta_updated_) {
-                sta_cond_.wait_for(lck, boost::chrono::duration<double>(req.wait_time));
+                sta_cond_.wait_for(lck, boost::chrono::duration<double>(waitTime));
             }
             if (!sta_updated_) {
                 rb = false;
             }
-            res.subcmd = sm.sta_msg.subcmd;
-            res.subdata = sm.sta_msg.subdata;
+            reSubcmd = sm.sta_msg.subcmd;
+            reSubdata = sm.sta_msg.subdata;
         }
         sta_updated_ = false;
     }
-    res.ok = rb;
+
     return rb;
 }
+
+bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &res)
+{
+    res.ok = ask_sta_struct(req.subcmd, req.subdata, req.wait_time, res.subcmd, res.subdata);
+    return res.ok;
+}
+

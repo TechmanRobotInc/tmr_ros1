@@ -13,8 +13,8 @@
 //
 
 TmSctCommunication::TmSctCommunication(const std::string &ip,
-	int recv_buf_len, std::condition_variable *cv)
-	: TmCommunication(ip.c_str(), 5890, recv_buf_len)
+	int recv_buf_len, bool &isOnListenNode, std::condition_variable *cv )
+	: TmCommunication(ip.c_str(), 5890,recv_buf_len) , isOnListenNode(isOnListenNode)
 {
 	ROS_INFO_STREAM("TM_SCT: TmSctCommunication");
 	if (cv) {
@@ -57,8 +57,16 @@ void TmSctCommunication::halt()
 	}
 }
 
+void TmSctCommunication::check_script_is_exit(std::string script){
+  std::string compareString = "ScriptExit()";
+  if(compareString.compare(script) == 0){
+    isOnListenNode  = false;
+  }
+}
+
 TmCommRC TmSctCommunication::send_script_str(const std::string &id, const std::string &script)
 {
+	check_script_is_exit(script);
 	std::string sct = script;
 	TmSctData cmd{ id, sct.data(), sct.size(), TmSctData::SrcType::Shallow };
 	TmPacket pack{ cmd };

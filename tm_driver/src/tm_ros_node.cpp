@@ -67,6 +67,7 @@ TmRosNode::TmRosNode(const std::string &host)
     sta_updated_ = false;
     sct_reconnect_timeout_ms_ = 1000;
     sct_reconnect_timeval_ms_ = 3000;
+    checkListenNodeThread = boost::thread(std::bind(&TmRosNode::check_is_on_listen_node, this));
     sct_thread_ = boost::thread(boost::bind(&TmRosNode::sct_responsor, this));
 
     ////////////////////////////////
