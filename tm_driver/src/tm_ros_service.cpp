@@ -17,7 +17,7 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
             rb = iface_.svr.start_tm_svr(t_o);
         }
         if (req.reconnect) {
-            if (svr_recovery_is_halt)
+            if (connect_recovery_is_halt)
             {
                 pub_reconnect_timeout_ms_ = 1000;
                 pub_reconnect_timeval_ms_ = 3000;
@@ -25,7 +25,7 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
                 notConnectTimeInS = 0;
                 diconnectTimes = 0;
                 maxNotConnectTimeInS = 0;
-                svr_recovery_is_halt = false;
+                connect_recovery_is_halt = false;
                 rb = iface_.svr.start_tm_svr(5000);
                 ROS_INFO_STREAM("TM_ROS: TM_SVR resume connection recovery");
             }
@@ -49,8 +49,19 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
             rb = iface_.sct.start_tm_sct(t_o);
         }
         if (req.reconnect) {
-            sct_reconnect_timeout_ms_ = t_o;
-            sct_reconnect_timeval_ms_ = t_v;
+            if (connect_recovery_is_halt)
+            {
+                sct_reconnect_timeout_ms_ = 1000;
+                sct_reconnect_timeval_ms_ = 3000;
+                connect_recovery_is_halt = false;
+                rb = iface_.sct.start_tm_sct(5000);
+                ROS_INFO_STREAM("TM_ROS: TM_SCT resume connection recovery");                					
+            }
+            else
+            {				
+                sct_reconnect_timeout_ms_ = t_o;
+                sct_reconnect_timeval_ms_ = t_v;
+            }			
             ROS_INFO_STREAM("TM_ROS: set TM_SCT reconnect timeout " << (int)t_o << "ms, timeval " << (int)t_v << "ms");
         }
         else {

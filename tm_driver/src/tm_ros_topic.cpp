@@ -186,7 +186,7 @@ bool TmRosNode::publish_func()
                     publish_svr();
                     break;
                 default:
-                    ROS_INFO_STREAM("TM_ROS: (TM_SVR): (" <<
+                    ROS_ERROR_STREAM("TM_ROS: (TM_SVR): (" <<
                         svr.data.transaction_id() << "): invalid mode (" << (int)(svr.data.mode()) << ")");
                     break;
                 }
@@ -203,7 +203,7 @@ bool TmRosNode::publish_func()
         publish_fbs(rc);
     }
     if(rc == TmCommRC::TIMEOUT){
-      ROS_INFO_STREAM_ONCE( "TM_ROS: (TM_SVR): lINK TIMEOUT");
+      ROS_INFO_STREAM_ONCE( "TM_ROS: (TM_SVR): LINK TIMEOUT");
       return false;
     }
     return true;
@@ -227,8 +227,7 @@ bool TmRosNode::rc_halt(){  //Stop rescue connection
         return false;
     }
     if((int)(notConnectTimeInS/60) >= maxTrialTimeInMinute){
-      print_info("TM_ROS: (TM_SVR): notConnectTimeInS = (%d) , maxTrialTimeInMinute = (%d)", 
-          (int)notConnectTimeInS, (int)maxTrialTimeInMinute);
+        ROS_DEBUG_STREAM("TM_ROS: (TM_SVR): notConnectTimeInS = " << (int)notConnectTimeInS << ", maxTrialTimeInMinute = " << (int)maxTrialTimeInMinute);
         return true;
     }
     return false;
@@ -254,23 +253,23 @@ void TmRosNode::publisher()
 
     while (ros::ok()) {
         //bool reconnect = false;
-        if (svr_recovery_is_halt) {
+        if (connect_recovery_is_halt) {
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
         }
         else   
         {	        	
             if (!svr.recv_init()) {
-                ROS_INFO_STREAM("TM_ROS: (TM_SVR): is not connected");
+                ROS_DEBUG_STREAM("TM_ROS: (TM_SVR): is not connected");
                 cq_manage();
                 publish_fbs(TmCommRC::TIMEOUT);
                 if(rc_halt()) {
-                    ROS_FATAL_STREAM("TM_ROS: (TM_SVR): Ethernet slave connection stopped");
+                    ROS_FATAL_STREAM("TM_ROS: (TM_SVR): Ethernet slave connection stopped!");
                     ROS_FATAL_STREAM("TM_ROS: (TM_SVR): LinkLost = " << (int)pm.fbs_msg.disconnection_times << ", MaxLostTime(s) = " << (int)pm.fbs_msg.max_not_connect_in_s);
-                    svr_recovery_is_halt = true;
+                    connect_recovery_is_halt = true;
                     svr.close_socket();
                 }
             }
-            if (!svr_recovery_is_halt) {
+            if (!connect_recovery_is_halt) {
                 while (ros::ok() && svr.is_connected()) {
                     if (!publish_func()){
                         cq_monitor();
@@ -298,7 +297,7 @@ void TmRosNode::svr_connect_recover()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    print_info("TM_ROS: (TM_SVR): reconnect in ");
+    ROS_INFO_STREAM("TM_ROS: (TM_SVR): Reconnecting...");
 
     uint64_t startTimeMs = TmCommunication::get_current_time_in_ms();
     while (ros::ok() && timeInterval < pub_reconnect_timeval_ms_) {
@@ -431,10 +430,10 @@ void TmRosNode::check_is_on_listen_node(){
         std::istringstream(reSubdata) >> std::boolalpha >> isInListenNode;
     
         if(isInListenNode){
-            ROS_INFO_STREAM("On listen node !");
+            ROS_INFO_STREAM("TM_ROS: On listen node.");
             iface_.back_to_listen_node();
         } else{
-            ROS_INFO_STREAM("Not on listen node !");
+            ROS_INFO_STREAM("TM_ROS: Not on listen node!");
         }
         checkIsOnListenNodeCondVar.wait(checkIsOnListenNodeLock);
     }
@@ -455,20 +454,26 @@ void TmRosNode::sct_responsor()
 
     while (ros::ok()) {
         //bool reconnect = false;
-        if (!sct.recv_init()) {
-            ROS_INFO_STREAM("TM_ROS: (TM_SCT): is not connected");
+        if (connect_recovery_is_halt) {
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
         }
-        firstEnter = true;
-        while (ros::ok() && sct.is_connected() && iface_.svr.is_connected()) {
-            if(firstEnter){
-                checkIsOnListenNodeCondVar.notify_one();
-                firstEnter = false;
+        else   
+        {
+            if (!sct.recv_init()) {
+                ROS_DEBUG_STREAM("TM_ROS: (TM_SCT): is not connected");
             }
-            if (!sct_func()) break;
+            firstEnter = true;
+            while (ros::ok() && sct.is_connected() && iface_.svr.is_connected()) {
+                if(firstEnter){
+                    checkIsOnListenNodeCondVar.notify_one();
+                    firstEnter = false;
+                }
+                if (!sct_func()) break;
+            }
+            sct.close_socket();
+            if (!ros::ok()) break;
+            sct_connect_recover();
         }
-        sct.close_socket();
-        if (!ros::ok()) break;
-        sct_connect_recover();
     }
     checkIsOnListenNodeCondVar.notify_one();
     firstCheckIsOnListenNodeCondVar.notify_one();
@@ -487,7 +492,7 @@ void TmRosNode::sct_connect_recover()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    ROS_INFO_STREAM("TM_ROS: (TM_SCT) reconnect in ");
+    ROS_INFO_STREAM("TM_ROS: (TM_SCT): Reconnecting...");
 
     uint64_t startTimeMs = TmCommunication::get_current_time_in_ms();
     while (ros::ok() && timeInterval < sct_reconnect_timeval_ms_) {
