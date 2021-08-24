@@ -35,7 +35,7 @@ TmDriver::TmDriver(const std::string &ip,
 bool TmDriver::start(int timeout_ms, bool stick_play)
 {
 	halt();
-	ROS_INFO_STREAM("TM_DRV: start");
+	ROS_DEBUG_STREAM("TM_DRV: start");
 	// connect to server
 	bool rb = svr.start_tm_svr(timeout_ms);
 	if (!rb) return rb;
@@ -52,7 +52,7 @@ bool TmDriver::start(int timeout_ms, bool stick_play)
 
 void TmDriver::halt()
 {
-	ROS_INFO_STREAM("TM_DRV: halt");
+	ROS_DEBUG_STREAM("TM_DRV: halt");
 	if (sct.is_connected()) {
 		// send command to stop project
 		sct.send_script_exit();

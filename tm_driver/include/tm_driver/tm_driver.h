@@ -57,7 +57,7 @@ public:
 	////////////////////////////////
 	// SCT Robot Function (set_XXX)
 	////////////////////////////////
-    bool is_on_listen_node();
+	bool is_on_listen_node();
 	bool script_exit(const std::string &id = "Exit");
 	bool set_tag(int tag, int wait = 0, const std::string &id = "Tag");
 	bool set_wait_tag(int tag, int timeout_ms = 0, const std::string &id = "WaitTag");

@@ -254,7 +254,7 @@ TmCommunication::TmCommunication(const char *ip, unsigned short port, int recv_b
 	, _recv_rc(TmCommRC::OK)
 	, _recv_ready(false)
 {
-	ROS_INFO_STREAM("TmCommunication::TmCommunication");
+	ROS_DEBUG_STREAM("TmCommunication::TmCommunication");
 
 	_recv = new TmCommRecv(recv_buf_len);
 

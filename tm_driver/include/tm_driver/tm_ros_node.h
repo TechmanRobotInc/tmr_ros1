@@ -96,7 +96,7 @@ protected:
     uint64_t notConnectTimeInS = 0;
     int maxTrialTimeInMinute = -1;
     uint64_t maxNotConnectTimeInS = 0;
-    bool svr_recovery_is_halt = false;
+    bool connect_recovery_is_halt = false;
     bool svr_updated_;
     boost::mutex svr_mtx_;
     boost::condition_variable svr_cond_;

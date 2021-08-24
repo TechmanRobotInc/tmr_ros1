@@ -137,7 +137,7 @@ void TmSvrCommunication::reconnect_function()
 	if (_reconnect_timeval_ms <= 0) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
-	ROS_INFO_STREAM("TM_SVR: reconnect in ");
+	ROS_INFO_STREAM("TM_SVR: Reconnecting.. ");
 	int cnt = 0;
 	while (_keep_thread_alive && cnt < _reconnect_timeval_ms) {
 		if (cnt % 500 == 0) {
