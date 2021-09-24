@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+  Techman robot gui bringup.
+  Start tm_gui and tm_driver node 
+  Usage:
+    tm_gui.launch robot_ip:=<value>
+  Example:
+    roslaunch ui_for_debug_and_demo tm_gui.launch robot_ip:=192.168.10.2
+-->
+<launch>
+
+  <node pkg="ui_for_debug_and_demo" name="tm_gui" type="robot_ui" output="screen"/>  
+  
+  <!-- tm driver -->
+  <node pkg="tm_driver" name="tm_driver" type="tm_driver" output="screen">
+    <param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
+  </node>
+
+</launch>
