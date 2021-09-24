@@ -168,26 +168,25 @@ void MainWindow::send_ui_feed_back_status(tm_msgs::FeedbackState msg){
         int_base_format_change(msg.error_code,ui->error_code_status_label,16);
         //set_text_null_reserve(false,ui->error_content_status_label);
     }
-    if(msg.cb_digital_output.size()>0){
+    if(msg.cb_digital_output.size() > 0){
       if(msg.cb_digital_output[0] == 0){
         set_text_high_low(false,ui->ctrl_do0_status_label,true);
       } else{
         set_text_high_low(true,ui->ctrl_do0_status_label,true);
       }
     }
-      
   }
   else
   {
     initial_status_ctrl_label();
-  }  
+  }
   if(msg.disconnection_times == 0){
     set_text_zero_false(msg.disconnection_times,ui->linklost_status_label);    
     set_text_zero_false(msg.max_not_connect_in_s,ui->maxlosttime_status_label);  
   } else{ 
     int_base_format_change(msg.disconnection_times,ui->linklost_status_label,10);
     int_base_format_change(msg.max_not_connect_in_s,ui->maxlosttime_status_label,10);
-  } 
+  }
 }
 void MainWindow::click_set_sct_re_connect_button(){
   ROS_DEBUG_STREAM("click [SctClient Re-Connect] button");  
@@ -238,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
   initial_ui_component();
   if (!ros::master::check())
   {
-    ROS_INFO_STREAM("No master started! roscore");
+    ROS_WARN_STREAM("No master started! roscore");
     this->close();
   } 
   rosPage = std::make_shared<RosPage>();
