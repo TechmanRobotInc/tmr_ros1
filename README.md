@@ -103,6 +103,8 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >
 >       ![2](figures/3.png)
 >
+>    Another way to set the __Ethernet Slave Data Table__ settings is to directly import the software package , see [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).
+>  
 > 4. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
 >
 >     Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
