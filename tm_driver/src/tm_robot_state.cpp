@@ -31,7 +31,7 @@ private:
 public:
 	TmDataTable(TmRobotState *rs)
 	{
-		ROS_DEBUG_STREAM("Create DataTable");
+		print_debug("Create DataTable");
 
 		_item_map.clear();
 		//_item_map[""] = { Item:, &rs- };
@@ -114,7 +114,7 @@ public:
 
 TmRobotState::TmRobotState()
 {
-	ROS_DEBUG_STREAM("TmRobotState::TmRobotState");
+	print_debug("TmRobotState::TmRobotState");
 
 	_data_table = new TmDataTable(this);
 
@@ -151,7 +151,7 @@ TmRobotState::TmRobotState()
 
 TmRobotState::~TmRobotState()
 {
-	ROS_DEBUG_STREAM("TmRobotState::~TmRobotState");
+	print_debug("TmRobotState::~TmRobotState");
 	delete _data_table;
 }
 
@@ -205,7 +205,7 @@ std::vector<unsigned char> TmRobotState::mtx_ctrller_DI()
 }
 std::vector<float> TmRobotState::mtx_ctrller_AO()
 {
-	std::vector<float_t> rv;
+	std::vector<float> rv;
 	mtx_lock();
 	rv = _ctrller_AO;
 	mtx_unlock();
@@ -280,19 +280,19 @@ size_t TmRobotState::_deserialize_skip(void *dst, const char *data, size_t offse
 size_t TmRobotState::_deserialize_copy_wo_check(void *dst, const char *data, size_t offset)
 {
 	size_t boffset = offset;
-	size_t bsize = 2;
+	//size_t bsize = 2;
 	unsigned short uslen; // 2 bytes
 
 	// skip item name
-	memcpy(&uslen, data + boffset, bsize);
-	boffset += bsize + uslen;
+	memcpy(&uslen, data + boffset, 2);
+	boffset += 2 + uslen;
 	// item data length
-	memcpy(&uslen, data + boffset, bsize);
-	boffset += bsize;
+	memcpy(&uslen, data + boffset, 2);
+	boffset += 2;
 	// item data
-	bsize = uslen;
-	memcpy(dst, data + boffset, bsize);
-	boffset += bsize;
+	//bsize = uslen;
+	memcpy(dst, data + boffset, uslen);
+	boffset += uslen;
 	return boffset;
 }
 
@@ -305,7 +305,7 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 	unsigned short uslen = 0; // 2 bytes
 	std::string item_name;
 
-	ROS_INFO_STREAM("TM Flow DataTable Checked Item: ");
+	print_info("TM Flow DataTable Checked Item: ");
 	_item_updates.clear();
 	//_f_deserialize_item.clear();
 
@@ -327,13 +327,15 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 			//func = std::bind(&RobotState::_deserialize_copy_wo_check, iter->second.dst,
 			//	std::placeholders::_2, std::placeholders::_3);
 			iter->second.checked = true;
-			ROS_DEBUG_STREAM("- " << item_name << " - checked");
+			std::string msg = "- " + item_name + " - checked";
+			print_debug(msg.c_str());
 			++check_count;
 		}
 		else {
 			//func = std::bind(&RobotState::_deserialize_skip, nullptr,
 			//	std::placeholders::_2, std::placeholders::_3);
-			ROS_DEBUG_STREAM("- " << item_name << " - skipped");
+			std::string msg = "- " + item_name + " - skipped";
+			print_debug(msg.c_str());
 			++skip_count;
 		}
 		_item_updates.push_back({ update.dst, update.func });
@@ -353,8 +355,10 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 		}
 		++count;
 	}
-	ROS_INFO_STREAM("Total " << _item_updates.size() << " item," <<
-		check_count << " checked, " << skip_count << " skipped");
+	
+	std::string msg = "Total " + std::to_string(_item_updates.size()) + " item," +
+	std::to_string(check_count) + " checked, " + std::to_string(skip_count) + " skipped";
+	print_info(msg.c_str());
 	isDataTableCorrect = true;
 
 	_deserialize_update(lock);
@@ -362,14 +366,15 @@ size_t TmRobotState::_deserialize_first_time(const char *data, size_t size, bool
 	for (auto iter : _data_table->get()) {
 		if (iter.second.required && !iter.second.checked) {
 			isDataTableCorrect = false;
-			ROS_ERROR_STREAM("Required item" << iter.first << " is NOT checked");
+			std::string msg = "Required item" + iter.first + " is NOT checked";
+			print_error(msg.c_str());
 		}
 	}
 
 	if(isDataTableCorrect){
-	  ROS_INFO_STREAM("data table is correct!");
+	  print_info("data table is correct!");
 	} else{
-	  ROS_ERROR_STREAM("data table is not correct!");
+	  print_error("data table is not correct!");
 	}
 
 	_f_deserialize = std::bind(&TmRobotState::_deserialize, this,

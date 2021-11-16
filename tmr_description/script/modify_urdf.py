@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from tmr_msgs.srv import *
+#from tmr_msgs.srv import *
 
 import os
 import shutil

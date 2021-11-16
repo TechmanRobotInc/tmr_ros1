@@ -310,7 +310,7 @@ void TmRosNode::svr_connect_recover()
     }    
     if (ros::ok() && pub_reconnect_timeval_ms_ >= 0) {
         ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SVR): connect" << (int)pub_reconnect_timeout_ms_ << "ms)...");
-        svr.connect_socket(pub_reconnect_timeout_ms_);
+        svr.connect_socket("ethernet slave",pub_reconnect_timeout_ms_);
     }
 }
 
@@ -505,6 +505,6 @@ void TmRosNode::sct_connect_recover()
     }
     if (ros::ok() && sct_reconnect_timeval_ms_ >= 0) {
         ROS_DEBUG_STREAM("0 sec\nTM_ROS: (TM_SCT) connect(" << (int)sct_reconnect_timeout_ms_ << "ms)...");
-        sct.connect_socket(sct_reconnect_timeout_ms_);
+        sct.connect_socket("listen node",sct_reconnect_timeout_ms_);
     }
 }
