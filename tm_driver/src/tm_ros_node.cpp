@@ -314,7 +314,38 @@ void TmRosNode::cancelCB(actionlib::ServerGoalHandle<control_msgs::FollowJointTr
 }
 
 
-////////////////////////////////
+void ros_debug_print(char* msg){
+  ROS_DEBUG("%s", msg);
+}
+void ros_info_print(char* msg){
+  ROS_INFO("%s", msg);
+}
+void ros_warn_function_print(char* msg){
+  ROS_WARN("%s", msg);
+}
+void ros_error_print(char* msg){
+  ROS_ERROR("%s", msg);
+}
+void ros_fatal_print(char* msg){
+  ROS_FATAL("%s", msg);
+}
+
+void set_up_print_fuction(){
+  set_up_print_debug_function(default_print_debug_function_print);
+  set_up_print_info_function(default_print_info_function_print);
+  set_up_print_warn_function(default_print_warn_function_print);
+  set_up_print_error_function(default_print_error_function_print);
+  set_up_print_fatal_function(default_print_fatal_function_print);
+  set_up_print_once_function(default_print_once_function_print);
+}
+void set_up_ros_print_fuction(){
+  set_up_print_debug_function(ros_debug_print);
+  set_up_print_info_function(ros_info_print);
+  set_up_print_warn_function(ros_warn_function_print);
+  set_up_print_error_function(ros_error_print);
+  set_up_print_fatal_function(ros_fatal_print);
+  set_up_print_once_function(default_print_once_function_print);
+}
 
 int main(int argc, char **argv)
 {

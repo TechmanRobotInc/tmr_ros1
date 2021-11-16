@@ -35,7 +35,7 @@ TmDriver::TmDriver(const std::string &ip,
 bool TmDriver::start(int timeout_ms, bool stick_play)
 {
 	halt();
-	ROS_DEBUG_STREAM("TM_DRV: start");
+	print_info("TM_DRV: start");
 	// connect to server
 	bool rb = svr.start_tm_svr(timeout_ms);
 	if (!rb) return rb;
@@ -52,7 +52,7 @@ bool TmDriver::start(int timeout_ms, bool stick_play)
 
 void TmDriver::halt()
 {
-	ROS_DEBUG_STREAM("TM_DRV: halt");
+	print_info("TM_DRV: halt");
 	if (sct.is_connected()) {
 		// send command to stop project
 		sct.send_script_exit();
@@ -62,6 +62,14 @@ void TmDriver::halt()
 		// send command to stop project
 	}
 	svr.halt();
+}
+
+bool TmDriver::get_connect_recovery_guide(){
+	return connect_recovery_is_halt;
+}
+
+void TmDriver::set_connect_recovery_guide(bool is_halt){
+	this->connect_recovery_is_halt = is_halt;
 }
 
 ////////////////////////////////
@@ -167,8 +175,8 @@ bool TmDriver::set_pvt_point(TmPvtMode mode, const TmPvtPoint &point, const std:
 bool TmDriver::set_pvt_traj(const TmPvtTraj &pvts, const std::string &id)
 {
 	std::string script = TmCommand::set_pvt_traj(pvts);
-	ROS_INFO_STREAM("TM_DRV: send script (pvt traj.):\n");
-	ROS_INFO_STREAM(script);
+	print_info("TM_DRV: send script (pvt traj.):\n");
+	print_info("%s\n", script.c_str());
 	return (sct.send_script_str(id, script) == RC_OK);
 }
 
@@ -196,7 +204,7 @@ bool TmDriver::run_pvt_traj(const TmPvtTraj &pvts)
 	else {
 		set_stop();
 	}
-	ROS_INFO_STREAM("TM_DRV: traj. exec. time:=" << time);
+	print_info("TM_DRV: traj. exec. time:= %.3f", time);
 	return true;
 }
 void TmDriver::stop_pvt_traj()

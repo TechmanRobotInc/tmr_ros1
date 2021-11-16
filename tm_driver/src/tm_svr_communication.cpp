@@ -16,7 +16,7 @@ TmSvrCommunication::TmSvrCommunication(const std::string &ip,
 	int recv_buf_len, std::condition_variable *cv)
 	: TmCommunication(ip.c_str(), 5891, recv_buf_len)
 {
-	ROS_INFO_STREAM("TM_SVR: TmSvrCommunication");
+	print_info("Ethernet slave communication: TmSvrCommunication");
 	if (cv) {
 		_cv = cv;
 		_has_thread = true;
@@ -32,7 +32,7 @@ bool TmSvrCommunication::start_tm_svr(int timeout_ms)
 {
 	if (socket_description() == 6188)
 	{
-	    ROS_INFO_STREAM("TM_SVR: start (fake)");
+	    print_info("Ethernet slave communication: start (fake)");
 		if (_has_thread) {
 			// start thread
 			_recv_thread = std::thread(std::bind(&TmSvrCommunication::tm_svr_thread_function, this));
@@ -41,9 +41,9 @@ bool TmSvrCommunication::start_tm_svr(int timeout_ms)
 	}
 
 	halt();
-	ROS_INFO_STREAM("TM_SVR: start");
+	print_info("Ethernet slave communication: start");
 
-	bool rb = connect_socket(timeout_ms);
+	bool rb = connect_socket("Ethernet slave communication",timeout_ms);
 	//if (!rb) return rb; // ? start thread anyway
 
 	if (_has_thread) {
@@ -57,7 +57,7 @@ void TmSvrCommunication::halt()
 {
 	if (socket_description() == 6188)
 	{
-		ROS_INFO_STREAM("TM_SVR: halt (fake)");
+		print_info("Ethernet slave communication: halt (fake)");
 		if (_has_thread) {
 			_keep_thread_alive = false;
 			if (_recv_thread.joinable()) {
@@ -73,7 +73,7 @@ void TmSvrCommunication::halt()
 		}
 	}
 	if (is_connected()) {
-		ROS_INFO_STREAM("TM_SVR: halt");
+		print_info("Ethernet slave communication: halt");
 		close_socket();
 	}
 }
@@ -101,12 +101,12 @@ TmCommRC TmSvrCommunication::send_stick_play()
 
 void TmSvrCommunication::tm_svr_thread_function()
 {
-	ROS_INFO_STREAM("TM_SVR: thread begin");
+	print_info("Ethernet slave communication: thread begin");
 	_keep_thread_alive = true;
 	while (_keep_thread_alive) {
 		bool reconnect = false;
 		if (!recv_init()) {
-			ROS_INFO_STREAM("TM_SVR: is not connected");
+			print_info("Ethernet slave communication: is not connected");
 		}
 		while (_keep_thread_alive && is_connected() && !reconnect) {
 			TmCommRC rc = tmsvr_function();
@@ -118,7 +118,7 @@ void TmSvrCommunication::tm_svr_thread_function()
 			case TmCommRC::NOTREADY:
 			case TmCommRC::NOTCONNECT:
 			case TmCommRC::TIMEOUT:
-				ROS_INFO_STREAM("TM_SVR: rc=" << int(rc));
+				print_info("Ethernet slave communication: rc=%d", int(rc));
 				reconnect = true;
 				break;
 			default: break;
@@ -128,7 +128,7 @@ void TmSvrCommunication::tm_svr_thread_function()
 		reconnect_function();
 	}
 	close_socket();
-	ROS_INFO_STREAM("TM_SVR: thread end");
+	print_info("Ethernet slave communication: thread end");
 }
 
 void TmSvrCommunication::reconnect_function()
@@ -137,18 +137,18 @@ void TmSvrCommunication::reconnect_function()
 	if (_reconnect_timeval_ms <= 0) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
-	ROS_INFO_STREAM("TM_SVR: Reconnecting.. ");
+	print_info("Ethernet slave communication: Reconnecting.. ");
 	int cnt = 0;
 	while (_keep_thread_alive && cnt < _reconnect_timeval_ms) {
 		if (cnt % 500 == 0) {
-			ROS_DEBUG_STREAM(0.001 * (_reconnect_timeval_ms - cnt) << " sec...");
+			print_debug("%.1f sec...", 0.001 * (_reconnect_timeval_ms - cnt));
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		++cnt;
 	}
 	if (_keep_thread_alive && _reconnect_timeval_ms >= 0) {
-		ROS_INFO_STREAM("0 sec\nTM_SVR: connect(" << (int)_reconnect_timeout_ms << "ms)...");
-		connect_socket(_reconnect_timeout_ms);
+		print_debug("0 sec\nEthernet slave communication: connect(%dms)...", (int)_reconnect_timeout_ms);
+		connect_socket("ethernet slave re-connection",_reconnect_timeout_ms);
 	}
 }
 
@@ -165,7 +165,7 @@ TmCommRC TmSvrCommunication::tmsvr_function()
 	for (auto &pack : pack_vec) {
 		if (pack.type == TmPacket::Header::CPERR) {
 			tmSvrErrData.set_CPError(pack.data.data(), pack.data.size());
-			ROS_ERROR("TM_SVR: CPERR %s",tmSvrErrData.error_code_str().c_str());
+            print_error("Ethernet slave communication: CPERR %s",tmSvrErrData.error_code_str().c_str());
 		}
 		else if (pack.type == TmPacket::Header::TMSVR) {
 			
@@ -176,27 +176,27 @@ TmCommRC TmSvrCommunication::tmsvr_function()
 			if (data.is_valid()) {
 				switch (data.mode()) {
 				case TmSvrData::Mode::RESPONSE:
-					ROS_INFO_STREAM("TM_SVR: RESPONSE (" << data.transaction_id() << "): [" <<
-					(int)(data.error_code()) << "]: " << std::string(data.content(), data.content_len()));
+					print_info("Ethernet slave communication: RESPONSE (%s): [%d]: %s", data.transaction_id().c_str(),
+						(int)(data.error_code()), std::string(data.content(), data.content_len()).c_str());
 					break;
 				case TmSvrData::Mode::BINARY:
 					state.mtx_deserialize(data.content(), data.content_len());
 					break;
 				case TmSvrData::Mode::READ_STRING:
-					ROS_INFO_STREAM("TM_SVR: READ_STRING (" << data.transaction_id() << "): " <<
-						std::string(data.content(), data.content_len()));
+					print_info("Ethernet slave communication: READ_STRING (%s): %s", data.transaction_id().c_str(),
+						std::string(data.content(), data.content_len()).c_str());
 					break;
 				default:
-					ROS_ERROR_STREAM("TM_SVR: (" << data.transaction_id() << "): invalid mode (" << (int)(data.mode()) << ")");
+					print_error("Ethernet slave communication: (%s): invalid mode (%d)", data.transaction_id().c_str(), (int)(data.mode()));
 					break;
 				}
 			}
 			else {
-				ROS_ERROR_STREAM("TM_SVR: invalid data");
+				print_error("Ethernet slave communication: invalid data");
 			}
 		}
 		else {
-			ROS_ERROR_STREAM("TM_SVR: invalid header");
+			print_error("Ethernet slave communication: invalid header");
 		}
 	}
 	return rc;
