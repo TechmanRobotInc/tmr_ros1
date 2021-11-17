@@ -29,7 +29,7 @@
   <!--   - this typically includes: robot_state, motion_interface, and joint_trajectory_action nodes -->
   <!--   - replace these calls with appropriate robot-specific calls or launch files -->
   <group unless="$(arg sim)">
-    <include file="$(find tm_driver)/launch/tm12_bringup.launch" >
+    <include file="$(find tm_driver)/launch/tm12_moveit_bringup.launch" >
       <arg name="robot_ip" value="$(arg robot_ip)"/>
     </include>
   </group>
