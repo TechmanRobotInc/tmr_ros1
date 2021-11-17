@@ -143,14 +143,6 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >```
 > Example :``rosrun tm_driver tm_driver 192.168.10.2``, if the <robot_ip_address> is 192.168.10.2
 >
->
-> Another way, the user can execute the specific existing launch file (example: __tm5_900_bringup.launch__) to enable the driver to connect to __tm5-900__ robot  
->
-> ```bash
-> roslaunch tm_driver tm5_900_bringup.launch robot_ip:=<robot_ip_address>
-> ```
-> Example :``roslaunch tm_driver tm5_900_bringup.launch robot_ip:=192.168.10.2``, if the <robot_ip_address> is 192.168.10.2
->
 > Now, the user can use a new terminal to run each ROS node or command, but don't forget to source the correct setup shell files as starting a new terminal.
 
 > __Usage with MoveIt__ 

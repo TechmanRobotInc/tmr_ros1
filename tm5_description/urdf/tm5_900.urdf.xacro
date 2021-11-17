@@ -103,7 +103,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_base_c.STL" />
+          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_base_c.stl" />
         </geometry>
       </collision>
       <xacro:cylinder_inertial_y radius="0.06" length="0.05" mass="${base_mass}">
@@ -139,7 +139,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_400w_01_c.STL" />
+          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_400w_01_c.stl" />
         </geometry>
       </collision>
       <xacro:cylinder_inertial_y radius="0.06" length="0.15" mass="${shoulder_mass}">
@@ -175,7 +175,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm1_c.STL" />
+          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm1_c.stl" />
         </geometry>
       </collision>
       <xacro:cylinder_inertial_y radius="0.06" length="${arm_1_length}" mass="${arm_1_mass}">
@@ -211,7 +211,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm2_c.STL" />
+          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm5_900_arm2_c.stl" />
         </geometry>
       </collision>
       <xacro:cylinder_inertial_y radius="0.045" length="${arm_2_length}" mass="${arm_2_mass}">
@@ -247,7 +247,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_01_c.STL" />
+          <mesh filename="package://tm5_description/meshes/tm5_900/collision/tm_100w_01_c.stl" />
         </geometry>
       </collision>
       <xacro:cylinder_inertial_y radius="0.045" length="0.12" mass="${wrist_1_mass}">
