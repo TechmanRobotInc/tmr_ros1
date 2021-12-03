@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-#from tmr_msgs.srv import *
+#from tm_msgs.srv import *
 
 import os
 import shutil
@@ -25,8 +25,8 @@ def _gen_urdf():
             rospy.logwarn('origin urdf file will be replaced')
 
 
-    rospy.wait_for_service('tmr/ask_item')
-    ask_item = rospy.ServiceProxy('tmr/ask_item', AskItem)
+    rospy.wait_for_service('tm_driver/ask_item')
+    ask_item = rospy.ServiceProxy('tm_driver/ask_item', AskItem)
     res_dh = ask_item('dh', 'DHTable', 1.0)
     res_dd = ask_item('dd', 'DeltaDH', 1.0)
 

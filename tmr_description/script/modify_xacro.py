@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from tmr_msgs.srv import *
+from tm_msgs.srv import *
 
 import os
 import shutil
@@ -25,8 +25,8 @@ def _gen_xarco():
             rospy.logwarn('origin xacro file will be replaced')
 
 
-    rospy.wait_for_service('tmr/ask_item')
-    ask_item = rospy.ServiceProxy('tmr/ask_item', AskItem)
+    rospy.wait_for_service('tm/ask_item')
+    ask_item = rospy.ServiceProxy('tm/ask_item', AskItem)
     res_dh = ask_item('dh', 'DHTable', 1.0)
     res_dd = ask_item('dd', 'DeltaDH', 1.0)
 
@@ -101,7 +101,7 @@ def _gen_xarco():
     datas = data_in.split(link_tag)
 
     if len(datas) < 3:
-        rospy.logerr('invalid tmr...xacro')
+        rospy.logerr('invalid tm...xacro')
         return
 
     link_data = link_start + datas[1] + link_end

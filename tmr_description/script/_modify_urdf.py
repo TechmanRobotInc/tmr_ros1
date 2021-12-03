@@ -1,6 +1,6 @@
 
 #import rospy
-#from tmr_msgs.srv import *
+from tm_msgs.srv import *
 
 #import os
 #import shutil
