@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="tm5_900" >
+
+  <!-- xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface" /-->
+  <xacro:arg name="stl_mesh" default="false" />
+
+  <!-- common stuff -->
+  <xacro:include filename="$(find tm5_description)/urdf/common.gazebo.xacro" />
+
+  <!-- tm5_900 -->
+  <xacro:include filename="$(find tm5_description)/urdf/tm5_900_iox.urdf.xacro" />
+
+  <!-- arm -->
+  <!--xacro:tm5_900_robot prefix="" joint_limited="false" transmission_hw_interface="$(arg transmission_hw_interface)" /-->
+  <xacro:tm5_900_robot prefix="" joint_limited="false" stl_mesh="$(arg stl_mesh)" />
+
+  <link name="world" />
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link="base" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+</robot>

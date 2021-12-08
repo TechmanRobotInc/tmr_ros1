@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find tm5_description)/launch/tm5_900_iox_upload.launch"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+    <param name="use_gui" value="true"/>
+  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tm5_description)/launch/view_robot.rviz" required="true" />
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true" /> -->
+</launch>

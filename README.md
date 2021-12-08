@@ -149,18 +149,31 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >
 > See [Moveit tutorial](https://ros-planning.github.io/moveit_tutorials/).<br/>
 >
-> To bring up MoveIt environment in simulation mode with virtual TM Robot, by typing
+> To bring up MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing
 >
 >
 > ```bash
 > roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=True
 > ```
 >
-> The user can also manipulate TM Robot in the real world, by typing<br/>
+> Or with virtual TM Robot (Example: TM5-900 nonvision series), by typing
+>
+>
+> ```bash
+> roslaunch tm5_900_nonvision_moveit_config tm5_900_moveit_planning_execution.launch sim:=True
+> ```
+>
+> The user can also manipulate TM Robot (Example: TM5-900) in the real world, by typing<br/>
 > :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.  
 >
 > ```bash
 > roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
+> ```
+>
+> Or TM Robot (Example: TM5-900 nonvision series), by typing
+>
+> ```bash
+> roslaunch tm5_900_nonvision_moveit_config tm5_900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
 > ```
 >
 > The parameter `<robot_ip_address>` means the IP address of the TM Robot.<br/>
