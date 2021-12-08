@@ -100,6 +100,7 @@ set(${PROJECT_NAME}_SOURCES
   src/tm_robot_state.cpp
   src/tm_packet.cpp
   src/tm_print.cpp
+  src/tm_driver_utilities.cpp
 )
 add_executable(tm_driver ${${PROJECT_NAME}_SOURCES})
 

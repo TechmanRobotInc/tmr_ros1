@@ -4,14 +4,14 @@
 // Topic
 ////////////////////////////////
 
-void TmRosNode::publish_fbs(TmCommRC rc)
+void TmRosNode::publish_fbs()
 {
     PubMsg &pm = pm_;
     TmRobotState &state = iface_.state;
 
     // Publish feedback state
     pm.fbs_msg.header.stamp = ros::Time::now();
-    if(rc != TmCommRC::TIMEOUT){
+    if(state.get_receive_state() != TmCommRC::TIMEOUT){
       pm.fbs_msg.is_svr_connected = iface_.svr.is_connected();
       pm.fbs_msg.is_sct_connected = iface_.sct.is_connected() & iface_.is_on_listen_node();
       pm.fbs_msg.tmsrv_cperr = (int)iface_.svr.tmSvrErrData.error_code();  //Node State Response 
@@ -100,7 +100,16 @@ void TmRosNode::publish_fbs(TmCommRC rc)
     pm.tfbc.sendTransform(tf::StampedTransform(
         Tbt, pm.joint_msg.header.stamp, base_frame_name_, tool_frame_name_));
 }
+void TmRosNode::pub_data(){
+  while(isRun){
+    
+    iface_.state.update_tm_robot_publish_state();
 
+    publish_fbs();
+
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(15));
+  }
+}
 void TmRosNode::publish_svr()
 {
     PubMsg &pm = pm_;
@@ -127,7 +136,7 @@ void TmRosNode::publish_svr()
     pm.svr_pub.publish(pm.svr_msg);
 }
 
-bool TmRosNode::publish_func()
+bool TmRosNode::get_data_function()
 {
     TmSvrCommunication &svr = iface_.svr;
     int n;
@@ -200,7 +209,7 @@ bool TmRosNode::publish_func()
         }
     }
     if (fbs) {
-        publish_fbs(rc);
+        iface_.state.set_receive_state(rc);
     }
     if(rc == TmCommRC::TIMEOUT){
       ROS_INFO_STREAM_ONCE( "TM_ROS: (TM_SVR): LINK TIMEOUT");
@@ -232,12 +241,12 @@ bool TmRosNode::rc_halt(){  //Stop rescue connection
     }
     return false;
 }
-void TmRosNode::publisher()
+void TmRosNode::get_data_thread()
 {
     PubMsg &pm = pm_;
     TmSvrCommunication &svr = iface_.svr;
 
-    ROS_INFO_STREAM("TM_ROS: publisher thread begin");
+    ROS_INFO_STREAM("TM_ROS: get data thread begin");
     initialNotConnectTime =  TmCommunication::get_current_time_in_ms();
     //PubMsg pm;
     //pm.fbs_pub = nh_.advertise<tm_msgs::FeedbackState>("feedback_states", 1);
@@ -261,7 +270,6 @@ void TmRosNode::publisher()
             if (!svr.recv_init()) {
                 ROS_DEBUG_STREAM("TM_ROS: (TM_SVR): is not connected");
                 cq_manage();
-                publish_fbs(TmCommRC::TIMEOUT);
                 if(rc_halt()) {
                     ROS_FATAL_STREAM("TM_ROS: (TM_SVR): Ethernet slave connection stopped!");
                     ROS_FATAL_STREAM("TM_ROS: (TM_SVR): LinkLost = " << (int)pm.fbs_msg.disconnection_times << ", MaxLostTime(s) = " << (int)pm.fbs_msg.max_not_connect_in_s);
@@ -271,7 +279,7 @@ void TmRosNode::publisher()
             }
             if (!connect_recovery_is_halt) {
                 while (ros::ok() && svr.is_connected()) {
-                    if (!publish_func()){
+                    if (!get_data_function()){
                         cq_monitor();
                         break;
                     }

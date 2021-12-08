@@ -33,7 +33,6 @@
 #include "tm_msgs/SetPositions.h"
 #include "tm_msgs/AskSta.h"
 
-
 class TmRosNode {
 protected:
     std::condition_variable svr_cv_;
@@ -96,6 +95,7 @@ protected:
     uint64_t notConnectTimeInS = 0;
     int maxTrialTimeInMinute = -1;
     uint64_t maxNotConnectTimeInS = 0;
+    int publishTimeMs = 15;
     bool connect_recovery_is_halt = false;
     bool svr_updated_;
     boost::mutex svr_mtx_;
@@ -104,6 +104,8 @@ protected:
     int pub_reconnect_timeout_ms_;
     int pub_reconnect_timeval_ms_;
     boost::thread pub_thread_;
+    std::thread getDataThread;
+    std::thread pubDataThread;
 
     bool sta_updated_;
     boost::mutex sta_mtx_;
@@ -136,6 +138,7 @@ protected:
     ros::ServiceServer set_positions_srv_;
 
     ros::ServiceServer ask_sta_srv_;
+    bool isRun = true;
 
     ////////////////////////////////
     // Init.
@@ -172,10 +175,12 @@ private:
     // Topic
     ////////////////////////////////
 
-    void publish_fbs(TmCommRC rc);
+    void publish_fbs();
     void publish_svr();
-    bool publish_func();
+    bool get_data_function();
+    void get_data_thread();
     void publisher();
+    void pub_data();
     void svr_connect_recover();
     void cq_monitor();//Connection quality
     void cq_manage();
