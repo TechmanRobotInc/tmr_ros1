@@ -3,7 +3,6 @@ project(tm_driver)
 
 add_definitions(-DROS_BUILD)
 add_definitions(-DUSE_BOOST)
-
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   control_msgs
@@ -100,6 +99,7 @@ set(${PROJECT_NAME}_SOURCES
   src/tm_robot_state.cpp
   src/tm_packet.cpp
   src/tm_print.cpp
+  src/tm_driver_utilities.cpp
 )
 add_executable(tm_driver ${${PROJECT_NAME}_SOURCES})
 

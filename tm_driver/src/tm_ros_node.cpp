@@ -62,7 +62,8 @@ TmRosNode::TmRosNode(const std::string &host)
     svr_updated_ = false;
     pub_reconnect_timeout_ms_ = 1000;
     pub_reconnect_timeval_ms_ = 3000;
-    pub_thread_ = boost::thread(boost::bind(&TmRosNode::publisher, this));
+    getDataThread = std::thread(std::bind(&TmRosNode::get_data_thread, this));
+    pubDataThread = std::thread(std::bind(&TmRosNode::pub_data, this));
 
     sta_updated_ = false;
     sct_reconnect_timeout_ms_ = 1000;
@@ -103,7 +104,10 @@ void TmRosNode::halt()
     sta_updated_ = true;
     sta_cond_.notify_all();
     svr_updated_ = true;
+    isRun = false;
     svr_cond_.notify_all();
+    checkIsOnListenNodeCondVar.notify_all();;
+    firstCheckIsOnListenNodeCondVar.notify_all();;
     if (sct_thread_.joinable()) { sct_thread_.join(); }
     if (pub_thread_.joinable()) { pub_thread_.join(); }
     // Driver
@@ -168,7 +172,7 @@ void TmRosNode::reorder_traj_joints(trajectory_msgs::JointTrajectory& traj) {
 }
 bool TmRosNode::is_start_positions_match(const trajectory_msgs::JointTrajectory &traj, double eps)
 {
-    auto q_act = iface_.state.mtx_joint_angle();
+    auto q_act = iface_.state.joint_angle();
 
     for (size_t i = 0; i < traj.points[0].positions.size(); ++i) {
         if (fabs(traj.points[0].positions[i] - q_act[i]) > eps)
