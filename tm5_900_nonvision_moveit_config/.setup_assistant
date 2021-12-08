@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: tm5_description
+    relative_path: urdf/tm5_900_iox_robot.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/tm5_900.srdf
+  CONFIG:
+    author_name: YH Wang
+    author_email: yh.wang@tm-robot.com
+    generated_timestamp: 1638929377
