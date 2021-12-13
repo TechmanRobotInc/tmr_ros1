@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="stl_mesh" default="false" />
+
+  <arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface" />
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find tm5_description)/urdf/tm5_700_iox_robot.urdf.xacro'
+    stl_mesh:=$(arg stl_mesh) transmission_hw_interface:=$(arg transmission_hw_interface)" />
+</launch>
