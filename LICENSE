@@ -29,7 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************
 ROS Melodic Morenia is licensed under the BSD 3-Clause "New" or "Revised" License
 
-Various portions of the code are taken from the ROS Melodic Morenia (https://github.com/ros/ros/blob/noetic-devel/LICENSE),
+Various portions of the code are taken from the ROS Melodic Morenia 
+(https://github.com/ros/ros/blob/noetic-devel/LICENSE),
 and are used in accordance with the following license:
 ******************************************************************************
 Redistribution and use in source and binary forms, with or without modification,
@@ -60,7 +61,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************
 ros-planning/moveit is licensed under the BSD 3-Clause "New" or "Revised" License
 
-Various portions of the code are taken from ros-planning/moveit (https://github.com/ros-planning/moveit/blob/master/LICENSE.txt),
+Various portions of the code are taken from ros-planning/moveit 
+(https://github.com/ros-planning/moveit/blob/master/LICENSE.txt),
 and are used in accordance with the following license:
 ******************************************************************************
 BSD 3-Clause License
@@ -96,13 +98,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************
 QT 5.12 is licensed under the LGPL v3 License
 
-The following free software components of ¡§ QT ¡¨are used and distributed pursuant to the LGPL v3 License, and are subject to the terms and conditions of said License
+The following free software components of "QT"are used and distributed pursuant 
+to the LGPL v3 License, and are subject to the terms and conditions of said License
 Qt Core 5.12, Distributed under the LGPL v3 License: 
       (https://doc.qt.io/qt-5.12/qtcore-index.html)
 Qt Quick 5.12, Distributed under the LGPL v3 License:
-¡@¡@¡@(https://doc-snapshots.qt.io/qt5-5.12/qtquick-index.html)
+      (https://doc-snapshots.qt.io/qt5-5.12/qtquick-index.html)
 Qt Widgets 5.12, Distributed under the LGPL v3 License:
-¡@¡@¡@(https://doc.qt.io/qt-5/qtwidgets-index.html#licenses)
+      (https://doc.qt.io/qt-5/qtwidgets-index.html#licenses)
 ******************************************************************************
 Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
