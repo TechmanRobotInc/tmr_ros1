@@ -3,6 +3,7 @@ project(tm_driver)
 
 add_definitions(-DROS_BUILD)
 add_definitions(-DUSE_BOOST)
+
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   control_msgs
