@@ -1,6 +1,9 @@
 
 #include "tm_driver/tm_print.h"
 #include "tm_driver/tm_driver.h"
+#include "tm_ethernet_slave_connect.h"
+#include "tm_listen_node_connect.h"
+#include <memory>
 
 #include <ros/ros.h>
 
@@ -33,15 +36,14 @@
 #include "tm_msgs/SetPositions.h"
 #include "tm_msgs/AskSta.h"
 
+
+
 class TmRosNode {
 protected:
     std::condition_variable svr_cv_;
     std::condition_variable sct_cv_;
     TmDriver iface_;
-    std::mutex checkIsOnListenNodeMutex;
-    std::condition_variable checkIsOnListenNodeCondVar;
-    std::mutex firstCheckIsOnListenNodeMutex;
-    std::condition_variable firstCheckIsOnListenNodeCondVar;
+
     ros::NodeHandle nh_;
 
     ////////////////////////////////
@@ -107,15 +109,9 @@ protected:
     std::thread getDataThread;
     std::thread pubDataThread;
 
-    bool sta_updated_;
-    boost::mutex sta_mtx_;
     boost::condition_variable sta_cond_;
 
-    int sct_reconnect_timeout_ms_;
-    int sct_reconnect_timeval_ms_;
     boost::thread sct_thread_;
-    boost::thread checkListenNodeThread;
-    bool firstEnter = true;
 
     ////////////////////////////////
     // Service for connection
@@ -139,6 +135,9 @@ protected:
 
     ros::ServiceServer ask_sta_srv_;
     bool isRun = true;
+
+    std::shared_ptr<ListenNodeConnection> listenNodeConnection;
+    std::shared_ptr<EthernetSlaveConnection> ethernetSlaveConnection;
 
     ////////////////////////////////
     // Init.
@@ -177,23 +176,14 @@ private:
 
     void publish_fbs();
     void publish_svr();
-    bool get_data_function();
-    void get_data_thread();
+
     void publisher();
     void pub_data();
     void svr_connect_recover();
-    void cq_monitor();//Connection quality
-    void cq_manage();
-    bool rc_halt();//Stop rescue connection
 
-    void sct_msg();
-    void check_is_on_listen_node_from_script(std::string id, std::string script);
-    void sta_msg();
-    bool sct_func();
-    void check_is_on_listen_node();
-    void sct_responsor();
-    void sct_connect_recover();
-    bool ask_sta_struct(std::string subcmd, std::string subdata, double waitTime,std::string &reSubcmd, std::string &reSubdata);
+    void sct_msg(TmSctData data);
+    void sta_msg(std::string subcmd, std::string subdata);
+
     ////////////////////////////////
     // Service
     ////////////////////////////////
