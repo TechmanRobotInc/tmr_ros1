@@ -44,7 +44,7 @@ void setup_print_debug(bool isPrintDebug){
   isPrintDebugOnTerminal = isPrintDebug;
 }
 
-void default_print_debug_function_print(char* msg){
+void default_debug_function_print(char* msg){
   std::cout<<PRINT_CYAN<<"[DEBUG] "<<msg<<std::endl<<PRINT_RESET;
 }
 void default_print_info_function_print(char* msg){
@@ -79,7 +79,7 @@ int print_debug(const char* fmt, ...) {
   } else if(isSetPrintDebugFunction){
     print_debug_function(msg);
   } else{
-    default_print_debug_function_print(msg);
+    default_debug_function_print(msg);
   }
   return n;
 }

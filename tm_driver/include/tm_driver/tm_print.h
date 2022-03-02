@@ -14,7 +14,7 @@ void set_up_print_fatal_function(void (*function_print)(char* fmt));
 void set_up_print_once_function(void (*function_print)(char* fmt));
 
 void default_print_once_function_print(char* msg);
-void default_print_debug_function_print(char* msg);
+void default_debug_function_print(char* msg);
 void default_print_info_function_print(char* msg);
 void default_print_warn_function_print(char* msg);
 void default_print_error_function_print(char* msg);

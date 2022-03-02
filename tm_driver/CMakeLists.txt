@@ -101,6 +101,8 @@ set(${PROJECT_NAME}_SOURCES
   src/tm_packet.cpp
   src/tm_print.cpp
   src/tm_driver_utilities.cpp
+  src/tm_ethernet_slave_connect.cpp
+  src/tm_listen_node_connect.cpp
 )
 add_executable(tm_driver ${${PROJECT_NAME}_SOURCES})
 

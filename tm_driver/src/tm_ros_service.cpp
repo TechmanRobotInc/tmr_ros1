@@ -12,64 +12,17 @@ bool TmRosNode::connect_tm(tm_msgs::ConnectTMRequest &req, tm_msgs::ConnectTMRes
     switch (req.server) {
     case tm_msgs::ConnectTMRequest::TMSVR:
         if (req.connect) {
-            print_info("TM_ROS: (re)connect(%d) TM_SVR", t_o);
-            iface_.svr.halt();
-            rb = iface_.svr.start_tm_svr(t_o);
+            rb = ethernetSlaveConnection->connect(t_o);
         }
         if (req.reconnect) {
-            if (connect_recovery_is_halt)
-            {
-                pub_reconnect_timeout_ms_ = 1000;
-                pub_reconnect_timeval_ms_ = 3000;
-                initialNotConnectTime =  TmCommunication::get_current_time_in_ms();
-                notConnectTimeInS = 0;
-                diconnectTimes = 0;
-                maxNotConnectTimeInS = 0;
-                connect_recovery_is_halt = false;
-                rb = iface_.svr.start_tm_svr(5000);
-                ROS_INFO_STREAM("TM_ROS: TM_SVR resume connection recovery");
-            }
-            else
-            {
-                pub_reconnect_timeout_ms_ = t_o;
-                pub_reconnect_timeval_ms_ = t_v;
-            }	
-            ROS_INFO_STREAM("TM_ROS: set TM_SVR reconnect timeout " << (int)pub_reconnect_timeout_ms_ << "ms, timeval " << (int)pub_reconnect_timeval_ms_ << "ms");
+            rb = ethernetSlaveConnection->re_connect(t_o,t_v);
         }
         else {
-            // no reconnect
-            pub_reconnect_timeval_ms_ = -1;
-            ROS_INFO_STREAM("TM_ROS: set TM_SVR NOT reconnect");
+            ethernetSlaveConnection->no_connect();
         }
         break;
     case tm_msgs::ConnectTMRequest::TMSCT:
-        if (req.connect) {
-            ROS_INFO_STREAM("TM_ROS: (re)connect(" << (int)t_o << ") TM_SCT");
-            iface_.sct.halt();
-            rb = iface_.sct.start_tm_sct(t_o);
-        }
-        if (req.reconnect) {
-            if (connect_recovery_is_halt)
-            {
-                sct_reconnect_timeout_ms_ = 1000;
-                sct_reconnect_timeval_ms_ = 3000;
-                connect_recovery_is_halt = false;
-                rb = iface_.sct.start_tm_sct(5000);
-                ROS_INFO_STREAM("TM_ROS: TM_SCT resume connection recovery");                					
-            }
-            else
-            {				
-                sct_reconnect_timeout_ms_ = t_o;
-                sct_reconnect_timeval_ms_ = t_v;
-            }			
-            ROS_INFO_STREAM("TM_ROS: set TM_SCT reconnect timeout " << (int)t_o << "ms, timeval " << (int)t_v << "ms");
-        }
-        else {
-            // no reconnect
-            sct_reconnect_timeval_ms_ = -1;
-            ROS_INFO_STREAM("TM_ROS: set TM_SCT NOT reconnect");
-        }
-        break;
+        rb = listenNodeConnection->connect_tmsct(req.timeout, req.timeval, req.connect, req.reconnect);
     }
     res.ok = rb;
     return rb;
@@ -113,10 +66,9 @@ bool TmRosNode::ask_item(tm_msgs::AskItemRequest &req, tm_msgs::AskItemResponse 
     res.ok = rb;
     return rb;
 }
-
 bool TmRosNode::send_script(tm_msgs::SendScriptRequest &req, tm_msgs::SendScriptResponse &res)
-{
-    bool rb = (iface_.sct.send_script_str(req.id, req.script) == iface_.RC_OK);
+{   
+    bool rb = listenNodeConnection->send_listen_node_script(req.id, req.script);
     res.ok = rb;
     return rb;
 }
@@ -172,40 +124,9 @@ bool TmRosNode::set_positions(tm_msgs::SetPositionsRequest &req, tm_msgs::SetPos
     res.ok = rb;
     return rb;
 }
-
-bool TmRosNode::ask_sta_struct(std::string subcmd, std::string subdata, double waitTime,std::string &reSubcmd, std::string &reSubdata)
-{
-    SctAndStaMsg &sm = sm_;
-    TmStaData &data = iface_.sct.sta_data;
-    bool rb = false;
-
-    sta_mtx_.lock();
-    sta_updated_ = false;
-    sta_mtx_.unlock();
-
-    rb = (iface_.sct.send_sta_request(subcmd, subdata) == iface_.RC_OK);
-
-    {
-        boost::unique_lock<boost::mutex> lck(sta_mtx_);
-        if (rb && waitTime > 0.0) {
-            if (!sta_updated_) {
-                sta_cond_.wait_for(lck, boost::chrono::duration<double>(waitTime));
-            }
-            if (!sta_updated_) {
-                rb = false;
-            }
-            reSubcmd = sm.sta_msg.subcmd;
-            reSubdata = sm.sta_msg.subdata;
-        }
-        sta_updated_ = false;
-    }
-
-    return rb;
-}
-
 bool TmRosNode::ask_sta(tm_msgs::AskStaRequest &req, tm_msgs::AskStaResponse &res)
 {
-    res.ok = ask_sta_struct(req.subcmd, req.subdata, req.wait_time, res.subcmd, res.subdata);
+    res.ok = listenNodeConnection->ask_sta_struct(req.subcmd, req.subdata, req.wait_time, res.subcmd, res.subdata);
     return res.ok;
 }
 

@@ -44,7 +44,7 @@ TmRosNode::TmRosNode(const std::string &host)
     ////////////////////////////////
     // TmDriver
     ////////////////////////////////
-    iface_.start(5000);
+    //iface_.start(5000); //
 
     ////////////////////////////////
     // Topic
@@ -59,17 +59,24 @@ TmRosNode::TmRosNode(const std::string &host)
     sm_.sct_pub = nh_.advertise<tm_msgs::SctResponse>("tm_driver/sct_response", 1);
     sm_.sta_pub = nh_.advertise<tm_msgs::StaResponse>("tm_driver/sta_response", 1);
 
+    listenNodeConnection = std::make_shared<ListenNodeConnection>(iface_,
+      std::bind(&TmRosNode::sct_msg,this,std::placeholders::_1),
+      std::bind(&TmRosNode::sta_msg,this,std::placeholders::_1,std::placeholders::_2), false);
+
+    ethernetSlaveConnection = std::make_shared<EthernetSlaveConnection>(iface_,
+      std::bind(&TmRosNode::publish_svr,this),
+      false);
+
     svr_updated_ = false;
     pub_reconnect_timeout_ms_ = 1000;
     pub_reconnect_timeval_ms_ = 3000;
-    getDataThread = std::thread(std::bind(&TmRosNode::get_data_thread, this));
+    //??
+    pm_.joint_msg.name = joint_names_;
+    pm_.joint_msg.position.assign(joint_names_.size(), 0.0);
+    pm_.joint_msg.velocity.assign(joint_names_.size(), 0.0);
+    pm_.joint_msg.effort.assign(joint_names_.size(), 0.0);
     pubDataThread = std::thread(std::bind(&TmRosNode::pub_data, this));
 
-    sta_updated_ = false;
-    sct_reconnect_timeout_ms_ = 1000;
-    sct_reconnect_timeval_ms_ = 3000;
-    checkListenNodeThread = boost::thread(std::bind(&TmRosNode::check_is_on_listen_node, this));
-    sct_thread_ = boost::thread(boost::bind(&TmRosNode::sct_responsor, this));
 
     ////////////////////////////////
     // Action
@@ -101,13 +108,12 @@ TmRosNode::~TmRosNode()
 void TmRosNode::halt()
 {
     ROS_INFO_STREAM("TM_ROS: halt\n");
-    sta_updated_ = true;
+
     sta_cond_.notify_all();
     svr_updated_ = true;
     isRun = false;
     svr_cond_.notify_all();
-    checkIsOnListenNodeCondVar.notify_all();;
-    firstCheckIsOnListenNodeCondVar.notify_all();;
+
     if (sct_thread_.joinable()) { sct_thread_.join(); }
     if (pub_thread_.joinable()) { pub_thread_.join(); }
     // Driver
@@ -335,7 +341,7 @@ void ros_fatal_print(char* msg){
 }
 
 void set_up_print_fuction(){
-  set_up_print_debug_function(default_print_debug_function_print);
+  set_up_print_debug_function(default_debug_function_print);
   set_up_print_info_function(default_print_info_function_print);
   set_up_print_warn_function(default_print_warn_function_print);
   set_up_print_error_function(default_print_error_function_print);
