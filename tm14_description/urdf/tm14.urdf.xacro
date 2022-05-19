@@ -1,0 +1,346 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:include filename="$(find tm5_description)/urdf/tm.transmission.xacro" />
+  <xacro:include filename="$(find tm5_description)/urdf/tm.gazebo.xacro" />
+
+  <xacro:macro name="cylinder_inertial_y" params="radius length mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${0.0833333 * mass * (3 * radius * radius + length * length)}" ixy="0.0" ixz="0.0"
+        iyy="${0.5 * mass * radius * radius}" iyz="0.0"
+        izz="${0.0833333 * mass * (3 * radius * radius + length * length)}" />
+    </inertial>
+  </xacro:macro>
+  <xacro:macro name="cylinder_inertial_z" params="radius length mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${0.0833333 * mass * (3 * radius * radius + length * length)}" ixy="0.0" ixz="0.0"
+        iyy="${0.0833333 * mass * (3 * radius * radius + length * length)}" iyz="0.0"
+        izz="${0.5 * mass * radius * radius}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="tm14_robot" params="prefix joint_limited stl_mesh
+    shoulder_1_lower_limit:=${-1.5*pi}    shoulder_1_upper_limit:=${1.5*pi}
+    shoulder_2_lower_limit:=${-pi}    shoulder_2_upper_limit:=${pi}
+    elbow_lower_limit:=${-pi}    elbow_upper_limit:=${pi}
+    wrist_1_lower_limit:=${-pi}    wrist_1_upper_limit:=${pi}
+    wrist_2_lower_limit:=${-pi}    wrist_2_upper_limit:=${pi}
+    wrist_3_lower_limit:=${-1.5*pi}    wrist_3_upper_limit:=${1.5*pi}
+    transmission_hw_interface:=hardware_interface/PositionJointInterface
+    safety_limits:=false safety_pos_margin:=0.15
+    safety_k_position:=20">
+
+    <!-- Inertia parameters -->
+    <xacro:property name="base_mass" value="1.0" />
+    <xacro:property name="shoulder_mass" value="7.6" />
+    <xacro:property name="arm_1_mass" value="14.0239" />
+    <xacro:property name="arm_2_mass" value="3.3577" />
+    <xacro:property name="wrist_1_mass" value="1.576" />
+    <xacro:property name="wrist_2_mass" value="1.576" />
+    <xacro:property name="wrist_3_mass" value="0.4" />
+
+
+    <xacro:property name="tm_d1" value="0.1652" />
+    <xacro:property name="tm_a2" value="0.5361" />
+    <xacro:property name="tm_a3" value="0.4579" />
+    <xacro:property name="tm_d4" value="0.1563" />
+    <xacro:property name="tm_d5" value="0.1060" />
+    <xacro:property name="tm_d6" value="0.11315" />
+
+    <!-- offsets for shoulder/elbow joints -->
+    <xacro:property name="wrist_offset" value="${tm_d5}" />
+    <xacro:property name="shoulder_offset" value="0.1801" />
+    <xacro:property name="elbow_offset" value="${wrist_offset + shoulder_offset - tm_d4}" /> <!-- 0.1298 -->
+
+    <!-- link lengths -->
+    <xacro:property name="shoulder_height" value="${tm_d1}" />
+    <xacro:property name="arm_1_length" value="${tm_a2}" />
+    <xacro:property name="arm_2_length" value="${tm_a3}" />
+    <!-- <xacro:property name="wrist_1_length" value="${tm_d5}" /> -->
+    <xacro:property name="wrist_2_length" value="${tm_d5}" />
+    <xacro:property name="wrist_3_length" value="${tm_d6}" />
+    <!--xacro:property name="ee_length" value="${tm_d6 - wrist_3_length}" /-->
+
+    <xacro:property name="shoulder_radius" value="0.070" />
+    <xacro:property name="arm_1_radius" value="0.070" />
+    <xacro:property name="elbow_radius" value="0.060" />
+    <xacro:property name="arm_2_radius" value="0.045" />
+    <xacro:property name="wrist_radius" value="0.045" />
+
+
+    <xacro:tm_arm_transmission prefix="${prefix}" hw_interface="${transmission_hw_interface}" />
+    <xacro:tm_arm_gazebo prefix="${prefix}" />
+
+    <!-- up is not finish-->   
+
+    <link name="${prefix}base_link" >
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_base.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_base.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="LightGrey">
+          <color rgba="0.5 0.5 0.5 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm14_base_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_y radius="0.06" length="0.05" mass="${base_mass}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_y>
+    </link>
+
+    <joint name="${prefix}shoulder_1_joint" type="revolute">
+      <parent link="${prefix}base_link" />
+      <child link = "${prefix}shoulder_1_link" />
+      <origin xyz="0 ${shoulder_height} 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <limit lower="${shoulder_1_lower_limit}" upper="${shoulder_1_upper_limit}" effort="150.0" velocity="3.15" />
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${shoulder_1_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_1_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0" />
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}shoulder_1_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_750w_01.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_750w_01.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="DarkOlive">
+          <color rgba="0.3 0.3 0.25 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm_750w_01_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_y radius="0.06" length="0.15" mass="${shoulder_mass}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_y>
+    </link>
+
+    <joint name="${prefix}shoulder_2_joint" type="revolute">
+      <parent link="${prefix}shoulder_1_link" />
+      <child link = "${prefix}arm_1_link" />
+      <origin xyz="0 0 ${shoulder_offset}" rpy="0 0 0" />    
+      <axis xyz="0 0 -1" />
+      <limit lower="${shoulder_2_lower_limit}" upper="${shoulder_2_upper_limit}" effort="150.0" velocity="3.15" />
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${shoulder_2_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_2_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0" />
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}arm_1_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_arm1.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_arm1.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="DarkOlive">
+          <color rgba="0.3 0.3 0.25 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm14_arm1_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_y radius="0.06" length="${arm_1_length}" mass="${arm_1_mass}">
+        <origin xyz="0 ${0.5*arm_1_length} 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_y>
+    </link>
+
+    <joint name="${prefix}elbow_joint" type="revolute">
+      <parent link="${prefix}arm_1_link" />
+      <child link = "${prefix}arm_2_link" />
+      <origin xyz="0 ${arm_1_length} ${-elbow_offset}" rpy="0 0 0" />
+      <axis xyz="0 0 -1" />
+      <limit lower="${elbow_lower_limit}" upper="${elbow_upper_limit}" effort="150.0" velocity="3.15" />
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${elbow_lower_limit + safety_pos_margin}" soft_upper_limit="${elbow_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}arm_2_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_arm2.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm14_arm2.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="DarkOlive">
+          <color rgba="0.3 0.3 0.25 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm14_arm2_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_y radius="0.045" length="${arm_2_length}" mass="${arm_2_mass}">
+        <origin xyz="0 ${0.5*arm_2_length} 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_y>
+    </link>
+
+    <joint name="${prefix}wrist_1_joint" type="revolute">
+      <parent link="${prefix}arm_2_link" />
+      <child link = "${prefix}wrist_1_link" />
+      <origin xyz="0 ${arm_2_length} ${wrist_offset}" rpy="0 0 0" />
+      <axis xyz="0 0 -1" />
+      <limit lower="${wrist_1_lower_limit}" upper="${wrist_1_upper_limit}" effort="150.0" velocity="3.15"/>
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${wrist_1_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_1_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0" />
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}wrist_1_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_100w_01.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_100w_01.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="DarkOlive">
+          <color rgba="0.3 0.3 0.25 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm_100w_01_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_y radius="0.045" length="0.12" mass="${wrist_1_mass}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_y>
+    </link>
+
+    <joint name="${prefix}wrist_2_joint" type="revolute">
+      <parent link="${prefix}wrist_1_link" />
+      <child link = "${prefix}wrist_2_link" />
+      <origin xyz="0 ${wrist_2_length} 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <limit lower="${wrist_2_lower_limit}" upper="${wrist_2_upper_limit}" effort="150.0" velocity="3.15" />
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${wrist_2_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_2_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0" />
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}wrist_2_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_100w_02.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_100w_02.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="DarkOlive">
+          <color rgba="0.3 0.3 0.25 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm_100w_02_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_z radius="0.045" length="0.12" mass="${wrist_2_mass}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_z>
+    </link>
+
+    <joint name="${prefix}wrist_3_joint" type="revolute">
+      <parent link="${prefix}wrist_2_link" />
+      <child link = "${prefix}wrist_3_link" />
+      <origin xyz="0 0 ${wrist_3_length}" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <limit lower="${wrist_3_lower_limit}" upper="${wrist_3_upper_limit}" effort="150.0" velocity="3.15" />
+      <xacro:if value="${safety_limits}">
+        <safety_controller soft_lower_limit="${wrist_3_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_3_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0" />
+      </xacro:if>
+      <dynamics damping="0.0" friction="0.0" />
+    </joint>
+
+    <link name="${prefix}wrist_3_link">
+      <visual>
+        <geometry>
+        <xacro:unless value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_ee.obj" />
+        </xacro:unless>
+        <xacro:if value="${stl_mesh}">
+          <mesh filename="package://tm14_description/meshes/tm14_1100/visual/tm_ee.stl" />
+        </xacro:if>
+        </geometry>
+        <material name="LightGrey">
+          <color rgba="0.5 0.5 0.5 1.0" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tm14_description/meshes/tm14_1100/collision/tm_ee_c.stl" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial_z radius="0.045" length="0.06" mass="${wrist_3_mass}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_z>
+    </link>
+
+    <joint name="${prefix}flange_fixed_joint" type="fixed">
+      <parent link="${prefix}wrist_3_link" />
+      <child link = "${prefix}flange_link" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="${prefix}flange_link">
+    </link>
+
+    <!-- ROS base to TM 'base_link' Coordinates transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}base-base_link" type="fixed">
+      <parent link="${prefix}base" />
+      <child link="${prefix}base_link" />
+      <origin xyz="0 0 0" rpy="${0.5 * pi} 0 0" /> <!-- Note: 0.5 * pi -->
+    </joint>
+
+    <!-- Frame coincident with all-zeros TCP on TM controller -->
+    <link name="${prefix}tool0" />
+    <joint name="${prefix}flange_link-tool0" type="fixed">
+      <parent link="${prefix}flange_link" />
+      <child link="${prefix}tool0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+  </xacro:macro>
+</robot>
