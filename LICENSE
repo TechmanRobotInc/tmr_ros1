@@ -1,3 +1,5 @@
+BSD 3-Clause License
+
 Copyright (c) 2019-2022, TECHMAN ROBOT INC.
 All rights reserved.
 
@@ -30,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ROS Melodic Morenia is licensed under the BSD 3-Clause "New" or "Revised" License
 
 Various portions of the code are taken from the ROS Melodic Morenia 
-(https://github.com/ros/ros/blob/noetic-devel/LICENSE),
+(https://github.com/ros/ros/blob/melodic-devel/LICENSE),
 and are used in accordance with the following license:
 ******************************************************************************
 Redistribution and use in source and binary forms, with or without modification,
