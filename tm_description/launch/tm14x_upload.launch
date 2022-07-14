@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="tm14x" />
+  <arg name="ns" default="" />
+  <arg name="prefix" default="" />
+
+  <arg name="color" default="none" />
+
+  <arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface" />
+
+  <!-- Arm -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find tm_description)/xacro/$(arg model).urdf.xacro' ns:=$(arg ns) prefix:=$(arg prefix) color:=$(arg color)" />
+    transmission_hw_interface:=$(arg transmission_hw_interface)" />
+</launch>

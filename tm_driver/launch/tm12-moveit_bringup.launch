@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+  Techman robot tm12 launch.
+  Usage:
+    tm12-moveit_bringup.launch robot_ip:=<value>
+-->
+<launch>
+  <!-- robot_ip: IP-address of the robot's socket-messaging server -->
+  <arg name="prefix" default="" />
+  <arg name="robot_ip" />
+  <arg name="min_payload" default="0.0" />
+  <arg name="max_payload" default="12.0" />
+
+  <!-- robot model -->
+  <!--
+  <include file="$(find tm_description)/launch/tm12_upload.launch">
+  </include>
+  -->
+
+  <!-- tm common -->
+  <include file="$(find tm_driver)/launch/tm_common.launch">
+    <arg name="prefix"  value="$(arg prefix)" />
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="min_payload" value="$(arg min_payload)" />
+    <arg name="max_payload" value="$(arg max_payload)" />
+  </include>
+
+</launch>
