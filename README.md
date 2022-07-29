@@ -149,36 +149,42 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >
 > See [Moveit tutorial](https://ros-planning.github.io/moveit_tutorials/).<br/>
 >
-> To bring up MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing
+> :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
+> Note: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
+>
+> To bring up MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing<br/>
 >
 >
 > ```bash
-> roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=True
+> roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution.launch sim:=True
 > ```
 >
-> Or with virtual TM Robot (Example: TM5-900 nonvision series), by typing
+> Or with virtual TM Robot (Example: TM5X-900 the eyeless model), by typing<br/>
 >
 >
 > ```bash
-> roslaunch tm5_900_nonvision_moveit_config tm5_900_moveit_planning_execution.launch sim:=True
+> roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=True
+> ```
+> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12 and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> <br/>
+>
+> The user can also manipulate real TM5-900 Robot (Example: TM5-900) to run, by typing<br/>
+>> :warning:[CAUTION] This demo will let the real TM Robot move, please be careful.<br/>
+>
+> ```bash
+> roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
 > ```
 >
-> The user can also manipulate TM Robot (Example: TM5-900) in the real world, by typing<br/>
-> :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.  
+> Or TM Robot (Example: TM5X-900 the eyeless model), by typing<br/>
 >
 > ```bash
-> roslaunch tm5_900_moveit_config tm5_900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
-> ```
->
-> Or TM Robot (Example: TM5-900 nonvision series), by typing
->
-> ```bash
-> roslaunch tm5_900_nonvision_moveit_config tm5_900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
+> roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
 > ```
 >
 > The parameter `<robot_ip_address>` means the IP address of the TM Robot.<br/>
->:warning:[CAUTION] This demo will let the real TM Robot move, please be careful.<br/>
-
+> :bookmark_tabs: Note2: If your real Robot is a TM12, in the above example, you should type "tm12-moveit_config" to instead of "tm5-900-moveit_config" and type "tm12_moveit_planning_execution.launchg" to instead of "tm5-900_moveit_planning_execution.launch".<br/>
+> :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
+> :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
 ## __4. Program script demonstration__
 

@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: tm_description
+    relative_path: xacro/tm14x.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/tm14x.srdf
+  CONFIG:
+    author_name: yh.wang
+    author_email: yh.wang@tm-robot.com
+    generated_timestamp: 1657002301

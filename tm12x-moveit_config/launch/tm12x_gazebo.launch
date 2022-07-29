@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="gazebo_gui" default="true"/>
+  <arg name="stl_mesh" default="true"/>
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
+  </include>
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find tm_description)/launch/tm12x_upload.launch">
+    <arg name="stl_mesh" value="$(arg stl_mesh)"/>
+  </include>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param robot_description -model robot -x 0 -y 0 -z 0"
+    respawn="false" output="screen" />
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" type="string" value="" />
+  </node>
+
+  <!-- Fake Calibration -->
+  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
+    args="pub /calibrated std_msgs/Bool true" />
+
+  <!-- joint_state_controller -->
+  <rosparam file="$(find tm12x-moveit_config)/config/joint_state_controller.yaml" command="load"/>
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn joint_state_controller" respawn="false" output="screen"/>
+
+  <!-- start arm controller -->
+  <rosparam file="$(find tm12x-moveit_config)/config/arm_controller_tm.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn arm_controller" respawn="false" output="screen"/>
+
+</launch>
