@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>tm_description</name>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
   <description>
     URDF description for Techman Robot arms
   </description>
@@ -14,7 +14,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>tmr_msgs</build_depend>
+  <build_depend>tm_msgs</build_depend>
 
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
@@ -24,7 +24,7 @@
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>tmr_msgs</exec_depend>
+  <exec_depend>tm_msgs</exec_depend>
 
   <export>
   </export>
