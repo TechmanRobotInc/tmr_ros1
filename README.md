@@ -6,9 +6,9 @@ Techman Robot is a state-of-the-art production tool that is highly compatible an
 
 ## __2. Feature__
 
-This driver is for <u>**ROS1 Noetic**</u> version. <br/>
-For using the driver, please make sure your ROS PC is installed correct.<br/>
-If the user want to use ROS2 driver version, please go to [TM ROS2 driver](https://github.com/TechmanRobotInc/tmr_ros2).<br/>
+This driver is for <u>**ROS1 Noetic**</u> version.<br/>
+To use the driver, make sure your ROS PC is installed correctly.<br/>
+If the user want to know how to use the ROS2 driver, please visit the [TM ROS2 driver](https://github.com/TechmanRobotInc/tmr_ros2) website or directly click the __TM ROS driver version__ listed in the table below.<br/>
 
 
 More information: TM ROS driver support list
@@ -30,12 +30,12 @@ The TM ROS driver for ROS1 is a __single ROS node__ which creates a ROS interfac
 
 > __Action Server__
 >
-> - An  action interface on _/follow_joint_trajectory_ for seamless integration with MoveIt
+> - An action interface on _/follow_joint_trajectory_ for seamless integration with MoveIt
 >
 > __Topic Publisher__
 >
 > - publish feedback state on _/feedback_states_  
-feedback state include robot position, error code, io state, etc.
+The FeedbackState includes robot position, error code, and io status, etc.
 (see _tm_msgs/msg/FeedbackState.msg_)  
 > - publish joint states on _/joint_states_  
 > - publish tool pose on _/tool_pose_
@@ -59,6 +59,7 @@ The user can directly refer to the chapters introduced in the following text: st
 
 
 ## __3. Usage__
+After installing the correct ROS version of the computer, the next step is to ensure that your hardware, control computer, and TM Robot are all properly configured to communicate with each other. See below to make sure the network settings on your computer are correct, the TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
 
 ### &sect; __TMflow Listen node setup__
 > The __Listen node__: a socket server can be established and be connected with ROS by an external device to communicate according to the [defined protocol](https://assets.omron.eu/downloads/manual/en/v1/i848_tm_expression_editor_and_listen_node_reference_manual_en.pdf). The user can make the robot communicate with the user's ROS (remote) computer equipment through a wired network, when all the network parameters in the _Network setting_ are set.<br/>
@@ -71,8 +72,11 @@ Example: Set the Subnet mask: 255.255.255.0 and IP address 192.168.10.2
 Note: Set the network mask, and the communication with the TM Robot must be in the set domain.  
 > ![2](figures/2.png)
 >
-> 3. Set the __Ethernet Slave Data Table__ settings: mouse-click to enter the page of __Setting &rArr; Connection &rArr; Ethernet Slave__ in order.   
-Enable the `Data Table Setting` item and check the following boxes as item predefined to receive/send specific data:
+> 3. Set the __Ethernet Slave__ `Data Table Setting` item: mouse-click to enter the page of __Setting &rArr; Connection &rArr; Ethernet Slave__ in order.  
+We recommend _one easy method_ <sup>1</sup> to set the __Ethernet Slave__ `Data Table setting` is to directly import the software package.  
+ <sup>1</sup> See [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).  
+Or the previously provided method as follows: (Note: TMflow software version changes may have slightly different settings.)  
+The user can manually click the `Data Table Setting` <sup>2</sup> item and check the following boxes as item _predefined_ <sup>3</sup> to receive/send specific data: 
 >
 >       - [x] Robot_Error
 >       - [x] Project_Run
@@ -101,29 +105,45 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 >       - [x] END_DI0~DI2
 >       - [x] END_AI0
 >
+>    <sup>2</sup> <u>Turn off</u> Ethernet Slave. Let "STATUS:   __Disable__" displayed on Ethernet Slave setting page, then click `Data Table Setting` to enter the next page for related settings.
+>    <sup>3</sup> The checked items listed above must <u>all</u> be selected for TM ROS setting.
+>
+>    When you need to check more about the maximum, minimum, average calculation properties of joint torque, the _three checked items_ <sup>4</sup> listed below can be checked individually or all of them, please leave them unchecked when not in use.
+>
+>       - [ ] Joint_Torque_Average
+>       - [ ] Joint_Torque_Min
+>       - [ ] Joint_Torque_Max
+>
+>    <sup>4</sup> This function requires <u>TMflow 1.84 or later</u> versions to support.
+>
+
+> 4. Enable the __Ethernet Slave__ settings: mouse-click to enable or disable TM Ethernet Slave. Once enabled, the robot establish a Socket server to send the robot status and data to the connected clients and permissions to access specific robot data.
+Mouse-click to enable the `Ethernet Slave` setting:
+Note: STATUS: &rArr; __Enable__. 
 >       ![2](figures/3.png)
 >
->    Another way to set the __Ethernet Slave Data Table__ settings is to directly import the software package , see [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).
->  
-> 4. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
+> 5. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
 >
 >     Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
 
 
 ###  &sect; __Remote connection to TM ROBOT__
-> Static IP of remote connection network settings through the wired network .<br/> 
+> Static IP of remote connection network settings through the wired network.<br/> 
 >
-> 1. Set the wired network of the user's (remote) Ubuntu computer by mouse-click on the top right of the desktop &rArr; Click on "Wired Settings" &rArr; Click on the gear icon &rArr; In the IPv4 feature options, click on "Manual" in order.<br/> 
+> 1. Set the wired network of the user's (remote) Ubuntu computer by mouse-click on the top right of the desktop &rArr; Click on "__Wired Settings__" &rArr; Click on the gear icon &rArr; In the IPv4 feature options, click on "Manual" in order.<br/> 
 > ![user_remote_network_settings](figures/user_remote_network_settings.png)
-> 2. Set the Static IP settings: where the IP address is fixed for the first three yards same as the previous setting 192.168.10, last yards 3-254 machine numbers are available. (Because _TM ROBOT_, you have been set to 192.168.10.2 )<br/> 
-> Example: Set the Netmask: 255.255.255.0 and IP address 192.168.10.30  <br/> 
+> 2. Set the Static IP settings: where the IP address is fixed for the first three yards same as the previous setting 192.168.10, last yards 3-254 machine numbers are available. (Because _TM ROBOT_, you have been set to 192.168.10.2)<br/> 
+> Example: Set the Netmask: 255.255.255.0 and IP address 192.168.10.30 <br/> 
 > ![user_remote_IP_example](figures/user_remote_IP_example.png)
 > 3. Check Internet connection: start a terminal to test the connectivity with the target host _TM ROBOT_, by typing ping 192.168.10.2
 > ![ping_target_host.png](figures/ping_target_host.png)
+>> :bulb: Tip: Remember to reconfigure the network settings due to <u>static IP changes</u> or <u>replacement of the ROS control PC</u>.<br/>
+>> As mentioned above, a valuable debugging tool is your operating system's <u>ping</u> command. If nothing appears to happen or an error is thrown, the robot cannot be accessed from your computer. Please go back to the top of this chapter and re-operate in the order of instructions.<br/>
+>> If you are an experienced user, you may just need to <u>turn off</u> &rArr; <u>turn on</u> the gear icon of "__Wired Settings__" on your computer or to <u>turn off</u> &rArr; <u>turn on</u> the "__Ethernet Slave Data Table__" setting of the robot to reconfigure the hardware settings.<br/>
+>
 
 
 ###  &sect; __TM ROS driver usage__
-
 > __ROS1 driver usage__
 > 
 > After the user has set up the ROS1 environment and built the TM driver based on the specific workspace, please enter your workspace `<workspace>` by launching the terminal, and remember to make the workspace visible to ROS.
@@ -186,10 +206,11 @@ Enable the `Data Table Setting` item and check the following boxes as item prede
 > :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
+
 ## __4. Program script demonstration__
 
 ### &sect; __Demo package description__
-> There are some demo codes showing  how to use TM ROS driver.<br/>
+> There are some demo codes showing how to use TM ROS driver.<br/>
 >
 > * demo_send_script:<br/>
 In this demo code, it shows how to send a __Listen node__ script to control the TM Robot. <br/>
@@ -197,7 +218,7 @@ The user can use service named "send_script" to send script.<br/>
 "id" &rarr; The transaction number expressed in any <u>alphanumeric</u> <sup>1</sup> characters.<br/> 
 "script" &rarr; the script which the user want to send.<br/>
 "ok" &rarr; the correctness of the script.<br/>
- ><sup>1</sup> If a non-alphanumeric byte is encountered, a CPERR 04 error is reported. When used as a communication packet response, it is a transaction number and identifies which group of commands to respond.<br/>
+> <sup>1</sup> If a non-alphanumeric byte is encountered, a CPERR 04 error is reported. When used as a communication packet response, it is a transaction number and identifies which group of commands to respond.<br/>
 >
 > * demo_ask_item:<br/>
 In this demo code, the user can use this service to send TMSCT <sup>2</sup> cmd.<br/> 
@@ -443,5 +464,5 @@ The user can use the script program to extract specific kinematic values from yo
 > Ans: The user can first find the displayed string "``[new save file path:] ``" on the screen, and the following string is the file save location.<br/>
 
 
-## __7. Contact Us__
+## __7. Contact us/Technical support__
 More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot.com/zh-hant/contact-us/)``[https://www.tm-robot.com/zh-hant/contact-us/] ``<br/>
