@@ -14,7 +14,7 @@ If the user want to know how to use the ROS2 driver, please visit the [TM ROS2 d
 More information: TM ROS driver support list
 |ROS Distribution (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
 |:---|:---|:---:|:---:|
-|[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|x|noetic|
+|[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|supported|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[**<font color=#800000>TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|x|master|
 |[**<font color=#808080>ROS 2 Foxy Fitzroy**](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)|[**<font color=#0000FF>TM ROS2 Foxy driver**](https://github.com/TechmanRobotInc/tmr_ros2)|supported|master|
 |[**<font color=#808080>ROS 2 Dashing Diademata**](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)|[**<font color=#0000FF>TM ROS2 Dashing driver**](https://github.com/TechmanRobotInc/tmr_ros2/tree/dashing-devel)|supported|dashing-devel|
@@ -205,8 +205,109 @@ Note: STATUS: &rArr; __Enable__.
 > :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
+## __4. Vision__
 
-## __4. Program script demonstration__
+### &sect; __TM ROS Vision usage__
+> Get image data through TMvision&trade; of TM Robot **(Built-in Vision System)**  
+>
+> __Dependencies__
+>
+> - ROS1 Noetic
+> - Python packages:
+>   1. flask
+>   2. waitress
+>   3. opencv-python==3.4.13.47 (Minimum)
+>   4. numpy
+>   5. datetime  
+>
+>    For example, install Python3 packages: 
+>      *  pip3 install flask
+>      *  pip3 install waitress
+>      *  pip3 install opencv-python
+>      *  pip3 install datetime
+>
+> __Techman Robot Vision__
+>
+> - type: sensor_msgs::Image
+> - message name: techman_image
+>
+> __Build TM ROS Vision driver node on your (remote) computer__
+>
+> Please open two terminals
+> In a new terminal 1: type Startup ROS core and type<br/>
+> ``roscore``<br/>
+>
+> In a new terminal 2: Under the environment settings have been finished with your workspace`<workspace>`, then type
+>
+> ```bash
+> cd ~/<workspace> && source devel/setup.bash
+> python3 ./src/tm_image/script/image_talker.py
+> ```
+>
+> :bulb: The user can check whether the connection succeeds or not? When you proceed to the following steps introduced in the following text: steps 6 of § TMflow Vision node setup.
+
+
+### &sect; __TMflow Vision node setup__
+> The __Vision node__ provides the creation of a plane with fixed-point type, servo type, and object type as well as a variety of AOI identification functions.<br/>
+> :bulb: Before going through the following steps, please build the TM ROS Vision driver node on your (remote) computer and then connect this (remote) computer to the local TM Robot computer.
+>
+> 1. Create a _Vision task_ project of __TMflow__ software, and then drag the __Vision node__  from the _nodes menu_ onto the project flow, as shown below.<br/>
+> ![create_a_vision_task](figures/create_a_vision_task.png)
+> 2. Click the __AOI -only__ icon, and then follow the steps below to handle some settings related to accessing TM Robot HMI.<br/>
+> ![choose_aoi_only](figures/choose_aoi_only.png)
+>
+>    TMflow 1.76 second version only:<br/> 
+> If no suitable dongle is detected, warning alerts will be displayed in the window.<br/>
+> ![open_need_dongle_key](figures/open_need_dongle_key.png)
+> TMflow 1.80 version: <br/>
+> The user don't need dongle to activate this function.
+>
+> 3. Click the __Find__ icon.
+> ![select_find](figures/select_find.png)
+>
+> 4. In TMflow 1.76 second version, click the __AI_Detection__ icon.<br/>
+> ![choose_ai_detection_only](figures/choose_ai_detection_only.png)
+> In TMflow 1.80 version, click the __External Detection__ icon.
+> ![change1](figures/change1.png)
+>
+> 5. In TMflow 1.76 second version, click the __+ Add Parameters__ button.
+> ![choose_add_parameters](figures/choose_add_parameters.png)
+> In TMflow 1.80 version, click the __Setting__ button.
+> ![change2](figures/change2.png)
+>
+> 6. To check whether the connection succeeds or not, please enter ``<user_pc_ip_address>:6189/api`` in the __HTTP Parameters__ blank text and click the __Send__ button to get the information of the (remote) computer for ROS.<br/>
+> The `<user_pc_ip_address>` means the IP address of the user's (remote) ROS computer, for example 192.168.2.12<br/>
+> ![check_connect_success](figures/check_connect_success.png)
+>
+>    If the connection fails, a __TIMEOUT__ error will be displayed in the window
+> ![wrong_ip_address](figures/wrong_ip_address.png)
+>
+>    If the IP address of the user's (remote) ROS computer doesn't exist, **ERROR_CODE_7** will be displayed in the window.
+> ![wrong_port](figures/wrong_port.png)
+> 7. Enter ``<user_pc_ip_address>:6189/api/DET`` in the URL blank text and type arbitrary letters in the __Value__ blank text; the __Key__ will be generated automatically.
+> ![add_model](figures/add_model.png)
+> 8. Assign a name to the model in  the __Model name__ blank text and click the __Save__ button.
+> ![save_model](figures/save_model.png)
+>
+> 9. Press the Play/Pause Button on the Robot Stick to start running this _Vision task_ project.
+>
+>    Note: TMflow software version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.80_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-80_rev2-00-2/))<br/>
+
+
+###  &sect; __Receive image data on the user's computer from TMflow Vision node__
+> :bulb: Do you prepare the TM Robot ready ? Make sure that TM Robot's operating software (TMflow) relative __HTTP Parameters__ Vision settings are ready and the _Vision task_ project is running.<br/>
+>
+> Now, in a new terminal of your (remote) ROS computer : Source setup.bash in the workspace path and run to get image data from TMvision&trade; by typing
+>
+> ```bash
+> source ./devel/setup.bash
+> rosrun demo demo_get_image_node
+> ```
+>
+> Then, the viewer will display image data from _TMflow_.
+
+
+## __5. Program script demonstration__
 
 ### &sect; __Demo package description__
 > There are some demo codes showing how to use TM ROS driver.<br/>
@@ -293,7 +394,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 ><br/>
 
 
-## __5. TM GUI debugging and demonstration__
+## __6. TM GUI debugging and demonstration__
 The GUI displays tm_driver connection status, sct, sta, svr messages and robot status. Easily judge the message between the driver and the robot through the GUI display. If the connection fails, the user can also try to send a reconnect command on this GUI for debugging.
 
 
@@ -337,7 +438,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 ``rosrun ui_for_debug_and_demo robot_ui``<br/>
 
 
-## __6. TM Robot corrected kinematics value loading and robot description file generation__
+## __7. TM Robot corrected kinematics value loading and robot description file generation__
 Real kinematic values vary from TM robot to another one as each robot is calibrated at the factory.<br/>
 The user can use the script program to extract specific kinematic values from your TM robot, which are taken into account by a python script function using a specific set of commands to automatically generate a new URDF or Xacro robot model description file.
 >> If the user just want to use the TM Robot nominal model to control the robot, the user can skip the rest of this chapter.<br/>
@@ -463,5 +564,5 @@ The user can use the script program to extract specific kinematic values from yo
 > Ans: The user can first find the displayed string "``[new save file path:] ``" on the screen, and the following string is the file save location.<br/>
 
 
-## __7. Contact us/Technical support__
+## __8. Contact us/Technical support__
 More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot.com/zh-hant/contact-us/)``[https://www.tm-robot.com/zh-hant/contact-us/] ``<br/>
