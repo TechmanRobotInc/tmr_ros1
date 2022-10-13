@@ -14,12 +14,12 @@ If the user want to know how to use the ROS2 driver, please visit the [TM ROS2 d
 More information: TM ROS driver support list
 |ROS Distribution (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
 |:---|:---|:---:|:---:|
-|[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|x|noetic|
+|[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|supported|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[**<font color=#800000>TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|x|master|
 |[**<font color=#808080>ROS 2 Foxy Fitzroy**](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)|[**<font color=#0000FF>TM ROS2 Foxy driver**](https://github.com/TechmanRobotInc/tmr_ros2)|supported|master|
 |[**<font color=#808080>ROS 2 Dashing Diademata**](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)|[**<font color=#0000FF>TM ROS2 Dashing driver**](https://github.com/TechmanRobotInc/tmr_ros2/tree/dashing-devel)|supported|dashing-devel|
 
-Note: The two current master branches are ROS1 Melodic and ROS2 Foxy.<br/>
+**Note**: The two current master branches are ROS1 Melodic and ROS2 Foxy.<br/>
 
 
 ### __ROS1 Driver__
@@ -69,13 +69,13 @@ After installing the correct ROS version of the computer, the next step is to en
 >
 > 2. Set the `Network` settings: mouse-click to enter the page of __System &rArr; Network__ in order.  
 Example: Set the Subnet mask: 255.255.255.0 and IP address 192.168.10.2  
-Note: Set the network mask, and the communication with the TM Robot must be in the set domain.  
+**Note**: Set the network mask, and the communication with the TM Robot must be in the set domain.  
 > ![2](figures/2.png)
 >
 > 3. Set the __Ethernet Slave__ `Data Table Setting` item: mouse-click to enter the page of __Setting &rArr; Connection &rArr; Ethernet Slave__ in order.  
 We recommend _one easy method_ <sup>1</sup> to set the __Ethernet Slave__ `Data Table setting` is to directly import the software package.  
  <sup>1</sup> See [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).  
-Or the previously provided method as follows: (Note: TMflow software version changes may have slightly different settings.)  
+Or the previously provided method as follows: (**Note**: TMflow software version changes may have slightly different settings.)  
 The user can manually click the `Data Table Setting` <sup>2</sup> item and check the following boxes as item _predefined_ <sup>3</sup> to receive/send specific data: 
 >
 >       - [x] Robot_Error
@@ -116,14 +116,13 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >
 >    <sup>4</sup> This function requires <u>TMflow 1.84 or later</u> versions to support.
 >
-> 4. Enable the __Ethernet Slave__ settings: mouse-click to enable or disable TM Ethernet Slave. Once enabled, the robot establish a Socket server to send the robot status and data to the connected clients and permissions to access specific robot data.
-Mouse-click to enable the `Ethernet Slave` setting:
-Note: STATUS: &rArr; __Enable__. 
+> 4. Enable the __Ethernet Slave__ settings: mouse-click to enable or disable TM Ethernet Slave. Once enabled, the robot establish a Socket server to send the robot status and data to the connected clients and permissions to access specific robot data.<br/>
+> Mouse-click to enable the `Ethernet Slave` setting and let `STATUS:` &rArr; __`Enable`__. 
 >       ![2](figures/3.png)
 >
 > 5. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
 >
->     Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
+>     **Note**: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
 
 
 ###  &sect; __Remote connection to TM ROBOT__
@@ -136,7 +135,7 @@ Note: STATUS: &rArr; __Enable__.
 > ![user_remote_IP_example](figures/user_remote_IP_example.png)
 > 3. Check Internet connection: start a terminal to test the connectivity with the target host _TM ROBOT_, by typing ping 192.168.10.2
 > ![ping_target_host.png](figures/ping_target_host.png)
->> :bulb: Tip: Remember to reconfigure the network settings due to <u>static IP changes</u> or <u>replacement of the ROS control PC</u>.<br/>
+>> :bulb: **Tip**: Remember to reconfigure the network settings due to <u>static IP changes</u> or <u>replacement of the ROS control PC</u>.<br/>
 >> As mentioned above, a valuable debugging tool is your operating system's <u>ping</u> command. If nothing appears to happen or an error is thrown, the robot cannot be accessed from your computer. Please go back to the top of this chapter and re-operate in the order of instructions.<br/>
 >> If you are an experienced user, you may just need to <u>turn off</u> &rArr; <u>turn on</u> the gear icon of "__Wired Settings__" on your computer or to <u>turn off</u> &rArr; <u>turn on</u> the "__Ethernet Slave Data Table__" setting of the robot to reconfigure the hardware settings.<br/>
 >
@@ -169,7 +168,7 @@ Note: STATUS: &rArr; __Enable__.
 > See [Moveit tutorial](http://docs.ros.org/en/melodic/api/moveit_tutorials/html/doc/getting_started/getting_started.html) to install the MoveIt packages.<br/>
 >
 > :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
-> Note: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
+> **Note**: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
 >
 > To bring up MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing<br/>
 >
@@ -266,7 +265,7 @@ In this demo code, the user can use send_script service sending a script to leav
 
 
 ### &sect; __Usage with demo code & driver__
-> Note: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> **Note**: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
 > 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
 ``mkdir ~/tmdriver_ws``<br/>
 ``cd ~/tmdriver_ws``<br/>
@@ -275,7 +274,7 @@ In this demo code, the user can use send_script service sending a script to leav
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
 > 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
-Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+**Note**: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core and type<br/>
@@ -312,7 +311,7 @@ The GUI displays tm_driver connection status, sct, sta, svr messages and robot s
 
 
 ### &sect; Usage with GUI debugging
-> Note: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> **Note**: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
 > 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
 ``mkdir ~/tmdriver_ws``<br/>
 ``cd ~/tmdriver_ws``<br/>
@@ -321,7 +320,7 @@ The GUI displays tm_driver connection status, sct, sta, svr messages and robot s
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-master``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
 > 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
-Note: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+**Note**: Do you set``source /opt/ros/melodic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core and type<br/>
@@ -416,7 +415,7 @@ The user can use the script program to extract specific kinematic values from yo
 >   <xacro:include filename="$(find tm_description)/xacro/user_defined.urdf.xacro" />
 > ```
 > Finally, the user can launch the modified robot file "``tm5-900.urdf.xacro``" to run your TM Robot or simulate the robot more accurately.<br/>
->> :bulb: Tip: Remember to recompile since the code has been changed.<br/>
+>> :bulb: **Tip**: Remember to recompile since the code has been changed.<br/>
 >> Please go back to your specific workspace. Then you can clean the build and devel directories with `rm -r build devel` before executing `catkin_make`.<br/>
 >
 >
@@ -450,7 +449,7 @@ The user can use the script program to extract specific kinematic values from yo
 > :bookmark_tabs: Note2: If your real Robot is the eyeless model as a TM12X, in the above example, you should type tm12x as an example for <urdf_from>.<br/>
 >
 > Finally, the user can use the new robot file, such as "``user_defined.urdf``", instead of the default nominal URDF model to run your TM Robot or simulate the robot more accurately.<br/>
->> :bulb: Tip: Remember to recompile since the code has been changed.<br/>
+>> :bulb: **Tip**: Remember to recompile since the code has been changed.<br/>
 >> Please go back to your specific workspace. Then you can clean the build and devel directories with `rm -r build devel` before executing `catkin_make`.<br/>
 >
 >
