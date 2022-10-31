@@ -252,7 +252,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```
 >
 > The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12 and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
-> For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".
+> For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".<br/>
 > :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12_gazebo.launch.<br/>
 > :bookmark_tabs: Note2: If the user need to improve end-point simulation accuracy, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
@@ -283,7 +283,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >
 > :bookmark_tabs: Note1: Remember to close all these executables when you no longer use them for Gazebo simulations.<br/>
 > :bookmark_tabs: Note2: Sometimes when gzserver is not properly shut down with ROS or cannot run Gazebo again after shutting down, you can try to kill the corresponding process with the following command.<br/>
->>:bulb: **Tip**: To kill both Gazebo server and Gazebo client executables. 
+>>:bulb: **Tip**: To kill both Gazebo server and Gazebo client executables.<br/>
 >> ``sudo killall -9 gazebo gzserver gzclient``<br/>
 >
 
