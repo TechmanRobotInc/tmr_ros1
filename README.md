@@ -19,7 +19,7 @@ More information: TM ROS driver support list
 |[**<font color=#808080>ROS 2 Foxy Fitzroy**](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)|[**<font color=#0000FF>TM ROS2 Foxy driver**](https://github.com/TechmanRobotInc/tmr_ros2)|supported|master|
 |[**<font color=#808080>ROS 2 Dashing Diademata**](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)|[**<font color=#0000FF>TM ROS2 Dashing driver**](https://github.com/TechmanRobotInc/tmr_ros2/tree/dashing-devel)|supported|dashing-devel|
 
-Note: The two current master branches are ROS1 Melodic and ROS2 Foxy.<br/>
+**Note**: The two current master branches are ROS1 Melodic and ROS2 Foxy.<br/>
 
 
 ### __ROS1 Driver__
@@ -59,6 +59,8 @@ The user can directly refer to the chapters introduced in the following text: st
 
 
 ## __3. Usage__
+The TM ROS driver is designed to interface the TM Robot's operating software (__TMflow__) with the Robot Operating System (ROS) so that program developers and researchers can build and reuse their own programs to control the TM robot externally.
+
 After installing the correct ROS version of the computer, the next step is to ensure that your hardware, control computer, and TM Robot are all properly configured to communicate with each other. See below to make sure the network settings on your computer are correct, the TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
 
 ### &sect; __TMflow Listen node setup__
@@ -69,13 +71,13 @@ After installing the correct ROS version of the computer, the next step is to en
 >
 > 2. Set the `Network` settings: mouse-click to enter the page of __System &rArr; Network__ in order.  
 Example: Set the Subnet mask: 255.255.255.0 and IP address 192.168.10.2  
-Note: Set the network mask, and the communication with the TM Robot must be in the set domain.  
+**Note**: Set the network mask, and the communication with the TM Robot must be in the set domain.  
 > ![2](figures/2.png)
 >
 > 3. Set the __Ethernet Slave__ `Data Table Setting` item: mouse-click to enter the page of __Setting &rArr; Connection &rArr; Ethernet Slave__ in order.  
 We recommend _one easy method_ <sup>1</sup> to set the __Ethernet Slave__ `Data Table setting` is to directly import the software package.  
  <sup>1</sup> See [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).  
-Or the previously provided method as follows: (Note: TMflow software version changes may have slightly different settings.)  
+ Or the previously provided method as follows:  (Note: TMflow software version changes may have slightly different settings.)  
 The user can manually click the `Data Table Setting` <sup>2</sup> item and check the following boxes as item _predefined_ <sup>3</sup> to receive/send specific data: 
 >
 >       - [x] Robot_Error
@@ -116,9 +118,8 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >
 >    <sup>4</sup> This function requires <u>TMflow 1.84 or later</u> versions to support.
 >
-> 4. Enable the __Ethernet Slave__ settings: mouse-click to enable or disable TM Ethernet Slave. Once enabled, the robot establish a Socket server to send the robot status and data to the connected clients and permissions to access specific robot data.
-Mouse-click to enable the `Ethernet Slave` setting:
-Note: STATUS: &rArr; __Enable__. 
+> 4. Enable the __Ethernet Slave__ settings: mouse-click to enable or disable TM Ethernet Slave. Once enabled, the robot establish a Socket server to send the robot status and data to the connected clients and permissions to access specific robot data.<br/>
+> Mouse-click to enable the `Ethernet Slave` setting and let `STATUS:` &rArr; __`Enable`__. 
 >       ![2](figures/3.png)
 >
 > 5. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
@@ -136,7 +137,7 @@ Note: STATUS: &rArr; __Enable__.
 > ![user_remote_IP_example](figures/user_remote_IP_example.png)
 > 3. Check Internet connection: start a terminal to test the connectivity with the target host _TM ROBOT_, by typing ping 192.168.10.2
 > ![ping_target_host.png](figures/ping_target_host.png)
->> :bulb: Tip: Remember to reconfigure the network settings due to <u>static IP changes</u> or <u>replacement of the ROS control PC</u>.<br/>
+>> :bulb: **Tip**: Remember to reconfigure the network settings due to <u>static IP changes</u> or <u>replacement of the ROS control PC</u>.<br/>
 >> As mentioned above, a valuable debugging tool is your operating system's <u>ping</u> command. If nothing appears to happen or an error is thrown, the robot cannot be accessed from your computer. Please go back to the top of this chapter and re-operate in the order of instructions.<br/>
 >> If you are an experienced user, you may just need to <u>turn off</u> &rArr; <u>turn on</u> the gear icon of "__Wired Settings__" on your computer or to <u>turn off</u> &rArr; <u>turn on</u> the "__Ethernet Slave Data Table__" setting of the robot to reconfigure the hardware settings.<br/>
 >
@@ -169,7 +170,7 @@ Note: STATUS: &rArr; __Enable__.
 > See [Moveit tutorial](https://ros-planning.github.io/moveit_tutorials/) to install the MoveIt packages.<br/>
 >
 > :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
-> Note: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
+> **Note**: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
 >
 > To bring up MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing<br/>
 >
@@ -205,10 +206,92 @@ Note: STATUS: &rArr; __Enable__.
 > :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
+> __Usage with Gazebo Simulation__ 
+>
+> See [Gazebo tutorial](https://classic.gazebosim.org/tutorials?tut=ros_installing&cat=connect_ros) to install the Gazebo packages.<br/>
+>> Then, install the other joint_trajectory_controller plugin: <br/>
+`` sudo apt-get install ros-noetic-joint-trajectory-controller``<br/>
+`` sudo apt-get install ros-noetic-rqt-joint-trajectory-controller``<br/>
+>
+> The tm_gazebo package contains the URDF/Xacro/SDF model files to simulate the TM Robot in Gazebo.
+>
+> A simple SDF model demonstrating the generation of a virtual TM robot to Gazebo using `rosrun` command, by typing
+> To open the terminal 1: Startup ROS core
+> ```bash
+> roscore
+> ```
+> In a new terminal 2: Source ROS environment settings, specify the model database path for Gazebo, then run Gazebo with ROS. 
+> ```bash
+> source /opt/ros/noetic/setup.bash
+> cd <workspace>
+> catkin_make
+> source ./devel/setup.bash
+> export GAZEBO_MODEL_PATH=~/<workspace>/src/tm_gazebo/models/
+> rosrun gazebo_ros gazebo
+> ```
+> 3. In another new terminal 3: Source ROS environment settings, then spawn TM Robot model (Example: TM5-900) in Gazebo.
+> ```bash
+> source /opt/ros/noetic/setup.bash
+> cd <workspace>
+> source ./devel/setup.bash
+> rosrun gazebo_ros spawn_model -database tm5-900 -sdf -model tm5-900 -x 0 -y 0 -z 0
+> ```
+>
+> Or directly to bring up Gazebo environment in simulation paused mode with virtual TM5-900 robot using `roslaunch` command in a terminal, by typing
+>> Note: When opening each terminal, don't forget to set up the ROS environment first.
+>
+> ```bash
+> roslaunch tm_gazebo tm5-900_gazebo_example.launch
+> ```
+>
+> There are several built-in launch files that can be used to start the TM Robot simulated robot using the nominal Xacro robot model settings in Gazebo.
+> The common command's form to bring up the TM simulated robot in Gazebo as follows: 
+>
+> ```bash
+> roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
+> ```
+>
+> The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12 and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".
+> :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12_gazebo.launch.<br/>
+> :bookmark_tabs: Note2: If the user need to improve end-point simulation accuracy, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
+
+> __Using Moveit! with Gazebo Simulator__
+>
+>  You can also use MoveIt! to control the simulated robot which is configured to run alongside Gazebo.
+> 
+> 1. Launch Gazebo simulation and load the ros_control controllers:
+> ```bash
+> roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
+> ```
+> After the Gazebo simulator is running, proceed to the next command to launch moveit!.
+> 
+> 2. Launch the combined of moveit! and Gazebo to allow motion planning plugin run:
+> ```bash
+> roslaunch <tm_robot_type>-moveit_config <tm_robot_type>_moveit_planning_execution_gazebo.launch
+> ```
+> Taking the TM5-900 robot as an example, use the commands introduced above:
+> Note: If you have started some executable programs with ROS commands in some terminal windows, it is recommended that you close them and then execute the following commands.
+> 1. To open the terminal 1: Running with Gazebo<br/>
+``source /opt/ros/noetic/setup.bash``<br/>
+``cd <workspace>``<br/>
+``source ./devel/setup.bash``<br/>
+``roslaunch tm_gazebo tm5-900_gazebo.launch``<br/>
+> 
+> 2. In a new terminal 2: Running with moveit!<br/>
+``roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution_gazebo.launch``<br/>
+>
+> :bookmark_tabs: Note1: Remember to close all these executables when you no longer use them for Gazebo simulations.<br/>
+> :bookmark_tabs: Note2: Sometimes when gzserver is not properly shut down with ROS or cannot run Gazebo again after shutting down, you can try to kill the corresponding process with the following command.<br/>
+>>:bulb: **Tip**: To kill both Gazebo server and Gazebo client executables. 
+>> ``sudo killall -9 gazebo gzserver gzclient``<br/>
+>
+
+
 ## __4. Vision__
 
 ### &sect; __TM ROS Vision usage__
-> Get image data through TMvision&trade; of TM Robot **(Built-in Vision System)**  
+> This chapter describes that the user can get image data through TMvision&trade; of TM Robot. **(Built-in Vision System)**  
 >
 > __Dependencies__
 >
@@ -310,7 +393,7 @@ Note: STATUS: &rArr; __Enable__.
 ## __5. Program script demonstration__
 
 ### &sect; __Demo package description__
-> There are some demo codes showing how to use TM ROS driver.<br/>
+> This chapter describes the _demo_ package and the code used as a c++ programming example, showing how to program robot scripts (TM Robot Expressions) through the TM ROS driver connection. <br/>
 >
 > * demo_send_script:<br/>
 In this demo code, it shows how to send a __Listen node__ script to control the TM Robot. <br/>
@@ -378,7 +461,7 @@ or<br/>
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-noetic``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
 > 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
-Note: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+**Note**: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core and type<br/>
@@ -395,7 +478,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 
 
 ## __6. TM GUI debugging and demonstration__
-The GUI displays tm_driver connection status, sct, sta, svr messages and robot status. Easily judge the message between the driver and the robot through the GUI display. If the connection fails, the user can also try to send a reconnect command on this GUI for debugging.
+This chapter describes a simplified GUI for displaying tm_driver connection status, sct, sta, svr messages, and robot status. The user can optionally install the _ui_for_debug_and_demo_ package to aid in viewing messages between the driver and the robot through the GUI display. If the driver connection fails, the user can also try to send a reconnect command on this GUI for debugging.
 
 
 ### &sect; GUI Debugging description
@@ -424,7 +507,7 @@ The GUI displays tm_driver connection status, sct, sta, svr messages and robot s
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-noetic``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
 > 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the worksapce visible to ROS of this terminal 1.<br/>
-Note: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
+**Note**: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
 > 5. Terminal 1: Startup ROS core and type<br/>
@@ -440,7 +523,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 
 ## __7. TM Robot corrected kinematics value loading and robot description file generation__
 Real kinematic values vary from TM robot to another one as each robot is calibrated at the factory.<br/>
-The user can use the script program to extract specific kinematic values from your TM robot, which are taken into account by a python script function using a specific set of commands to automatically generate a new URDF or Xacro robot model description file.
+This chapter describes that the user can use a script program to extract specific kinematic values from your TM robot. The python script function automatically generates a new URDF or Xacro robot model description file using a specific set of commands.
 >> If the user just want to use the TM Robot nominal model to control the robot, the user can skip the rest of this chapter.<br/>
 
 ### &sect; __Corrected kinematics value description__
@@ -519,7 +602,7 @@ The user can use the script program to extract specific kinematic values from yo
 >   <xacro:include filename="$(find tm_description)/xacro/user_defined.urdf.xacro" />
 > ```
 > Finally, the user can launch the modified robot file "``tm5-900.urdf.xacro``" to run your TM Robot or simulate the robot more accurately.<br/>
->> :bulb: Tip: Remember to recompile since the code has been changed.<br/>
+>> :bulb: **Tip**: Remember to recompile since the code has been changed.<br/>
 >> Please go back to your specific workspace. Then you can clean the build and devel directories with `rm -r build devel` before executing `catkin_make`.<br/>
 >
 >
@@ -553,7 +636,7 @@ The user can use the script program to extract specific kinematic values from yo
 > :bookmark_tabs: Note2: If your real Robot is the eyeless model as a TM12X, in the above example, you should type tm12x as an example for <urdf_from>.<br/>
 >
 > Finally, the user can use the new robot file, such as "``user_defined.urdf``", instead of the default nominal URDF model to run your TM Robot or simulate the robot more accurately.<br/>
->> :bulb: Tip: Remember to recompile since the code has been changed.<br/>
+>> :bulb: **Tip**: Remember to recompile since the code has been changed.<br/>
 >> Please go back to your specific workspace. Then you can clean the build and devel directories with `rm -r build devel` before executing `catkin_make`.<br/>
 >
 >

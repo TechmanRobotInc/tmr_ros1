@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <!-- shadows -->
+    <scene>
+      <shadows>false</shadows>
+    </scene>
+    <!-- Several tm robot models demo -->
+    <include>    
+      <uri>model://tm-robot</uri>
+    </include>
+  </world>
+</sdf>
