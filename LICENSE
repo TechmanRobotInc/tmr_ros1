@@ -275,7 +275,7 @@ Library.
 Gazebo is licensed under the Software License Agreement (Apache License)
 
 Various portions of the code are taken from gazebo11 
-(https://github.com/osrf/gazebo/blob/gazebo11/LICENSE.txt),
+(https://github.com/gazebosim/gazebo-classic/blob/gazebo11/LICENSE),
 and are used in accordance with the following license:
 ******************************************************************************
 Software License Agreement (Apache License)
