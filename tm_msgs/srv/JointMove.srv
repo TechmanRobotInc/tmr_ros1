@@ -1,0 +1,3 @@
+sensor_msgs/JointState jointTarget
+---
+bool isOK

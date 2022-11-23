@@ -12,7 +12,7 @@ If the user want to know how to use the ROS2 driver, please visit the [TM ROS2 d
 
 
 More information: TM ROS driver support list
-|ROS Distribution (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
+|ROS Distro (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
 |:---|:---|:---:|:---:|
 |[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|supported|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[**<font color=#800000>TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|x|master|
@@ -49,7 +49,7 @@ send "Stop", "Pause" or "Resume" command to _Listen node_
 > - _/tm_driver/set_io_ (see _tm_msgs/srv/SetIO.srv_) :  
 send digital or analog output value to _Listen node_  
 > - _/tm_driver/set_position (see _tm_msgs/srv/SetPosition.srv_) :  
-send motion command to _Listen node_, the motion type include PTP, LINE, CIRC ans PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
+send motion command to _Listen node_, the motion type include PTP, LINE, CIRC and PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
 >
 >
 
@@ -59,6 +59,8 @@ The user can directly refer to the chapters introduced in the following text: st
 
 
 ## __3. Usage__
+The TM ROS driver is designed to interface the TM Robot's operating software (__TMflow__) with the Robot Operating System (ROS) so that program developers and researchers can build and reuse their own programs to control the TM robot externally.
+
 After installing the correct ROS version of the computer, the next step is to ensure that your hardware, control computer, and TM Robot are all properly configured to communicate with each other. See below to make sure the network settings on your computer are correct, the TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
 
 ### &sect; __TMflow Listen node setup__
@@ -75,7 +77,7 @@ Example: Set the Subnet mask: 255.255.255.0 and IP address 192.168.10.2
 > 3. Set the __Ethernet Slave__ `Data Table Setting` item: mouse-click to enter the page of __Setting &rArr; Connection &rArr; Ethernet Slave__ in order.  
 We recommend _one easy method_ <sup>1</sup> to set the __Ethernet Slave__ `Data Table setting` is to directly import the software package.  
  <sup>1</sup> See [TM ROS Driver vs TMflow software Usage : Import Data Table Setting](https://github.com/TechmanRobotInc/TM_Export).  
-Or the previously provided method as follows: (**Note**: TMflow software version changes may have slightly different settings.)  
+ Or the previously provided method as follows:  (Note: TMflow software version changes may have slightly different settings.)  
 The user can manually click the `Data Table Setting` <sup>2</sup> item and check the following boxes as item _predefined_ <sup>3</sup> to receive/send specific data: 
 >
 >       - [x] Robot_Error
@@ -122,7 +124,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >
 > 5. Press the Play/Pause Button on the Robot Stick to start running this _Listen task_ project.
 >
->     **Note**: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
+>     Note: Software TMflow version changes may have slightly different settings.([SW1.76_Rev2.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-76_rev2-00/)) ([SW1.82_Rev1.00](https://www.tm-robot.com/zh-hant/wpdmdownload/software-manual-tmflow_sw1-82_rev1-00/))<br/>
 
 
 ###  &sect; __Remote connection to TM ROBOT__
@@ -204,11 +206,92 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
+> __Usage with Gazebo Simulation__ 
+>
+> See [Gazebo tutorial](https://classic.gazebosim.org/tutorials?tut=ros_installing&cat=connect_ros) to install the Gazebo packages.<br/>
+>> Then, install the other joint_trajectory_controller plugin: <br/>
+`` sudo apt-get install ros-melodic-joint-trajectory-controller``<br/>
+`` sudo apt-get install ros-melodic-rqt-joint-trajectory-controller``<br/>
+>
+> The tm_gazebo package contains the URDF/Xacro/SDF model files to simulate the TM Robot in Gazebo.
+>
+> A simple SDF model demonstrating the generation of a virtual TM robot to Gazebo using `rosrun` command, by typing
+> To open the terminal 1: Startup ROS core
+> ```bash
+> roscore
+> ```
+> In a new terminal 2: Source ROS environment settings, specify the model database path for Gazebo, then run Gazebo with ROS. 
+> ```bash
+> source /opt/ros/melodic/setup.bash
+> cd <workspace>
+> catkin_make
+> source ./devel/setup.bash
+> export GAZEBO_MODEL_PATH=~/<workspace>/src/tm_gazebo/models/
+> rosrun gazebo_ros gazebo
+> ```
+> 3. In another new terminal 3: Source ROS environment settings, then spawn TM Robot model (Example: TM5-900) in Gazebo.
+> ```bash
+> source /opt/ros/melodic/setup.bash
+> cd <workspace>
+> source ./devel/setup.bash
+> rosrun gazebo_ros spawn_model -database tm5-900 -sdf -model tm5-900 -x 0 -y 0 -z 0
+> ```
+>
+> Or directly to bring up Gazebo environment in simulation paused mode with virtual TM5-900 robot using `roslaunch` command in a terminal, by typing
+>> Note: When opening each terminal, don't forget to set up the ROS environment first.
+>
+> ```bash
+> roslaunch tm_gazebo tm5-900_gazebo_example.launch
+> ```
+>
+> There are several built-in launch files that can be used to start the TM Robot simulated robot using the nominal Xacro robot model settings in Gazebo.
+> The common command's form to bring up the TM simulated robot in Gazebo as follows: 
+>
+> ```bash
+> roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
+> ```
+>
+> The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12 and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".<br/>
+> :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12_gazebo.launch.<br/>
+> :bookmark_tabs: Note2: If the user need to improve end-point simulation accuracy, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
+
+> __Using Moveit! with Gazebo Simulator__
+>
+>  You can also use MoveIt! to control the simulated robot which is configured to run alongside Gazebo.
+> 
+> 1. Launch Gazebo simulation and load the ros_control controllers:
+> ```bash
+> roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
+> ```
+> After the Gazebo simulator is running, proceed to the next command to launch moveit!.
+> 
+> 2. Launch the combined of moveit! and Gazebo to allow motion planning plugin run:
+> ```bash
+> roslaunch <tm_robot_type>-moveit_config <tm_robot_type>_moveit_planning_execution_gazebo.launch
+> ```
+> Taking the TM5-900 robot as an example, use the commands introduced above:
+> Note: If you have started some executable programs with ROS commands in some terminal windows, it is recommended that you close them and then execute the following commands.
+> 1. To open the terminal 1: Running with Gazebo<br/>
+``source /opt/ros/melodic/setup.bash``<br/>
+``cd <workspace>``<br/>
+``source ./devel/setup.bash``<br/>
+``roslaunch tm_gazebo tm5-900_gazebo.launch``<br/>
+> 
+> 2. In a new terminal 2: Running with moveit!<br/>
+``roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution_gazebo.launch``<br/>
+>
+> :bookmark_tabs: Note1: Remember to close all these executables when you no longer use them for Gazebo simulations.<br/>
+> :bookmark_tabs: Note2: Sometimes when gzserver is not properly shut down with ROS or cannot run Gazebo again after shutting down, you can try to kill the corresponding process with the following command.<br/>
+>>:bulb: **Tip**: To kill both Gazebo server and Gazebo client executables.<br/>
+>> ``sudo killall -9 gazebo gzserver gzclient``<br/>
+>
+
 
 ## __4. Program script demonstration__
 
 ### &sect; __Demo package description__
-> There are some demo codes showing how to use TM ROS driver.<br/>
+> This chapter describes the _demo_ package and the code used as a c++ programming example, showing how to program robot scripts (TM Robot Expressions) through the TM ROS driver connection. <br/>
 >
 > * demo_send_script:<br/>
 In this demo code, it shows how to send a __Listen node__ script to control the TM Robot. <br/>
@@ -265,7 +348,7 @@ In this demo code, the user can use send_script service sending a script to leav
 
 
 ### &sect; __Usage with demo code & driver__
-> **Note**: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> Note: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
 > 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
 ``mkdir ~/tmdriver_ws``<br/>
 ``cd ~/tmdriver_ws``<br/>
@@ -291,7 +374,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 
 
 ## __5. TM GUI debugging and demonstration__
-The GUI displays tm_driver connection status, sct, sta, svr messages and robot status. Easily judge the message between the driver and the robot through the GUI display. If the connection fails, the user can also try to send a reconnect command on this GUI for debugging.
+This chapter describes a simplified GUI for displaying tm_driver connection status, sct, sta, svr messages, and robot status. The user can optionally install the _ui_for_debug_and_demo_ package to aid in viewing messages between the driver and the robot through the GUI display. If the driver connection fails, the user can also try to send a reconnect command on this GUI for debugging.
 
 
 ### &sect; GUI Debugging description
@@ -311,7 +394,7 @@ The GUI displays tm_driver connection status, sct, sta, svr messages and robot s
 
 
 ### &sect; Usage with GUI debugging
-> **Note**: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
+> Note: If the user have even successfully built a specific code(tmr_ros1), the user only need to change to the TM driver workspace path  ``cd ~/tmdriver_ws`` , and then directly refer to steps 5~7 below. <br/>
 > 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change current directory into the workspace directory path.<br/>
 ``mkdir ~/tmdriver_ws``<br/>
 ``cd ~/tmdriver_ws``<br/>
@@ -336,7 +419,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 
 ## __6. TM Robot corrected kinematics value loading and robot description file generation__
 Real kinematic values vary from TM robot to another one as each robot is calibrated at the factory.<br/>
-The user can use the script program to extract specific kinematic values from your TM robot, which are taken into account by a python script function using a specific set of commands to automatically generate a new URDF or Xacro robot model description file.
+This chapter describes that the user can use a script program to extract specific kinematic values from your TM robot. The python script function automatically generates a new URDF or Xacro robot model description file using a specific set of commands.
 >> If the user just want to use the TM Robot nominal model to control the robot, the user can skip the rest of this chapter.<br/>
 
 ### &sect; __Corrected kinematics value description__

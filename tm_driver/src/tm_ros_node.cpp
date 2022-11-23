@@ -9,7 +9,7 @@
 TmRosNode::TmRosNode(const std::string &host)
     //: iface_(host, nullptr, &sct_cv_)
     : iface_(host, nullptr, nullptr)
-    , as_(nh_, "joint_trajectory_action"
+    , as_(nh_, "follow_joint_trajectory"
         , boost::bind(&TmRosNode::goalCB, this, _1)
         , boost::bind(&TmRosNode::cancelCB, this, _1)
         , false)

@@ -11,7 +11,7 @@
   <rosparam command="load" file="$(find tm14-moveit_config)/config/joint_names.yaml"/>
  
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
-  <!--  - if sim=false, a robot_ip argument is required -->
+  <!--  - if sim = false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
   <arg name="robot_ip" unless="$(arg sim)" />
  
@@ -20,6 +20,11 @@
     <arg name="load_robot_description" value="true" />
   </include>
 
+
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="/follow_joint_trajectory" to="/joint_trajectory_action"/>
+  <remap unless="$(arg sim)" from="/follow_joint_trajectory" to="/arm_controller/follow_joint_trajectory"/>
+  
   <!-- run the robot simulator and action interface nodes -->
   <group if="$(arg sim)">
     <include file="$(find industrial_robot_simulator)/launch/robot_interface_simulator.launch" />

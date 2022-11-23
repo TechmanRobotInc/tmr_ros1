@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model_name" default="tm5x-700"/>
+  <arg name="xacro_model" default="tm5x-700"/>
+  <!-- Robot Pose from [x,y,z,roll,pitch,yaw] --> 
+  <arg name="init_pose" default="-x 0.0 -y 0.0 -z 0.0 -R 0.0 -P 0.0 -Y 0.0"/>
+
+  <!-- Gazebo specific options -->
+  <arg name="world" default="$(find tm_gazebo)/worlds/empty.world"/>
+  <arg name="debug" default="false"/>
+  <arg name="gazebo_gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+
+  <!-- robot_state_publisher parameters -->
+  <arg name="publish_frequency" default="125"/>
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+  </include>
+
+  <!-- default PID configurations from YAML file to parameter server -->
+  <!-- <rosparam file="$(find tm_gazebo)/config/gazebo_ros_control.yaml" command="load"/> -->
+
+  <!-- send robot urdf.xacro to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find tm_gazebo)/xacro/$(arg xacro_model).urdf.xacro'" /> 
+
+  <!-- unpause only after loading robot model -->
+  <arg name="unpause" value="$(eval '' if arg('paused') else '-unpause')" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param robot_description -model $(arg model_name) $(arg unpause) $(arg init_pose)"
+    respawn="false" output="screen" />
+  
+  <!-- robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+    <param name="publish_frequency" type="double" value="$(arg publish_frequency)" />
+
+  <!-- Fake Calibration -->
+  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
+    args="pub /calibrated std_msgs/Bool true" />
+
+  <!-- joint_state_controller -->
+  <rosparam file="$(find tm_gazebo)/config/joint_state_controller.yaml" command="load"/>
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn joint_state_controller" respawn="false" output="screen"/>
+
+  <!-- start arm controller -->
+  <rosparam file="$(find tm_gazebo)/config/tm_arm_controller.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <!-- load other controllers -->
+  <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager"
+     args="load joint_group_position_controller" respawn="false" output="screen"/>
+
+</launch>

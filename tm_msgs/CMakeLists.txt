@@ -26,6 +26,8 @@ add_service_files(
   SetEvent.srv
   SetIO.srv
   #SetPayload.srv
+  JointMove.srv
+  CartesianMove.srv
   SetPositions.srv
   AskSta.srv
 )

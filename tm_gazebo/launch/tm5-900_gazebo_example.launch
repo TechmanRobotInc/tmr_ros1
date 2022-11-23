@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- exmaple: send robot.urdf to param server, spawn robot joint pose, and starts gazebo in paused mode -->
+  <arg name="model_name" default="tm5-example"/>
+  <arg name="urdf_model" default="tm5-900-nominal"/>
+  <!-- Robot Pose from [joint1,joint2,joint3,joint4,joint5,joint6] --> 
+  <arg name="init_pose" default="-J shoulder_1_joint 0.0 -J shoulder_2_joint 0.0 -J elbow_joint 0.0 -J wrist_1_joint 0.0 -J wrist_2_joint 0.0 -J wrist_3_joint 0.0"/>
+
+  <!-- Gazebo specific options -->
+  <arg name="world" default="$(find tm_gazebo)/worlds/empty.world"/>
+  <arg name="debug" default="false"/>
+  <arg name="gazebo_gui" default="true"/>
+  <arg name="paused" default="true"/>
+  <arg name="use_sim_time" default="true"/>
+
+  <!-- robot_state_publisher parameters -->
+  <arg name="publish_frequency" default="125"/>
+
+  <!-- remap topics to conform to ROS-I specifications, if controllers use joint_trajectory_action -->
+  <!-- 
+  <remap from="/arm_controller/follow_joint_trajectory" to="/joint_trajectory_action" />
+  <remap from="/arm_controller/state" to="/feedback_states" />
+  <remap from="/arm_controller/command" to="/joint_path_command"/>
+  -->
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+  </include>
+
+  <!-- default PID configurations from YAML file to parameter server -->
+  <rosparam file="$(find tm_gazebo)/config/gazebo_ros_control.yaml" command="load"/>
+
+  <!-- send robot urdf to param server -->
+  <param name="robot_description" textfile="$(find tm_gazebo)/urdf/$(arg urdf_model).urdf" />  
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param robot_description -model $(arg model_name) $(arg init_pose)"
+    respawn="false" output="screen" />
+  
+  <!-- robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+    <param name="publish_frequency" type="double" value="$(arg publish_frequency)" />
+
+  <!-- Fake Calibration -->
+  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
+    args="pub /calibrated std_msgs/Bool true" />
+
+  <!-- joint_state_controller -->
+  <rosparam file="$(find tm_gazebo)/config/joint_state_controller.yaml" command="load"/>
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn joint_state_controller" respawn="false" output="screen"/>
+
+  <!-- start arm controller -->
+  <rosparam file="$(find tm_gazebo)/config/tm_arm_controller.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager"
+    args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <!-- load other controllers -->
+  <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager"
+     args="load joint_group_position_controller" respawn="false" output="screen"/>
+
+</launch>
