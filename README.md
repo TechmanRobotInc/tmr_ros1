@@ -12,7 +12,7 @@ If the user want to know how to use the ROS2 driver, please visit the [TM ROS2 d
 
 
 More information: TM ROS driver support list
-|ROS Distribution (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
+|ROS Distro (ROS Environment Setup)|TM ROS driver version|TM ROS Vision|Remark: switch GitHub branches|
 |:---|:---|:---:|:---:|
 |[**<font color=#808080>ROS Noetic Ninjemys**](http://wiki.ros.org/noetic)|[**<font color=#800000>TM ROS1 Noetic driver**](https://github.com/TechmanRobotInc/tmr_ros1/tree/noetic)|supported|noetic|
 |[**<font color=#808080>ROS Melodic Morenia**](http://wiki.ros.org/melodic)|[**<font color=#800000>TM ROS1 Melodic driver**](https://github.com/TechmanRobotInc/tmr_ros1/)|x|master|
@@ -49,7 +49,7 @@ send "Stop", "Pause" or "Resume" command to _Listen node_
 > - _/tm_driver/set_io_ (see _tm_msgs/srv/SetIO.srv_) :  
 send digital or analog output value to _Listen node_  
 > - _/tm_driver/set_position (see _tm_msgs/srv/SetPosition.srv_) :  
-send motion command to _Listen node_, the motion type include PTP, LINE, CIRC ans PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
+send motion command to _Listen node_, the motion type include PTP, LINE, CIRC and PLINE, the position value is joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
 >
 >
 
