@@ -159,9 +159,9 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > Then, run the driver to maintain the connection with TM Robot by typing 
 >
 >```bash
-> rosrun tm_driver tm_driver <robot_ip_address>
+> rosrun tm_driver tm_driver robot_ip:=<robot_ip_address>
 >```
-> Example :``rosrun tm_driver tm_driver 192.168.10.2``, if the <robot_ip_address> is 192.168.10.2
+> Example :``rosrun tm_driver tm_driver robot_ip:=192.168.10.2``, if the <robot_ip_address> is 192.168.10.2
 >
 > Now, the user can use a new terminal to run each ROS node or command, but don't forget to source the correct setup shell files as starting a new terminal.
 
@@ -202,8 +202,8 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```
 >
 > The parameter `<robot_ip_address>` means the IP address of the TM Robot.<br/>
-> :bookmark_tabs: Note2: If your real Robot is a TM12, in the above example, you should type "tm12-moveit_config" to instead of "tm5-900-moveit_config" and type "tm12_moveit_planning_execution.launchg" to instead of "tm5-900_moveit_planning_execution.launch".<br/>
-> :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launchg" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
+> :bookmark_tabs: Note2: If your real Robot is a TM12, in the above example, you should type "tm12-moveit_config" to instead of "tm5-900-moveit_config" and type "tm12_moveit_planning_execution.launch" to instead of "tm5-900_moveit_planning_execution.launch".<br/>
+> :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launch" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default is to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 
 > __Usage with Gazebo Simulation__ 
@@ -364,7 +364,7 @@ In this demo code, the user can use send_script service sending a script to leav
 ``roscore``<br/>
 > 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM Robot by typing<br/>
 ``source ./devel/setup.bash``<br/>
-``rosrun tm_driver tm_driver <robot_ip_address>``<br/>
+``rosrun tm_driver tm_driver robot_ip:=<robot_ip_address>``<br/>
 The <robot_ip_address> is the IP address of the TM Robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
 > 7. In another new terminal: Source setup.bash in the workspace path and type specific demo node function which the user want to study for applications. For example: the user select to run demo_set_io, the user can type<br/>
 ``source ./devel/setup.bash``<br/>
@@ -410,7 +410,7 @@ This chapter describes a simplified GUI for displaying tm_driver connection stat
 ``roscore``<br/>
 > 6. In a new terminal 2: Source setup.bash in the workspace path and run the driver to connect to TM Robot by typing<br/>
 ``source ./devel/setup.bash``<br/>
-``rosrun tm_driver tm_driver <robot_ip_address>``<br/>
+``rosrun tm_driver tm_driver robot_ip:=<robot_ip_address>``<br/>
 The <robot_ip_address> is the IP address of the TM Robot, the user can get it through TM Flow, for example 192.168.10.2<br/>
 > 7. In another new terminal 3: Source setup.bash in the workspace path and start GUI debug by typing<br/>
 ``source ./devel/setup.bash``<br/>
@@ -462,7 +462,7 @@ This chapter describes that the user can use a script program to extract specifi
 > source /opt/ros/melodic/setup.bash
 > cd <workspace>
 > source ./devel/setup.bash
-> rosrun tm_driver tm_driver <robot_ip_address>
+> rosrun tm_driver tm_driver robot_ip:=<robot_ip_address>
 > ```
 > The parameter `<robot_ip_address>` means the IP address of your TM Robot, the user can get it through TM Flow.<br/>
 > 
@@ -513,7 +513,7 @@ This chapter describes that the user can use a script program to extract specifi
 > source /opt/ros/melodic/setup.bash
 > cd <workspace>
 > source ./devel/setup.bash
-> rosrun tm_driver tm_driver <robot_ip_address>
+> rosrun tm_driver tm_driver robot_ip:=<robot_ip_address>
 > ```
 > The parameter `<robot_ip_address>` means the IP address of your TM Robot, the user can get it through TM Flow.<br/>
 > 

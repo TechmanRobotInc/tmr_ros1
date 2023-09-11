@@ -160,7 +160,7 @@
     <origin rpy="0.000000 -0.000000 0.000000" xyz="0.000000 0.000000 0.165200"/>
     <axis xyz="0 0 1"/>
     <!--limit-->
-    <limit effort="353" lower="-4.71238898038" upper="4.71238898038" velocity="2.09439510239"/>
+    <limit effort="353" lower="-6.28318530718" upper="6.28318530718" velocity="2.09439510239"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <link name="link_1">
@@ -187,7 +187,7 @@
     <origin rpy="-1.570796 -1.570796 0.000000" xyz="0.000000 0.000000 0.000000"/>
     <axis xyz="0 0 1"/>
     <!--limit-->
-    <limit effort="353" lower="-3.14159265359" upper="3.14159265359" velocity="2.09439510239"/>
+    <limit effort="353" lower="-6.28318530718" upper="6.28318530718" velocity="2.09439510239"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <link name="link_2">
@@ -241,7 +241,7 @@
     <origin rpy="0.000000 -0.000000 1.570796" xyz="0.457900 0.000000 -0.156300"/>
     <axis xyz="0 0 1"/>
     <!--limit-->
-    <limit effort="54" lower="-3.14159265359" upper="3.14159265359" velocity="2.61799387799"/>
+    <limit effort="54" lower="-6.28318530718" upper="6.28318530718" velocity="2.61799387799"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <link name="link_4">
@@ -268,7 +268,7 @@
     <origin rpy="1.570796 -0.000000 0.000000" xyz="0.000000 -0.106000 0.000000"/>
     <axis xyz="0 0 1"/>
     <!--limit-->
-    <limit effort="54" lower="-3.14159265359" upper="3.14159265359" velocity="2.61799387799"/>
+    <limit effort="54" lower="-6.28318530718" upper="6.28318530718" velocity="2.61799387799"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <link name="link_5">
@@ -295,7 +295,7 @@
     <origin rpy="1.570796 -0.000000 0.000000" xyz="0.000000 -0.113150 0.000000"/>
     <axis xyz="0 0 1"/>
     <!--limit-->
-    <limit effort="54" lower="-4.71238898038" upper="4.71238898038" velocity="3.14159265359"/>
+    <limit effort="54" lower="-6.28318530718" upper="6.28318530718" velocity="3.14159265359"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <link name="link_6">

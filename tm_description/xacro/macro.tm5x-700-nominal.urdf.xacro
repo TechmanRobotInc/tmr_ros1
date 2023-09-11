@@ -4,12 +4,12 @@
   <xacro:include filename="$(find tm_description)/xacro/macro.inertial.xacro" />
 
   <xacro:macro name="tm5x-700" params="ns prefix color:=none format:=obj
-    shoulder_1_joint_lower_limit:=${radians(-270)}    shoulder_1_joint_upper_limit:=${radians(270)}
-    shoulder_2_joint_lower_limit:=${radians(-180)}    shoulder_2_joint_upper_limit:=${radians(180)}
+    shoulder_1_joint_lower_limit:=${radians(-360)}    shoulder_1_joint_upper_limit:=${radians(360)}
+    shoulder_2_joint_lower_limit:=${radians(-360)}    shoulder_2_joint_upper_limit:=${radians(360)}
     elbow_joint_lower_limit:=${radians(-155)}    elbow_joint_upper_limit:=${radians(155)}
-    wrist_1_joint_lower_limit:=${radians(-180)}    wrist_1_joint_upper_limit:=${radians(180)}
-    wrist_2_joint_lower_limit:=${radians(-180)}    wrist_2_joint_upper_limit:=${radians(180)}
-    wrist_3_joint_lower_limit:=${radians(-270)}    wrist_3_joint_upper_limit:=${radians(270)}
+    wrist_1_joint_lower_limit:=${radians(-360)}    wrist_1_joint_upper_limit:=${radians(360)}
+    wrist_2_joint_lower_limit:=${radians(-360)}    wrist_2_joint_upper_limit:=${radians(360)}
+    wrist_3_joint_lower_limit:=${radians(-360)}    wrist_3_joint_upper_limit:=${radians(360)}
     shoulder_1_joint_velocity_limit:=${radians(180)}    
     shoulder_2_joint_velocity_limit:=${radians(180)}
     elbow_joint_velocity_limit:=${radians(180)}    
