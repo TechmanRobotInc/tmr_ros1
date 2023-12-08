@@ -4,8 +4,10 @@ import rospy
 from tm_msgs.msg import *
 from tm_msgs.srv import *
 
+
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + ': subcmd: %s, subdata: %s\n', data.subcmd, data.subdata)
+
 
 def ask_sta_demo():
     rospy.init_node('ask_sta_demo')
@@ -31,6 +33,7 @@ def ask_sta_demo():
     rospy.loginfo('subcmd: %s, subdata: %s\n', res1.subcmd, res1.subdata)
 
     rospy.sleep(0.5)
+
 
 if __name__ == '__main__':
     try:

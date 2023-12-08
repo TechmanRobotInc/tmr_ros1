@@ -30,8 +30,7 @@ int encoding_to_mat_type(const std::string & encoding){
   }
 }
 
-void imageCallback(const sensor_msgs::ImageConstPtr& msg)
-{
+void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   try{
     cv::Mat frame(msg->height, msg->width, encoding_to_mat_type(msg->encoding),
       const_cast<unsigned char *>(msg->data.data()), msg->step);
@@ -41,28 +40,31 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
     std::cout << "Width : " << frame.size().width << std::endl;
     std::cout << "Height: " << frame.size().height << std::endl;
     frame.copyTo(image);
-    std::cout<<"after set this->image = frame";
+    std::cout<<"after setting image to frame";
   }
   catch(std::runtime_error &exception){
-    std::cout<<"there is a exception "<< exception.what()<< std::endl;
+    std::cout<<"there is an exception "<< exception.what()<< std::endl;
   }
 }
-int show_image(){
+
+void show_image(){
   while(true){
-    cv::imshow("view",image );
+    cv::imshow("showimage",image );
     cv::waitKey(30);
   }
 }
-int main(int argc, char **argv)
-{
+
+int main(int argc, char **argv){
   ros::init(argc, argv, "image_listener");
   ros::NodeHandle nh;
-  cv::namedWindow("view");
-  //cv::Mat frame;
-  //cv::imshow("view",frame);
+
+  cv::namedWindow("showimage");
 
   ros::Subscriber sub = nh.subscribe("techman_image", 1000, imageCallback);
   std::thread(show_image).detach();
   ros::spin();
-  cv::destroyWindow("view");
+
+  cv::destroyWindow("showimage");
+
+  return 0;
 }

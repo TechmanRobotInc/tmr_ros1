@@ -12,11 +12,11 @@ void SvrResponseCallback(const tm_msgs::SvrResponse::ConstPtr& msg)
 
 int main(int argc, char **argv)
 {
-
   ros::init(argc, argv, "SvrResponse");
   ros::NodeHandle nh_demo_get;
   ros::Subscriber sub = nh_demo_get.subscribe("tm_driver/svr_response", 1000, SvrResponseCallback);
   ros::spin();
+  
   return 0;  		  	  		
 }
 

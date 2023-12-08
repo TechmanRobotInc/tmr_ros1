@@ -29,5 +29,6 @@ int main(int argc, char **argv)
   ros::NodeHandle nh_demo_get;
   ros::Subscriber sub = nh_demo_get.subscribe("feedback_states", 1000, TMmsgCallback);
   ros::spin();
+
   return 0;  		  	  		
 }

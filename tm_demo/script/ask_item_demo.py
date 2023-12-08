@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+import rospy
+from tm_msgs.msg import *
+from tm_msgs.srv import *
+
 """
 Demo: Ask item (HandCamera_Value, Delta)
 'ask_item' service send 'Read' request command to controller.
@@ -21,12 +25,10 @@ the service call is blocking with timeout 'wait_time' sec. until the result is r
 You can get result in response data.
 """
 
-import rospy
-from tm_msgs.msg import *
-from tm_msgs.srv import *
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + ': id: %s, content: %s\n', data.id, data.content)
+
 
 def ask_item_demo():
     rospy.init_node('ask_item_demo')
@@ -78,7 +80,7 @@ def ask_item_demo():
 
     for example:
     "DeltaDH={-0.001059821,0.02508766,0.009534874,0,0.001116668,0.06614932,0.308224,0.0287381,0.06797475,-0.0319523,0.3752921,0.06614756,-0.006998898,0.06792655,-0.06083903,0.02092069,0.02965812,-0.1331249,0.06793034,0.02077797,0.08265772,0.03200645,0.01835932,0.06145732,0.08273286,0.6686108,0.6972408,-0.1793097,-0.0794057,1.425708}"
- 
+
     { d_theta1, d_alpha1, d_a1, d_d1, d_beta1, d_theta2, .... }  unit: mm | deg
     (prefix: d -> delta)
 
@@ -97,6 +99,7 @@ def ask_item_demo():
     """
 
     rospy.sleep(0.5)
+
 
 if __name__ == '__main__':
     try:

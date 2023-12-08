@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.0.2)
-project(demo)
+project(image_sub)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -7,12 +7,14 @@ project(demo)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+find_package(OpenCV REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  sensor_msgs
+  OpenCV
   std_msgs
   tm_msgs
+  cv_bridge
 )
 
 ## System dependencies are found with CMake's conventions
@@ -136,19 +138,9 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/demo_node.cpp)
-add_executable(demo_send_script   src/demo_send_script.cpp)
-add_executable(demo_ask_sta       src/demo_ask_sta.cpp)
-add_executable(demo_connect_tm    src/demo_connect_tm.cpp)
-add_executable(demo_set_event     src/demo_set_event.cpp)
-add_executable(demo_set_io        src/demo_set_io.cpp)
-add_executable(demo_set_positions src/demo_set_positions.cpp)
-add_executable(demo_write_item    src/demo_write_item.cpp)
-add_executable(demo_ask_item      src/demo_ask_item.cpp)
-add_executable(demo_get_feedback      get_status_demo_src/demo_get_feedback.cpp)
-add_executable(demo_get_sct_response  get_status_demo_src/demo_get_sct_response.cpp)
-add_executable(demo_get_sta_response  get_status_demo_src/demo_get_sta_response.cpp)
-add_executable(demo_get_svr_response  get_status_demo_src/demo_get_svr_response.cpp)
-add_executable(demo_leave_listen_node src/demo_leave_listen_node.cpp)
+add_executable(sub_img src/sub_img.cpp)
+
+target_link_libraries(sub_img ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -159,61 +151,13 @@ add_executable(demo_leave_listen_node src/demo_leave_listen_node.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_send_script ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_ask_sta ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_connect_tm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_set_event ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_set_io ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_set_positions ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_write_item ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_ask_item ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_get_feedback ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_get_sct_response ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_get_sta_response ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_get_svr_response ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(demo_leave_listen_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(sub_img ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
- target_link_libraries(demo_send_script
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_ask_sta
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_connect_tm
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_set_event
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_set_io
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_set_positions
-   ${catkin_LIBRARIES}
- ) 
- target_link_libraries(demo_write_item
-   ${catkin_LIBRARIES}
- ) 
- target_link_libraries(demo_ask_item
-   ${catkin_LIBRARIES}
- ) 
- target_link_libraries(demo_get_feedback
-   ${catkin_LIBRARIES}
- )  
- target_link_libraries(demo_get_sct_response
-   ${catkin_LIBRARIES}
- ) 
- target_link_libraries(demo_get_sta_response
-   ${catkin_LIBRARIES}
- )
- target_link_libraries(demo_get_svr_response
-   ${catkin_LIBRARIES}
- )  
- target_link_libraries(demo_leave_listen_node
+ target_link_libraries(sub_img
    ${catkin_LIBRARIES}
  ) 
 #############

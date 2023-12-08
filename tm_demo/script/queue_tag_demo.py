@@ -8,7 +8,7 @@ from tm_msgs.srv import *
 Demo: Ask QueueTag
 
 Notice:
-1. this demo has robot movement! 
+1. this demo has robot movement!
     robot will move to home pose and rotate J3 to about 70 degree
 2. start from a new flow so that the Tag state is all 'false'
 
@@ -17,15 +17,14 @@ Two way to check whether the motion command is done:
 1. Listening to 'tm_driver/sta_response' topic.
 2. Polling QueueTag state by 'tm_driver/ask_sta' service.
 
-
 set QueueTag:
 using 'tm_driver/set_event' service
 
 ask QueueTag:
 using 'tm_driver/ask_sta' service,
 and 'tm_driver/sta_response' topic
-
 """
+
 
 def callback(msg):
     rospy.loginfo(rospy.get_caller_id() + ': %s', msg.subdata)
@@ -33,6 +32,7 @@ def callback(msg):
         data = msg.subdata.split(',')
         if data[1] == 'true':
             rospy.loginfo('point (Tag %s) is reached', data[0])
+
 
 def queue_tag_demo(by_polling):
     rospy.init_node('queue_tag_demo')
@@ -52,10 +52,10 @@ def queue_tag_demo(by_polling):
 
     # 4 points (joint angle[rad])
     points = [
-        [0.,0.,0.,0.,0.,0.],
-        [0.,0.,0.4,0.,0.,0.],
-        [0.,0.,0.8,0.,0.,0.],
-        [0.,0.,1.2,0.,0.,0.]
+        [0., 0., 0., 0., 0., 0.],
+        [0., 0., 0.4, 0., 0., 0.],
+        [0., 0., 0.8, 0., 0., 0.],
+        [0., 0., 1.2, 0., 0., 0.]
     ]
 
     # send 4 motion command
@@ -78,9 +78,10 @@ def queue_tag_demo(by_polling):
     else:
         rospy.spin()
 
+
 if __name__ == '__main__':
     try:
-        #queue_tag_demo(False)
+        # queue_tag_demo(False)
         queue_tag_demo(True)
     except rospy.ROSInterruptException:
         pass

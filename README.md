@@ -452,7 +452,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >
 > ```bash
 > source ./devel/setup.bash
-> rosrun demo demo_get_image_node
+> rosrun image_sub sub_img
 > ```
 >
 > Then, the viewer will display image data from _TMflow_.

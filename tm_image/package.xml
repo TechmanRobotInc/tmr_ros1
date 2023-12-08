@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>tm_image</name>
-  <version>0.0.0</version>
-  <description>The tm_image package</description>
+  <version>1.0.0</version>
+  <description>tm_image</description>
 
-  <maintainer email="yhtsai@todo.todo">yhtsai</maintainer>
+  <maintainer email="leo.wu@tm-robot.com">leo wu</maintainer>
+  <maintainer email="yh.wang@tm-robot.com">Yh Wang</maintainer>
 
   <license>BSD</license>
 
@@ -20,9 +21,6 @@
   <exec_depend>tm_msgs</exec_depend>
   <exec_depend>cv_bridge</exec_depend> 
 
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>
