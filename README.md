@@ -231,7 +231,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```
 > :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running. 
 > 
-> Then, run the driver to maintain the connection with TM Robot by typing 
+> Then, run the driver to maintain the connection with the real TM Robot by typing 
 >
 >```bash
 > rosrun tm_driver tm_driver <robot_ip_address>
@@ -242,12 +242,20 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 
 > __Usage with MoveIt__ 
 >
-> See [Moveit tutorial](https://ros-planning.github.io/moveit_tutorials/) to install the MoveIt packages.<br/>
+> See [Moveit tutorial](https://moveit.ros.org/install/) to install the MoveIt packages.<br/>
+> ```bash
+> sudo apt install ros-noetic-moveit
+> ```
+>
+> Then, use the following command to install ROS-Industrial packages on Ubuntu, working with ROS Noetic:
+> ```bash
+> sudo apt-get install ros-noetic-industrial-robot-simulator
+> ```
 >
 > :bulb: Do you prepare the __TM Robot__ ready ? Make sure that TM Robot's operating software (__TMflow__) network settings are ready and the __Listen node__ is running.<br/>
 > **Note**: The following directive settings vary slightly due to package changes. The earlier TM ROS1 TM5, TM12, TM14 descriptions, and related moveit_config packages were migrated to [another](https://github.com/TechmanRobotInc/earlier-descriptions) repository.<br/>
 >
-> To bring up the MoveIt environment in simulation mode with virtual TM Robot (Example: TM5-900), by typing<br/>
+> To bring up the MoveIt environment in simulation mode with the virtual TM Robot (Example: TM5-900), by typing<br/>
 >
 >
 > ```bash
@@ -260,7 +268,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```bash
 > roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=True
 > ```
-> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12 and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
 > <br/>
 >
 > The user can also manipulate real TM5-900 Robot (Example: TM5-900) to run, by typing<br/>
