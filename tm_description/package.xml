@@ -9,7 +9,8 @@
   <author email="ken.tsai@tm-robot.com">Ken Tsai</author>
   <maintainer email="ken.tsai@tm-robot.com">Ken Tsai</maintainer>
   <maintainer email="yh.wang@tm-robot.com">Yh Wang</maintainer>
-  <license>BSD</license>
+
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>

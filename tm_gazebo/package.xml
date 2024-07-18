@@ -9,7 +9,7 @@
   <author email="yh.wang@tm-robot.com">yh.wang</author>
   <maintainer email="yh.wang@tm-robot.com">yh.wang</maintainer>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
