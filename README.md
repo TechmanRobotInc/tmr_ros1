@@ -118,12 +118,12 @@ The FeedbackState includes robot position, error code, and io status, etc.
 > __Service Server__
 >
 > - _/tm_driver/send_script_ (see _tm_msgs/srv/SendScript.srv_) :  
-send robot script (_TM Robot Expression_) to _Listen node_  
+send robot script (_TM Robot Expression_) to _Listen Node_  
 > - _/tm_driver/set_event_ (see _tm_msgs/srv/SetEvent.srv_) :  
-send "Stop", "Pause" or "Resume" commands to _Listen node_  
+send "Stop", "Pause" or "Resume" commands to _Listen Node_  
 > - _/tm_driver/set_io_ (see _tm_msgs/srv/SetIO.srv_) :  
-send digital or analog output value to _Listen node_  
-> - _/tm_driver/set_position (see _tm_msgs/srv/SetPosition.srv_) :  
+send digital or analog output value to _Listen Node_  
+> - _/tm_driver/set_positions (see _tm_msgs/srv/SetPositions.srv_) :  
 send motion command to _Listen node_, the motion type include PTP, LINE, CIRC, and PLINE, the position value is a joint angle(__J__) or tool pose(__T__), see [[Expression Editor and Listen Node.pdf]]
 >
 >
@@ -182,7 +182,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 >       - [x] END_DI0~DI2
 >       - [x] END_AI0
 >
->    <sup>2</sup> <u>Turn off</u> Ethernet Slave. Let "STATUS:   __Disable__" be displayed on the Ethernet Slave setting page, then click `Data Table Setting` to enter the next page for related settings.  
+>    <sup>2</sup> <u>Turn off</u> Ethernet Slave. Let "STATUS:   __Disable__" displayed on the Ethernet Slave setting page, then click `Data Table Setting` to enter the next page for related settings.  
 >    <sup>3</sup> The checked items listed above must <u>all</u> be selected for TM ROS setting.
 >
 >    When you need to check more about the maximum, minimum, and average calculation properties of joint torque, the _three checked items_ <sup>4</sup> listed below can be checked individually or all of them, please leave them unchecked when not in use.
@@ -239,6 +239,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > Example :``rosrun tm_driver tm_driver 192.168.10.2``, if the <robot_ip_address> is 192.168.10.2
 >
 > Now, the user can use a new terminal to run each ROS node or command, but don't forget to source the correct setup shell files as starting a new terminal.
+> Note: When you finish executing your developed scripts or motion commands through the TM ROS driver connection, press __CTRL + C__ in all terminal windows to shut everything down.
 
 > __Usage with MoveIt__ 
 >
@@ -268,7 +269,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```bash
 > roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=True
 > ```
-> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, tm14, tm16, and tm20 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
 > <br/>
 >
 > The user can also manipulate real TM5-900 Robot (Example: TM5-900) to run, by typing<br/>
@@ -285,9 +286,11 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > ```
 >
 > The parameter `<robot_ip_address>` means the IP address of the TM Robot.<br/>
+> Note: When you have finished, press CTRL + C in all terminal windows to shut everything down.<br/>
 > :bookmark_tabs: Note2: If your real Robot is a TM12, in the above example, you should type "tm12-moveit_config" to instead of "tm5-900-moveit_config" and type "tm12_moveit_planning_execution.launch" to instead of "tm5-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launch" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
+> :bookmark_tabs: Note5: __Running two tm ros drivers at the same IP address is not allowed.__ Since the tm driver node has been written into the moveit launch file, there is no need to execute _rosrun tm_driver tm_driver <robot_ip_address>_.<br/>
 
 > __Usage with Gazebo Simulation__ 
 >
@@ -470,7 +473,8 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > rosrun image_sub sub_img
 > ```
 >
-> Then, the viewer will display image data from _TMflow_.
+> Then, the viewer will display image data from _TMflow_.<br/>
+> **Note**: When you have finished, press CTRL + C in all terminal windows to shut everything down.<br/>
 
 
 ## __5. Program script demonstration__
@@ -488,15 +492,13 @@ The user can use a service named "send_script" to send the script.<br/>
 >
 > * demo_ask_item:<br/>
 In this demo code, the user can use this service to send TMSVR <sup>2</sup> cmd.<br/> 
-> <sup>2</sup> For more detailed information, please refer to _defined protocol_: Expression Editor and Listen Node.pdf (Chapter 9.6 TMSVR)<br/>
+> <sup>2</sup> For more detailed information, please refer to _defined protocol_: TM Expression Editor and Listen Node.pdf (Chapter 9.6 TMSVR)<br/>
 >
 > * demo_ask_sta:<br/>
 In this demo code, the user can use this service to send TMSTA <sup>3</sup> cmd.<br/>
 > <sup>3</sup> For more detailed information, please refer to _defined protocol_ (Chapter7.5 TMSTA)<br/>
 > * demo_connect_tm:<br/>
 In this demo code, the user can set the connection type. <br/>
-If the user sets reconnect to true, every time the driver disconnects from the __Listen node__, it will try to reconnect.<br/>
-There are two kinds of connection settings the user can select, one is "connect_tmsvr" for Ethernet server connection, and the other is "connect_tmsct" for  TMflow connection.<br/>
 >
 > * demo_set_event:<br/>
 In this demo code, six event types can be selected.<br/> 
@@ -543,7 +545,7 @@ or<br/>
 ``git clone -b noetic https://github.com/TechmanRobotInc/tmr_ros1.git``<br/>
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-noetic``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
-> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the workspace visible to ROS of this terminal 1.<br/>
+> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the workspace visible to ROS.<br/>
 **Note**: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
@@ -553,16 +555,16 @@ or<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun tm_driver tm_driver <robot_ip_address>``<br/>
 The <robot_ip_address> is the IP address of the TM Robot, the user can get it through TM Flow, for example, 192.168.10.2<br/>
-> 7. In another new terminal: Source setup.bash in the workspace path and type the specific demo node function that the user wants to study for applications. For example: the user select to run demo_set_io, the user can type<br/>
+> 7. In another new terminal 3: Source setup.bash in the workspace path and type the specific demo node function that the user wants to study for applications. For example: the user select to run demo_set_io, the user can type<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun demo demo_set_io``<br/>
 > :warning:[CAUTION] Some demos will let the TM Robot move, please be careful.<br/>
-**Note**: When you are finished, press CTRL + C in all terminal windows to shut everything down.<br/>
+**Note**: When you have finished, press CTRL + C in all terminal windows to shut everything down.<br/>
 ><br/>
 
 
 ## __6. TM GUI debugging and demonstration__
-This chapter describes a simplified GUI for displaying tm_driver connection status, sct, sta, svr messages, and robot status. The user can optionally install the _ui_for_debug_and_demo_ package to aid in viewing messages between the driver and the robot through the GUI display. If the driver connection fails, the user can also try to send a reconnect command on this GUI for debugging.
+This chapter describes a simplified GUI for displaying tm_driver connection status, sct, sta, svr messages, and robot status. The user can optionally install the _ui_for_debug_and_demo_ package to aid in viewing messages between the driver and the robot through the GUI display.
 
 
 ### &sect; GUI Debugging description
@@ -581,7 +583,7 @@ This chapter describes a simplified GUI for displaying tm_driver connection stat
 > :bulb: If the"``Ethernet``" connection is interrupted, the display of most controlled label items in the GUI will be displayed as "NaN" and the robot feedback state will remain the last state and become invalid.<br/>
 
 
-### &sect; Usage with GUI debugging
+### &sect; Usage with GUI debugging on the external Linux PC
 > Note: If the user has even successfully built a specific code(tmr_ros1), the user only needs to change to the TM driver workspace path  ``cd ~/tmdriver_ws``, and then directly refer to steps 5~7 below. <br/>
 > 1. Type to create a root workspace directory by starting a terminal: For example,  ``tmdriver_ws`` or ``catkin_ws``, then type to change the current directory into the workspace directory path.<br/>
 ``mkdir ~/tmdriver_ws``<br/>
@@ -590,7 +592,7 @@ This chapter describes a simplified GUI for displaying tm_driver connection stat
 ``git clone https://github.com/TechmanRobotInc/tmr_ros1.git -b noetic``<br/>
 > 3. After the download done, rename the download folder ``tmr_ros1``(or ``tmr_ros1-noetic``) to ``src`` by typing<br/>
 ``mv tmr_ros1 src``<br/>  (or right-click on the download folder, select "Rename...")<br/>
-> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the workspace visible to ROS of this terminal 1.<br/>
+> 4. At the workspace directory to build the download packages and source 'setup.bash' in this workspace to make the workspace visible to ROS.<br/>
 **Note**: Do you set``source /opt/ros/noetic/setup.bash`` ready? Make sure to obtain the correct setup file according to your workspace hierarchy, and then type the following below to compile.<br/>
 ``catkin_make``<br/>
 ``source ./devel/setup.bash``<br/>
@@ -603,7 +605,7 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 > 7. In another new terminal 3: Source setup.bash in the workspace path and start GUI debug by typing<br/>
 ``source ./devel/setup.bash``<br/>
 ``rosrun ui_for_debug_and_demo robot_ui``<br/>
-**Note**: When you are finished, press CTRL + C in all terminal windows to shut everything down.<br/>
+**Note**: When you have finished, press CTRL + C in all terminal windows to shut everything down.<br/>
 
 
 ## __7. TM Robot corrected kinematics value loading and robot description file generation__
@@ -641,7 +643,7 @@ This chapter describes that the user can use a script program to extract specifi
 > :bulb: Do you run the driver to maintain the connection with TM Robot, make sure that TM Robot's operating software (TMflow) network settings are ready and the Listen node is running.<br/>
 > <br/>
 > * #### __Take generating a new Xacro file as an example__
-> The following steps describe how to import specific kinematic values using a real TM5-900 Robot following the procedure below and select the corresponding type tm5-900 as an example of <urdf_from>.<br/>
+> The following steps describe how to import specific kinematic values using a real TM5-900 Robot following the procedure below, and select the corresponding type tm5-900 as an example of <urdf_from>.<br/>
 >
 > 1. Terminal 1: Startup ROS core and type<br/>
 ``roscore``<br/>
@@ -655,7 +657,7 @@ This chapter describes that the user can use a script program to extract specifi
 > ```
 > The parameter `<robot_ip_address>` means the IP address of your TM Robot, the user can get it through TM Flow.<br/>
 > 
-> 3. In another new terminal 3: source setup.bash in the workspace path, change the current directory to the directory path of the python script to get the specific kinematic parameters of your TM Robot, and then enter the specified command format to generate a new name by the <urdf_gen> argument, for example, named user_defined.<br/>
+> 3. In another new terminal 3: Source setup.bash in the workspace path, change the current directory to the directory path of the Python script to get the specific kinematic parameters of your TM Robot, and then enter the specified command format to generate a new name by the <urdf_gen> argument, for example, named user_defined.<br/>
 > 
 > ```bash
 > source /opt/ros/noetic/setup.bash
@@ -733,5 +735,11 @@ This chapter describes that the user can use a script program to extract specifi
 > Ans: The user can first find the displayed string "``[new save file path:] ``" on the screen, and the following string is the file save location.<br/>
 
 
-## __8. Contact us / Technical support__
+## __8. Contact us / Technical support__   [![Email](https://img.shields.io/badge/-Email-c14438?style=flat&logo=Gmail&logoColor=white)](mailto:tmsales@tm-robot.com)
 More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot.com/zh-hant/contact-us/)``[https://www.tm-robot.com/zh-hant/contact-us/] ``<br/>
+> [!TIP]
+> 1. The tm_description package contains description files and meshes, available for the TM5-900, TM5-700, TM12, TM14, TM16, and TM20 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
+> 2. Some packages with ROS1 Noetic MoveIt configurations for TM Cobots are available for the TM5-900, TM5-700, TM12, TM14, TM16, and TM20 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
+> 3. Some packages with ROS1 Noetic Gazebo 11 configurations for TM Cobots are available for the TM5-900, TM5-700, TM12, TM14 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
+<div> </div>
+
