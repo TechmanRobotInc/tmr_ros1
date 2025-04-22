@@ -263,13 +263,13 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution.launch sim:=True
 > ```
 >
-> Or with virtual TM Robot (Example: TM5X-900 the eyeless model), by typing<br/>
+> Or with virtual TM Robot (Example: TM5X-900 without integrated camera), by typing<br/>
 >
 >
 > ```bash
 > roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=True
 > ```
-> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, tm14, tm16, and tm20 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+> :bookmark_tabs: Note1: There are several built-in TM Robot nominal robot model settings, available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, and (without integrated camera) TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
 > <br/>
 >
 > The user can also manipulate real TM5-900 Robot (Example: TM5-900) to run, by typing<br/>
@@ -279,7 +279,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > roslaunch tm5-900-moveit_config tm5-900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
 > ```
 >
-> Or TM Robot (Example: TM5X-900 the eyeless model), by typing<br/>
+> Or TM Robot (Example: TM5X-900 without integrated camera), by typing<br/>
 >
 > ```bash
 > roslaunch tm5x-900-moveit_config tm5x-900_moveit_planning_execution.launch sim:=False robot_ip:=<robot_ip_address>
@@ -288,7 +288,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > The parameter `<robot_ip_address>` means the IP address of the TM Robot.<br/>
 > Note: When you have finished, press CTRL + C in all terminal windows to shut everything down.<br/>
 > :bookmark_tabs: Note2: If your real Robot is a TM12, in the above example, you should type "tm12-moveit_config" to instead of "tm5-900-moveit_config" and type "tm12_moveit_planning_execution.launch" to instead of "tm5-900_moveit_planning_execution.launch".<br/>
-> :bookmark_tabs: Note3: If your real Robot is the eyeless model as a TM12X, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launch" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
+> :bookmark_tabs: Note3: If your real Robot is a TM12X without integrated camera, in the above example, you should type "tm12x-moveit_config" to instead of "tm5x-900-moveit_config" and type "tm12x_moveit_planning_execution.launch" to instead of "tm5x-900_moveit_planning_execution.launch".<br/>
 > :bookmark_tabs: Note4: In MoveIt planning_context.launch, TM Robot set the default to read the Xacro file, such as _TM5-900_ model, to read the file _tm5-900.urdf.xacro_ into robot_description or such as _TM12_ model, to read the file _tm12.urdf.xacro_ into robot_description. If the user wants to use the specific model parameters instead of the nominal model to control the robot, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
 > :bookmark_tabs: Note5: __Running two tm ros drivers at the same IP address is not allowed.__ Since the tm driver node has been written into the moveit launch file, there is no need to execute _rosrun tm_driver tm_driver <robot_ip_address>_.<br/>
 
@@ -337,7 +337,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
 > ```
 >
-> The prefix `<tm_robot_type>` means the TM Robot type, available for the tm5-900, tm5-700, tm12, and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x, and tm14x models.<br/>
+> The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12, tm14, and (without integrated camera) tm5x-900, tm5x-700, tm12x, and tm14x models.<br/>
 > For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".<br/>
 > :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12_gazebo.launch.<br/>
 > :bookmark_tabs: Note2: If the user needs to improve end-point simulation accuracy, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
@@ -566,7 +566,6 @@ The <robot_ip_address> is the IP address of the TM Robot, the user can get it th
 ## __6. TM GUI debugging and demonstration__
 This chapter describes a simplified GUI for displaying tm_driver connection status, sct, sta, svr messages, and robot status. The user can optionally install the _ui_for_debug_and_demo_ package to aid in viewing messages between the driver and the robot through the GUI display.
 
-
 ### &sect; GUI Debugging description
 > * If the user forgets to run the TM ROS driver, the user will see all the controlled label items of the GUI displayed as "NaN".<br/>
 > * The user can click the"``Quit_GUI``" button or click the "``x``" close button in the upper right corner to close this GUI.<br/>
@@ -624,7 +623,7 @@ This chapter describes that the user can use a script program to extract specifi
  >```
  > * <script_name> : Provide modify_xacro.py or modify_urdf.py two Python scripts program as options.
  > * <urdf_from>: The first argument represents the original URDF model form of the TM Robot, and the file part naming <sup>1</sup> is <urdf_from>.<br/>
- > <sup>1</sup> There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, and tm14 models, as well as the eyeless models tm5x-900, tm5x-700, tm12x and tm14x models.<br/>
+ > <sup>1</sup> There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, tm14, tm16, tm20 and (without integrated camera) tm5x-900, tm5x-700, tm12x, tm14x models.<br/> 
  > For example, select the tm12 nominal robot model as the input model form, the user can type tm12 as the <urdf_from>. For details of this item, please refer to the modify_urdf.py or modify_xacro.py code.<br/>
  > * <urdf_gen>: The second argument means the newly generated URDF model form of the TM Robot, and the file <sup>2</sup> name is <urdf_gen>.<br/>
  > <sup>2</sup> For example, if the user names it test and select modify_xacro.py as script program, a test.urdf.xacro robot description file will be generated.<br/>
@@ -680,7 +679,7 @@ This chapter describes that the user can use a script program to extract specifi
 > ```
 >
 > :bookmark_tabs: Note1: If your real Robot is a TM5-700, in the above example, you should type tm5-700 as an example for <urdf_from> and modify the tm5-700.urdf.xacro file.<br/>
-> :bookmark_tabs: Note2: If your real Robot is the eyeless model as a TM5X-700, in the above example, you should type tm5x-700 as an example for <urdf_from> and modify the tm5x-700.urdf.xacro file.<br/>
+> :bookmark_tabs: Note2: If your real Robot is a TM5X-700 without integrated camera, in the above example, you should type tm5x-700 as an example for <urdf_from> and modify the tm5x-700.urdf.xacro file.<br/>
 >
 > Please refer to the following to modify the content format of the filename line:<br/>
 > ```bash
@@ -721,7 +720,7 @@ This chapter describes that the user can use a script program to extract specifi
 > When this procedure is completed, the user can find that the newly generated named robot description file has been saved, e.g."``user_defined.urdf``".<br/>
 >
 > :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12 as an example for <urdf_from>.<br/>
-> :bookmark_tabs: Note2: If your real Robot is the eyeless model as a TM12X, in the above example, you should type tm12x as an example for <urdf_from>.<br/>
+> :bookmark_tabs: Note2: If your real Robot is a TM12X without integrated camera, in the above example, you should type tm12x as an example for <urdf_from>.<br/>
 >
 > Finally, the user can use the new robot file, such as "``user_defined.urdf``", instead of the default nominal URDF model to run your TM Robot or simulate the robot more accurately.<br/>
 >> :bulb: **Tip**: Remember to recompile since the code has been changed.<br/>
@@ -736,10 +735,10 @@ This chapter describes that the user can use a script program to extract specifi
 
 
 ## __8. Contact us / Technical support__   [![Email](https://img.shields.io/badge/-Email-c14438?style=flat&logo=Gmail&logoColor=white)](mailto:tmsales@tm-robot.com)
-More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot.com/zh-hant/contact-us/)``[https://www.tm-robot.com/zh-hant/contact-us/] ``<br/>
+More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot.com/en/contact-us/)``[https://www.tm-robot.com/en/contact-us/] ``<br/>
 > [!TIP]
-> 1. The tm_description package contains description files and meshes, available for the TM5-900, TM5-700, TM12, TM14, TM16, and TM20 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
-> 2. Some packages with ROS1 Noetic MoveIt configurations for TM Cobots are available for the TM5-900, TM5-700, TM12, TM14, TM16, and TM20 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
-> 3. Some packages with ROS1 Noetic Gazebo 11 configurations for TM Cobots are available for the TM5-900, TM5-700, TM12, TM14 models, as well as the eyeless models TM5x-900, TM5x-700, TM12x, TM14x models.<br/>
+> 1. The tm_description package contains description files and meshes, available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, and (without integrated camera) TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
+> 2. Some software packages with ROS1 Noetic MoveIt configurations for TM Cobots are available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
+> 3. Some software packages with ROS1 Noetic Gazebo 11 configurations for TM Cobots are available for TM5-900, TM5-700, TM12, TM14, TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
 <div> </div>
 
