@@ -337,7 +337,7 @@ The user can manually click the `Data Table Setting` <sup>2</sup> item and check
 > roslaunch tm_gazebo <tm_robot_type>_gazebo.launch
 > ```
 >
-> The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12, tm14, and (without integrated camera) tm5x-900, tm5x-700, tm12x, and tm14x models.<br/>
+> The prefix `<tm_robot_type>` means the TM Robot type, available for tm5-900, tm5-700, tm12, tm14, tm16, tm20, and (without integrated camera) tm5x-900, tm5x-700, tm12x, and tm14x models.<br/>
 > For the TM5-900 Robot, simply replace the prefix accordingly to tm5-900 and type "``roslaunch tm_gazebo tm5-900_gazebo.launch``".<br/>
 > :bookmark_tabs: Note1: If your real Robot is a TM12, in the above example, you should type tm12_gazebo.launch.<br/>
 > :bookmark_tabs: Note2: If the user needs to improve end-point simulation accuracy, please refer to the following section __Take generating a new Xacro file as an example__ of chapter 6 to modify the Xacro file.<br/>
@@ -623,7 +623,7 @@ This chapter describes that the user can use a script program to extract specifi
  >```
  > * <script_name> : Provide modify_xacro.py or modify_urdf.py two Python scripts program as options.
  > * <urdf_from>: The first argument represents the original URDF model form of the TM Robot, and the file part naming <sup>1</sup> is <urdf_from>.<br/>
- > <sup>1</sup> There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, tm14, tm16, tm20 and (without integrated camera) tm5x-900, tm5x-700, tm12x, tm14x models.<br/> 
+ > <sup>1</sup> There are several built-in TM Robot nominal robot model settings, available for tm5-900, tm5-700, tm12, tm14, tm16, tm20, and (without integrated camera) tm5x-900, tm5x-700, tm12x, tm14x models.<br/> 
  > For example, select the tm12 nominal robot model as the input model form, the user can type tm12 as the <urdf_from>. For details of this item, please refer to the modify_urdf.py or modify_xacro.py code.<br/>
  > * <urdf_gen>: The second argument means the newly generated URDF model form of the TM Robot, and the file <sup>2</sup> name is <urdf_gen>.<br/>
  > <sup>2</sup> For example, if the user names it test and select modify_xacro.py as script program, a test.urdf.xacro robot description file will be generated.<br/>
@@ -739,6 +739,6 @@ More Support & Service, please contact us. [@TECHMAN ROBOT](https://www.tm-robot
 > [!TIP]
 > 1. The tm_description package contains description files and meshes, available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, and (without integrated camera) TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
 > 2. Some software packages with ROS1 Noetic MoveIt configurations for TM Cobots are available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
-> 3. Some software packages with ROS1 Noetic Gazebo 11 configurations for TM Cobots are available for TM5-900, TM5-700, TM12, TM14, TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
+> 3. Some software packages with ROS1 Noetic Gazebo 11 configurations for TM Cobots are available for TM5-900, TM5-700, TM12, TM14, TM16, TM20, TM5X-900, TM5X-700, TM12X, TM14X models.<br/>
 <div> </div>
 

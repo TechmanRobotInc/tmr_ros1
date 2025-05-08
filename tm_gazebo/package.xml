@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>tm_gazebo</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <description>
-      Gazebo wrapper for the Techman Robot arms.
+      Classic Gazebo 11 simulation for the Techman Robot arms.
   </description>
 
-  <author email="yh.wang@tm-robot.com">yh.wang</author>
-  <maintainer email="yh.wang@tm-robot.com">yh.wang</maintainer>
+  <author email="yh.wang@tm-robot.com">Yh Wang</author>
+  <maintainer email="yh.wang@tm-robot.com">Yh Wang</maintainer>
 
   <license>BSD-3-Clause</license>
 
