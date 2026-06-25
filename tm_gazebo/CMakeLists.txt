@@ -6,5 +6,5 @@ find_package(catkin REQUIRED)
 
 catkin_package()
 
-install(DIRECTORY config launch rviz meshes models worlds xacro
+install(DIRECTORY config launch rviz urdf models worlds xacro
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
